@@ -12,10 +12,10 @@ def template_1(shoe_img, main_color, second_color, model_name, sizes):
     draw = ImageDraw.Draw(canvas)
 
     # Fonts
-    font_big = load_font("Segoe.UI.Bold.Italic.ttf", 300)
-    font_mid = load_font("Segoe.UI.Bold.Italic.ttf", 35)
-    font_fid = load_font("Segoe.UI.Bold.Italic.ttf", 43)
-    font_bid = load_font("Segoe.UI.Bold.Italic.ttf", 55)
+    font_big = load_font("Segoe.UI.Bold_p30download.com.ttf", 300)
+    font_mid = load_font("Segoe.UI_p30download.com.ttf", 35)
+    font_fid = load_font("Segoe.UI_p30download.com.ttf", 43)
+    font_bid = load_font("Segoe.UI_p30download.com.ttf", 55)
 
     text_color = main_color
 
