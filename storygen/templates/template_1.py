@@ -1,10 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import random
 from PIL import ImageFilter
-
-def lighten_color(color, strength=0.15):
-    # Blend main color with white at given strength
-    return tuple(int(c * strength + 255 * (1 - strength)) for c in color)
+from storygen.utils import lighten_color, load_font
 
 def template_1(shoe_img, main_color, second_color, model_name, sizes):
     W, H = 1080, 1920
@@ -15,10 +12,11 @@ def template_1(shoe_img, main_color, second_color, model_name, sizes):
     draw = ImageDraw.Draw(canvas)
 
     # Fonts
-    font_big = ImageFont.truetype("/content/drive/MyDrive/Fonts/Segoe.UI.Bold.Italic_p30download.com.ttf", 300)
-    font_mid = ImageFont.truetype("/content/drive/MyDrive/Fonts/Segoe.UI.Bold.Italic_p30download.com.ttf", 35)
-    font_fid = ImageFont.truetype("/content/drive/MyDrive/Fonts/Segoe.UI.Bold.Italic_p30download.com.ttf", 43)
-    font_bid = ImageFont.truetype("/content/drive/MyDrive/Fonts/Segoe.UI.Bold.Italic_p30download.com.ttf", 55)
+    font_big = load_font("Segoe.UI.Bold.Italic.ttf", 300)
+    font_mid = load_font("Segoe.UI.Bold.Italic.ttf", 35)
+    font_fid = load_font("Segoe.UI.Bold.Italic.ttf", 43)
+    font_bid = load_font("Segoe.UI.Bold.Italic.ttf", 55)
+
     text_color = main_color
 
     # 1. Big NIKE text at the top (centered horizontally)

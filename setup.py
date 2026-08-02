@@ -8,4 +8,7 @@ setup(
         "Pillow>=10.0",
     ],
     include_package_data=True,
+    package_data={
+        "storygen": ["fonts/*.ttf"],
+    },
 )
