@@ -3,7 +3,8 @@ import random
 from PIL import ImageFilter
 from storygen.utils import lighten_color, load_font
 
-def template_1(shoe_img, main_color, second_color, model_name, sizes):
+def template_1(photo_1, main_color, second_color, model_name, sizes):
+    shoe_img = photo_1
     W, H = 1080, 1920
 
     # Background: 15% main color blended with white
