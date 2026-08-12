@@ -15,7 +15,7 @@ def template_1(photo_1, main_color, second_color, model_name, sizes):
     # Fonts
     font_big = load_font("Segoe.UI.Bold_p30download.com.ttf", 300)
     font_mid = load_font("Segoe.UI_p30download.com.ttf", 35)
-    font_fid = load_font("Segoe.UI_p30download.com.ttf", 43)
+    font_fid = load_font("A-Mitra-Font/A%20Mitra%2004.ttf", 43)
     font_bid = load_font("Segoe.UI_p30download.com.ttf", 55)
 
     text_color = main_color
@@ -85,7 +85,7 @@ def template_1(photo_1, main_color, second_color, model_name, sizes):
       corner_radius = 15
 
       # Title "Sizes:"
-      title_text = "Sizes:"
+      title_text = "Size:"
       bbox = font_mid.getbbox(title_text)
       title_w, title_h = bbox[2] - bbox[0], bbox[3] - bbox[1]
 
@@ -131,7 +131,7 @@ def template_1(photo_1, main_color, second_color, model_name, sizes):
 
     # 6. Footer text under shoe, rotated with same slope
     rand_num = random.randint(100, 999)
-    footer_text = f"For more info, direct {rand_num}"
+    footer_text = f"برای اطلاعات بیشتر، {rand_num} رو دایرکت کن"
 
     # Temporary transparent image for rotated text
     temp_img = Image.new("RGBA", (W, H), (255, 255, 255, 0))
