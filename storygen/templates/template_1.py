@@ -92,6 +92,10 @@ def template_1(photo_1, main_color, second_color, model_name, sizes):
       # Each size line height
       line_spacing = 10
       sizes_heights = []
+        # Ensure sizes is a list split only by commas
+      if isinstance(sizes, str):
+          sizes = [s.strip() for s in sizes.split(",") if s.strip()]
+
       for size in sizes:
           bbox = font_mid.getbbox(size)
           size_h = bbox[3] - bbox[1]
