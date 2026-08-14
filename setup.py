@@ -9,6 +9,8 @@ setup(
         "rembg",
         "numpy",
         "scikit-learn",
+        "cairosvg",
+        "pycairo",
     ],
     include_package_data=True,
     package_data={
