@@ -1,4 +1,10 @@
-
+from storygen.processing import remove_background, extract_colors
+from storygen.utils import lighten_color, load_font
+from storygen.utils import (
+    remove_background, extract_colors, lighten_color, darken_color,
+    adjust_saturation, load_font, add_brand_logo, place_shoe,
+    draw_trapezoid, add_user_logo, draw_text
+)
 
 def template_2b(photo_1, photo_2, model_name, shop_name, sizes, brand, username):
     W, H = 1080, 1920
