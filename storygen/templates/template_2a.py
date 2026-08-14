@@ -10,9 +10,10 @@ def template_2a(photo_1, photo_2, model_name, shop_name, sizes, brand, username)
     W, H = 1080, 1920
 
     # Remove background and get colors
-    photo_1_rem = remove_background(photo_1)
-    photo_2_rem = remove_background(photo_2)
+    photo_1_rem = photo_1
+    photo_2_rem = photo_2
     main_color, second_color = extract_colors(photo_1_rem)
+
 
     # --- 1. Background with trapezoids ---
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
