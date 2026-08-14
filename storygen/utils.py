@@ -11,9 +11,9 @@ import io
 import cairo
 
 BRAND_CONFIG = {
-    "adidas": "/content/drive/MyDrive/1080/addidas not opt 12.svg",
-    "nike": "/content/drive/MyDrive/1080/nike-20-black.svg",
-    "newbalance": "/content/drive/MyDrive/1080/new balance-16.svg",
+    "adidas": "brands/addidas-1.svg",
+    "nike": "brands/nike-1.svg",
+    "newbalance": "brands/new balance-1.svg",
 }
 
 
@@ -124,7 +124,7 @@ def add_brand_logo(canvas, brand, mode=0, opacity=128, color=(0,0,0), pos=None, 
 
     else:
         # Fallback: text overlay
-        font_logo = load_font("/content/fonts/Segoe.UI.Bold.Italic_p30download.com.ttf", 220)
+        font_logo = load_font("Segoe.UI_p30download.com.ttf", 220)
         bbox = font_logo.getbbox(brand.upper())
         logo_w = bbox[2] - bbox[0]
         logo_h = bbox[3] - bbox[1]
@@ -132,7 +132,7 @@ def add_brand_logo(canvas, brand, mode=0, opacity=128, color=(0,0,0), pos=None, 
         # Resize text if too big
         if logo_w > max_size[0]:
             scale = max_size[0]/logo_w
-            font_logo = load_font("/content/fonts/Segoe.UI.Bold.Italic_p30download.com.ttf", int(220*scale))
+            font_logo = load_font("Segoe.UI_p30download.com.ttf", int(220*scale))
 
         # Auto-center text if pos not provided
         if pos is None:
