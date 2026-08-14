@@ -11,7 +11,7 @@ def template_2b(photo_1, photo_2, model_name, shop_name, sizes, brand, username)
 
     # --- 1. Background image ---
     # Load a background PNG/JPG from your folder
-    bg_path = "/content/drive/MyDrive/1080/template2b_bg.png"
+    bg_path = "bg/template2b_bg.png"
     canvas = Image.open(bg_path).convert("RGBA").resize((W, H))
     draw = ImageDraw.Draw(canvas)
 
@@ -27,7 +27,7 @@ def template_2b(photo_1, photo_2, model_name, shop_name, sizes, brand, username)
     place_shoe(canvas, photo_2_rem, pos=(None,1310), max_size=(650,450), angle=0, center_x=True)
 
     # --- 5. Model name ---
-    font_model = load_font("/content/fonts/Segoe.UI.Bold.Italic_p30download.com.ttf", 60)
+    font_model = load_font("Segoe.UI_p30download.com.ttf", 60)
     bbox = font_model.getbbox(model_name)
     model_x = (W - (bbox[2]-bbox[0])) // 2
     draw.text((model_x, 775), model_name, fill=(0,0,0), font=font_model)
@@ -35,9 +35,9 @@ def template_2b(photo_1, photo_2, model_name, shop_name, sizes, brand, username)
     # --- 6. Shop name ---
     draw_text(canvas,
                text=shop_name,
-               font_path_eng="/content/fonts/Segoe.UI.Bold.Italic_p30download.com.ttf",
+               font_path_eng="Segoe.UI_p30download.com.ttf",
                font_size_eng=55,
-               font_path_per="/content/fonts/A Mitra 04.ttf",
+               font_path_per="A Mitra 04.ttf",
                font_size_per=60,
                pos=(None, 853),
                rotation=0,
@@ -51,7 +51,7 @@ def template_2b(photo_1, photo_2, model_name, shop_name, sizes, brand, username)
         else:
             sizes_list = sizes
 
-        font_mid = load_font("/content/fonts/Segoe.UI.Bold.Italic_p30download.com.ttf", 40)
+        font_mid = load_font("Segoe.UI_p30download.com.ttf", 40)
         title_text = "Size:"
         bbox = font_mid.getbbox(title_text)
         title_w, title_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
@@ -77,9 +77,9 @@ def template_2b(photo_1, photo_2, model_name, shop_name, sizes, brand, username)
     footer_text = f"برای اطلاعات بیشتر\n {rand_num} رو دایرکت کن!"
     draw_text(canvas,
                text= footer_text,
-               font_path_eng="/content/fonts/Segoe.UI.Bold.Italic_p30download.com.ttf",
+               font_path_eng="Segoe.UI_p30download.com.ttf",
                font_size_eng=55,
-               font_path_per="/content/fonts/A Mitra 04.ttf",
+               font_path_per="A Mitra 04.ttf",
                font_size_per=40,
                pos=(20, 1350),
                rotation=90,
