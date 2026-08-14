@@ -1,18 +1,5 @@
-from importlib.resources import files
-from PIL import ImageFont
-
-def lighten_color(color, strength=0.15):
-    """Blend main color with white at given strength."""
-    return tuple(int(c * strength + 255 * (1 - strength)) for c in color)
-
-def load_font(name: str, size: int):
-    """Load a font from the bundled fonts folder."""
-    font_path = files("storygen.fonts").joinpath(name)
-    return ImageFont.truetype(str(font_path), size)
-
-
 # --- CORE FUNCTIONS ---
-
+from importlib.resources import files
 from rembg import remove
 from io import BytesIO
 import numpy as np
@@ -93,8 +80,10 @@ def adjust_saturation(color, factor):
     return (int(r2*255), int(g2*255), int(b2*255))
 
 # 6. Load font (LOCAL version for Colab)
-def load_font(path: str, size: int):
-    return ImageFont.truetype(path, size)
+def load_font(name: str, size: int):
+    """Load a font from the bundled fonts folder."""
+    font_path = files("storygen.fonts").joinpath(name)
+    return ImageFont.truetype(str(font_path), size)
 
 # 7. add brand logo
 def add_brand_logo(canvas, brand, mode=0, opacity=128, color=(0,0,0), pos=None, max_size=(400,400)):
