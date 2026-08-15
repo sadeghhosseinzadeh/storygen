@@ -40,7 +40,7 @@ def template_1a(photo_1, model_name, sizes):
     # 4. Shoe photo (background removed + placed)
     place_shoe(canvas, photo_1_rem,
                pos=(None, (H - 1000)//2 + 100),  # same vertical offset logic
-               max_size=(1000, 1000),
+               max_size=(750, 750),
                angle=-31,
                center_x=True)
 
@@ -48,29 +48,35 @@ def template_1a(photo_1, model_name, sizes):
     if sizes:
         rect_w = 350
         rect_x1 = 60
-        rect_y1 = 1100  # adjust based on shoe placement
+        rect_y1 = y + shoe_resized.size[1] + 40
         rect_color = lighten_color(main_color, 0.15)
-        corner_radius = 15
 
         title_text = "Size:"
         bbox = font_mid.getbbox(title_text)
-        title_w, title_h = bbox[2] - bbox[0], bbox[3] - bbox[1]
+        title_w, title_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
 
-        draw.rounded_rectangle([rect_x1, rect_y1, rect_x1+rect_w, rect_y1+200],
-                               radius=corner_radius, fill=rect_color)
+        line_spacing = 10
+        sizes_heights = [font_mid.getbbox(s)[3]-font_mid.getbbox(s)[1] for s in sizes]
+        total_text_h = title_h + sum(sizes_heights) + line_spacing*(len(sizes)-1)
+
+        rect_h = total_text_h + 20 + 20 + 40
+        rect_x2 = rect_x1 + rect_w
+        rect_y2 = rect_y1 + rect_h
+
+        draw.rounded_rectangle([rect_x1, rect_y1, rect_x2, rect_y2],
+                               radius=15, fill=rect_color)
+
         title_x = rect_x1 + (rect_w - title_w)//2
         title_y = rect_y1 + 20
-        draw.text((title_x, title_y), title_text, fill=text_color, font=font_mid)
+        draw.text((title_x, title_y), title_text, fill=main_color, font=font_mid)
 
         current_y = title_y + title_h + 20
-        if isinstance(sizes, str):
-            sizes = [s.strip() for s in sizes.split(",") if s.strip()]
         for size in sizes:
             bbox = font_mid.getbbox(size)
             size_w, size_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
             size_x = rect_x1 + (rect_w - size_w)//2
-            draw.text((size_x, current_y), size, fill=text_color, font=font_mid)
-            current_y += size_h + 10
+            draw.text((size_x, current_y), size, fill=main_color, font=font_mid)
+            current_y += size_h + line_spacing
 
     # 6. Footer text (unchanged)
     rand_num = random.randint(100, 999)
