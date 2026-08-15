@@ -44,44 +44,43 @@ def template_1a(photo_1, model_name, sizes):
                angle=-31,
                center_x=True)
 
-    # 5. Sizes box (unchanged)
-# 5. Sizes box
-if sizes:
-    # Ensure sizes is a list split only by commas
-    if isinstance(sizes, str):
-        sizes = [s.strip() for s in sizes.split(",") if s.strip()]
-
-    rect_w = 350
-    rect_x1 = 60
-    rect_y1 = 1350
-    rect_color = lighten_color(main_color, 0.15)
-
-    title_text = "Size:"
-    bbox = font_mid.getbbox(title_text)
-    title_w, title_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
-
-    line_spacing = 10
-    sizes_heights = [font_mid.getbbox(s)[3]-font_mid.getbbox(s)[1] for s in sizes]
-    total_text_h = title_h + sum(sizes_heights) + line_spacing*(len(sizes)-1)
-
-    rect_h = total_text_h + 20 + 20 + 40
-    rect_x2 = rect_x1 + rect_w
-    rect_y2 = rect_y1 + rect_h
-
-    draw.rounded_rectangle([rect_x1, rect_y1, rect_x2, rect_y2],
-                           radius=15, fill=rect_color)
-
-    title_x = rect_x1 + (rect_w - title_w)//2
-    title_y = rect_y1 + 20
-    draw.text((title_x, title_y), title_text, fill=main_color, font=font_mid)
-
-    current_y = title_y + title_h + 20
-    for size in sizes:
-        bbox = font_mid.getbbox(size)
-        size_w, size_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
-        size_x = rect_x1 + (rect_w - size_w)//2
-        draw.text((size_x, current_y), size, fill=main_color, font=font_mid)
-        current_y += size_h + line_spacing
+    # 5. Sizes box
+    if sizes:
+        # Ensure sizes is a list split only by commas
+        if isinstance(sizes, str):
+            sizes = [s.strip() for s in sizes.split(",") if s.strip()]
+    
+        rect_w = 350
+        rect_x1 = 60
+        rect_y1 = 1350
+        rect_color = lighten_color(main_color, 0.15)
+    
+        title_text = "Size:"
+        bbox = font_mid.getbbox(title_text)
+        title_w, title_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
+    
+        line_spacing = 10
+        sizes_heights = [font_mid.getbbox(s)[3]-font_mid.getbbox(s)[1] for s in sizes]
+        total_text_h = title_h + sum(sizes_heights) + line_spacing*(len(sizes)-1)
+    
+        rect_h = total_text_h + 20 + 20 + 40
+        rect_x2 = rect_x1 + rect_w
+        rect_y2 = rect_y1 + rect_h
+    
+        draw.rounded_rectangle([rect_x1, rect_y1, rect_x2, rect_y2],
+                               radius=15, fill=rect_color)
+    
+        title_x = rect_x1 + (rect_w - title_w)//2
+        title_y = rect_y1 + 20
+        draw.text((title_x, title_y), title_text, fill=main_color, font=font_mid)
+    
+        current_y = title_y + title_h + 20
+        for size in sizes:
+            bbox = font_mid.getbbox(size)
+            size_w, size_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
+            size_x = rect_x1 + (rect_w - size_w)//2
+            draw.text((size_x, current_y), size, fill=main_color, font=font_mid)
+            current_y += size_h + line_spacing
 
 
     # 6. Footer text (unchanged)
