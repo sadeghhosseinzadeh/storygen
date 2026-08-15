@@ -252,22 +252,22 @@ def add_user_logo(canvas, logo_path=None,
                   center_x=False, center_y=False):
     """
     Add a user logo PNG/SVG from the assets folder.
-    If logo_path is None, skip.
+    If logo_path is None or invalid, skip gracefully.
     """
     if not logo_path:
         return canvas
 
-    # Open logo (handle PNG or SVG)
-    if str(logo_path).lower().endswith(".svg"):
-        import cairosvg
-        # Convert SVG to PNG in memory
-        png_data = cairosvg.svg2png(url=str(logo_path))
-        from PIL import Image
-        import io
-        logo = Image.open(io.BytesIO(png_data)).convert("RGBA")
-    else:
-        from PIL import Image
-        logo = Image.open(logo_path).convert("RGBA")
+    try:
+        # Handle SVG → convert to PNG in memory
+        if str(logo_path).lower().endswith(".svg"):
+            png_data = cairosvg.svg2png(url=str(logo_path))
+            logo = Image.open(io.BytesIO(png_data)).convert("RGBA")
+        else:
+            logo = Image.open(logo_path).convert("RGBA")
+    except Exception as e:
+        # Skip gracefully if file is corrupted or unreadable
+        print(f"Warning: could not load logo {logo_path}: {e}")
+        return canvas
 
     # Resize to fit max_size
     lw, lh = logo.size
