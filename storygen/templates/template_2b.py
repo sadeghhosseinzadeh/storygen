@@ -14,7 +14,9 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
 
     # --- 1. Background image ---
     # Load a background PNG/JPG from your folder
-    bg_path = "bg/template2b_bg.png"
+    package_root = Path(storygen.__file__).parent
+    bg_path = package_root / "bg" / "template2b_bg.png"
+    
     canvas = Image.open(bg_path).convert("RGBA").resize((W, H))
     draw = ImageDraw.Draw(canvas)
 
