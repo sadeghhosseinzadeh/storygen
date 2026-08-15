@@ -7,7 +7,7 @@ from storygen.utils import (
     draw_trapezoid, add_user_logo, draw_text
 )
 
-def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, username):
+def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=None):
     W, H = 1080, 1920
 
     # Remove background and get colors
