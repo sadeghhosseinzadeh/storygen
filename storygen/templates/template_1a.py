@@ -1,7 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 import random
-from storygen.processing import remove_background
-from storygen.utils import lighten_color, load_font, place_shoe
+from storygen.utils import lighten_color, load_font, place_shoe, remove_background, extract_colors
 
 def template_1a(photo_1, model_name, sizes):
     W, H = 1080, 1920
