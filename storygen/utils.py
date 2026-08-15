@@ -74,11 +74,14 @@ def adjust_saturation(color, factor):
     r2, g2, b2 = colorsys.hls_to_rgb(h, l, s)
     return (int(r2*255), int(g2*255), int(b2*255))
 
-# 6. Load font (LOCAL version for Colab)
-def load_font(name: str, size: int):
-    """Load a font from the bundled fonts folder."""
-    font_path = files("storygen.fonts").joinpath(name)
-    return ImageFont.truetype(str(font_path), size)
+# 6. Load font 
+def load_font(font_filename, size):
+    try:
+        font_path = files("storygen.fonts").joinpath(font_filename)
+        return ImageFont.truetype(str(font_path), size)
+    except OSError:
+        print(f"Warning: font {font_filename} not found, using default")
+        return ImageFont.load_default()
 
 # 7. add brand logo
 def add_brand_logo(canvas, brand, variant=1, mode=0, opacity=255, color=(0,0,0), pos=None, max_size=(400,400)):
