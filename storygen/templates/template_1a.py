@@ -3,10 +3,12 @@ import random
 from storygen.processing import remove_background
 from storygen.utils import lighten_color, load_font, place_shoe
 
-def template_1a(photo_1, main_color, second_color, model_name, sizes):
+def template_1a(photo_1, model_name, sizes):
     W, H = 1080, 1920
 
     # Background: 15% main color blended with white
+    photo_1_rem = remove_background(photo_1)
+    main_color, second_color = extract_colors(photo_1_rem)
     bg = lighten_color(main_color, 0.15)
     canvas = Image.new("RGB", (W, H), bg)
     draw = ImageDraw.Draw(canvas)
@@ -37,7 +39,6 @@ def template_1a(photo_1, main_color, second_color, model_name, sizes):
     draw.polygon(bottom_shape_points, fill=second_color)
 
     # 4. Shoe photo (background removed + placed)
-    photo_1_rem = remove_background(photo_1)
     place_shoe(canvas, photo_1_rem,
                pos=(None, (H - 1000)//2 + 100),  # same vertical offset logic
                max_size=(1000, 1000),
