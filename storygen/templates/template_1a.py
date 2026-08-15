@@ -52,7 +52,7 @@ def template_1a(photo_1, model_name, sizes):
     
         rect_w = 350
         rect_x1 = 60
-        rect_y1 = 1450
+        rect_y1 = 1550
         rect_color = lighten_color(main_color, 0.15)
     
         title_text = "Size:"
