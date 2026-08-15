@@ -12,8 +12,5 @@ setup(
         "cairosvg",
         "pycairo",
     ],
-    include_package_data=True,
-    package_data={
-        "storygen": ["fonts/*.ttf"],
-    },
+    include_package_data=True, 
 )
