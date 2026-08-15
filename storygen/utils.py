@@ -9,6 +9,8 @@ import colorsys
 import cairosvg
 import io
 import cairo
+from pathlib import Path
+import storygen
 
 BRAND_CONFIG = {
     "adidas": "brands/addidas-1.svg",
@@ -86,12 +88,15 @@ def load_font(name: str, size: int):
     return ImageFont.truetype(str(font_path), size)
 
 # 7. add brand logo
-def add_brand_logo(canvas, brand, mode=0, opacity=128, color=(0,0,0), pos=None, max_size=(400,400)):
+def add_brand_logo(canvas, brand, variant=1, mode=0, opacity=255, color=(0,0,0), pos=None, max_size=(400,400)):
     W, H = canvas.size
     brand = brand.lower()
-    logo_path = BRAND_CONFIG.get(brand)
+    # Construct filename like "nike-1.svg", "nike-2.svg"
+    logo_filename = f"{brand}-{variant}.svg"
+    package_root = Path(storygen.__file__).parent
+    logo_path = package_root / "brands" / logo_filename
 
-    if mode == 0 and logo_path:
+    if mode == 0 and logo_path.exists():
         # Convert SVG to PNG at target size
         if logo_path.endswith(".svg"):
             png_bytes = cairosvg.svg2png(url=logo_path,
