@@ -249,41 +249,44 @@ def draw_trapezoid(ctx, x_left, y_top, x_right, y_top_right, y_bottom_left, y_bo
 
 
 # 10. Add user logo
-def add_user_logo(canvas, username, base_folder="/content/drive/MyDrive/1080",
+def add_user_logo(canvas, logo_path=None,
                   pos=(None, None), max_size=(200,200),
                   center_x=False, center_y=False):
     """
-    Add a user logo PNG from a local folder.
-    Supports None/None auto-centering like place_shoe().
+    Add a user logo PNG/SVG from the assets folder.
+    If logo_path is None, skip.
     """
+    if not logo_path:
+        return canvas
 
-    # Build path
-    logo_path = f"{base_folder}/{username}logo.png"
-    logo = Image.open(logo_path).convert("RGBA")
+    # Open logo (handle PNG or SVG)
+    if str(logo_path).lower().endswith(".svg"):
+        import cairosvg
+        # Convert SVG to PNG in memory
+        png_data = cairosvg.svg2png(url=str(logo_path))
+        from PIL import Image
+        import io
+        logo = Image.open(io.BytesIO(png_data)).convert("RGBA")
+    else:
+        from PIL import Image
+        logo = Image.open(logo_path).convert("RGBA")
 
     # Resize to fit max_size
     lw, lh = logo.size
     max_w, max_h = max_size
     ratio = min(max_w/lw, max_h/lh)
-    if ratio > 1:
-        ratio = min(max_w/lw, max_h/lh)
-
     new_w, new_h = int(lw * ratio), int(lh * ratio)
     logo_resized = logo.resize((new_w, new_h), Image.LANCZOS)
 
     # Canvas size
     W, H = canvas.size
-
-    # Extract pos values
     pos_x, pos_y = pos
 
-    # Auto-center logic (None = center)
+    # Auto-center logic
     if pos_x is None:
         pos_x = (W - new_w) // 2
     if pos_y is None:
         pos_y = (H - new_h) // 2
-
-    # Override with flags if needed
     if center_x:
         pos_x = (W - new_w) // 2
     if center_y:
@@ -292,7 +295,6 @@ def add_user_logo(canvas, username, base_folder="/content/drive/MyDrive/1080",
     # Paste
     canvas.paste(logo_resized, (pos_x, pos_y), logo_resized)
     return canvas
-
 
 # 11. Draw text
 def draw_text(canvas, text,
