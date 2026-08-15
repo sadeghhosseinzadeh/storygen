@@ -7,7 +7,7 @@ from storygen.utils import (
     draw_trapezoid, add_user_logo, draw_text
 )
 
-def template_2a(photo_1, photo_2, model_name, shop_name, sizes, brand, username):
+def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, username):
     W, H = 1080, 1920
 
     # Remove background and get colors
@@ -62,9 +62,9 @@ def template_2a(photo_1, photo_2, model_name, shop_name, sizes, brand, username)
 
     # --- 5. Shop name ---
     font_shop = load_font("Segoe.UI_p30download.com.ttf", 50)
-    bbox = font_shop.getbbox(shop_name)
+    bbox = font_shop.getbbox(shop_name_en)
     shop_x = (W - (bbox[2]-bbox[0])) // 2
-    draw.text((shop_x, 255), shop_name, fill=shades[3], font=font_shop)
+    draw.text((shop_x, 255), shop_name_en, fill=shades[3], font=font_shop)
 
 
     # --- 6. Sizes box ---
