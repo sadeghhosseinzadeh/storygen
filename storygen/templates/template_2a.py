@@ -65,7 +65,7 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     font_shop = load_font("Segoe.UI.Semibold_p30download.com.ttf", 50)
     bbox = font_shop.getbbox(shop_name_en)
     shop_x = (W - (bbox[2]-bbox[0])) // 2
-    draw.text((shop_x, 255), shop_name_en, fill=shades[3], font=font_shop)
+    draw.text((shop_x, 270), shop_name_en, fill=shades[3], font=font_shop)
 
 
     # --- 6. Sizes box ---
@@ -83,7 +83,7 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
 
         # Shift everything up and left by changing these anchors
         rect_x1 = 80
-        rect_y1 = H - 440
+        rect_y1 = H - 400
         rect_w = 400
 
         # Position title
