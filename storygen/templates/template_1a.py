@@ -39,7 +39,7 @@ def template_1a(photo_1, model_name, sizes):
 
     # 4. Shoe photo (background removed + placed)
     place_shoe(canvas, photo_1_rem,
-               pos=(None, 750),  
+               pos=(None, 700),  
                max_size=(750, 600),
                angle=-31,
                center_x=True)
@@ -52,7 +52,7 @@ def template_1a(photo_1, model_name, sizes):
     
         rect_w = 350
         rect_x1 = 60
-        rect_y1 = 1350
+        rect_y1 = 1450
         rect_color = lighten_color(main_color, 0.15)
     
         title_text = "Size:"
@@ -72,14 +72,14 @@ def template_1a(photo_1, model_name, sizes):
     
         title_x = rect_x1 + (rect_w - title_w)//2
         title_y = rect_y1 + 20
-        draw.text((title_x, title_y), title_text, fill=main_color, font=font_mid)
+        draw.text((title_x, title_y), title_text, fill=second_color, font=font_mid)
     
         current_y = title_y + title_h + 20
         for size in sizes:
             bbox = font_mid.getbbox(size)
             size_w, size_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
             size_x = rect_x1 + (rect_w - size_w)//2
-            draw.text((size_x, current_y), size, fill=main_color, font=font_mid)
+            draw.text((size_x, current_y), size, fill=second_color, font=font_mid)
             current_y += size_h + line_spacing
 
 
