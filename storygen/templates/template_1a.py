@@ -48,7 +48,7 @@ def template_1a(photo_1, model_name, sizes):
     if sizes:
         rect_w = 350
         rect_x1 = 60
-        rect_y1 = y + shoe_resized.size[1] + 40
+        rect_y1 = 1400
         rect_color = main_color
 
         title_text = "Size:"
