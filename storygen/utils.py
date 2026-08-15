@@ -92,7 +92,7 @@ def add_brand_logo(canvas, brand, variant=1, mode=0, opacity=255, color=(0,0,0),
     if mode == 0 and logo_path.exists():
         # Convert SVG to PNG at target size
         if logo_path.suffix.lower() == ".svg":
-            png_bytes = cairosvg.svg2png(url=logo_path,
+            png_bytes = cairosvg.svg2png(url=str(logo_path),
                                          output_width=max_size[0],
                                          output_height=max_size[1])
             logo_img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
