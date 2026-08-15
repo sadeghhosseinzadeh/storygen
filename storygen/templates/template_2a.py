@@ -1,4 +1,5 @@
 import cairo
+import random
 from PIL import Image, ImageDraw
 from storygen.processing import remove_background, extract_colors
 from storygen.utils import lighten_color, load_font
