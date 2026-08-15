@@ -4,7 +4,7 @@ from rembg import remove
 from io import BytesIO
 import numpy as np
 from sklearn.cluster import KMeans
-from PIL import Image, ImageFont, ImageDraw
+from PIL import Image, ImageFont, ImageDraw, ImageFilter
 import colorsys
 import cairosvg
 import io
