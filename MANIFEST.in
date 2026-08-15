@@ -1,0 +1,3 @@
+recursive-include storygen/fonts *.ttf
+recursive-include storygen/bg *.png
+recursive-include storygen/brands *.svg
