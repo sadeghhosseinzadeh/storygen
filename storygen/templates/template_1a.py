@@ -40,7 +40,7 @@ def template_1a(photo_1, model_name, sizes):
     # 4. Shoe photo (background removed + placed)
     place_shoe(canvas, photo_1_rem,
                pos=(None, (H - 1000)//2 + 100),  # same vertical offset logic
-               max_size=(750, 750),
+               max_size=(650, 450),
                angle=-31,
                center_x=True)
 
@@ -48,8 +48,8 @@ def template_1a(photo_1, model_name, sizes):
     if sizes:
         rect_w = 350
         rect_x1 = 60
-        rect_y1 = 1400
-        rect_color = main_color
+        rect_y1 = 1350
+        rect_color = second_color
 
         title_text = "Size:"
         bbox = font_mid.getbbox(title_text)
