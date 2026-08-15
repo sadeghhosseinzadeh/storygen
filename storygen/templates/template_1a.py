@@ -49,7 +49,7 @@ def template_1a(photo_1, model_name, sizes):
         rect_w = 350
         rect_x1 = 60
         rect_y1 = y + shoe_resized.size[1] + 40
-        rect_color = lighten_color(main_color, 0.15)
+        rect_color = main_color
 
         title_text = "Size:"
         bbox = font_mid.getbbox(title_text)
