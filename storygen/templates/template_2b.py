@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import io
 import cairosvg
 import storygen
-from storygen.processing import remove_background, extract_colors
+
 from storygen.utils import (
     remove_background, extract_colors, lighten_color, darken_color,
     adjust_saturation, load_font, add_brand_logo, place_shoe,
@@ -35,7 +35,7 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     place_shoe(canvas, photo_2_rem, pos=(None,1310), max_size=(650,450), angle=0, center_x=True)
 
     # --- 5. Model name ---
-    font_model = load_font("Segoe.UI_p30download.com.ttf", 60)
+    font_model = load_font("Segoe.UI.Bold_p30download.com.ttf", 70)
     bbox = font_model.getbbox(model_name)
     model_x = (W - (bbox[2]-bbox[0])) // 2
     draw.text((model_x, 775), model_name, fill=(0,0,0), font=font_model)
@@ -43,11 +43,11 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     # --- 6. Shop name ---
     draw_text(canvas,
                text=shop_name_en,
-               font_path_eng="Segoe.UI_p30download.com.ttf",
+               font_path_eng="Segoe.UI.Semibold_p30download.com.ttf",
                font_size_eng=55,
                font_path_per="A Mitra 04.ttf",
                font_size_per=60,
-               pos=(None, 853),
+               pos=(None, 863),
                rotation=0,
                fill=(0,0,0))
 
@@ -59,7 +59,7 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
         else:
             sizes_list = sizes
 
-        font_mid = load_font("Segoe.UI_p30download.com.ttf", 40)
+        font_mid = load_font("Segoe.UI.Semibold_p30download.com.ttf", 40)
         title_text = "Size:"
         bbox = font_mid.getbbox(title_text)
         title_w, title_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
