@@ -38,7 +38,7 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     font_model = load_font("Segoe.UI.Bold_p30download.com.ttf", 70)
     bbox = font_model.getbbox(model_name)
     model_x = (W - (bbox[2]-bbox[0])) // 2
-    draw.text((model_x, 775), model_name, fill=(0,0,0), font=font_model)
+    draw.text((model_x, 757), model_name, fill=(0,0,0), font=font_model)
 
     # --- 6. Shop name ---
     draw_text(canvas,
@@ -47,7 +47,7 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
                font_size_eng=55,
                font_path_per="A Mitra 04.ttf",
                font_size_per=60,
-               pos=(None, 863),
+               pos=(None, 845),
                rotation=0,
                fill=(0,0,0))
 
@@ -59,12 +59,12 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
         else:
             sizes_list = sizes
 
-        font_mid = load_font("Segoe.UI.Semibold_p30download.com.ttf", 40)
+        font_mid = load_font("Segoe.UI.Semibold_p30download.com.ttf", 45)
         title_text = "Size:"
         bbox = font_mid.getbbox(title_text)
         title_w, title_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
 
-        rect_x1 = 80
+        rect_x1 = 50
         rect_y1 = 900
         rect_w = 400
 
