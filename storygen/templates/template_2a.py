@@ -56,14 +56,15 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     place_shoe(canvas, photo_1_rem, pos=(None,550), max_size=(600,400), angle=0, center_x=True)
     place_shoe(canvas, photo_2_rem, pos=(None,950), max_size=(600,400), angle=0, center_x=True)
 
+
     # --- 4. Model name ---
-    font_model = load_font("Segoe.UI_p30download.com.ttf", 60)
+    font_model = load_font("Segoe.UI.Bold_p30download.com.ttf", 70)
     bbox = font_model.getbbox(model_name)
     model_x = (W - (bbox[2]-bbox[0])) // 2
     draw.text((model_x, 190), model_name, fill=shades[3], font=font_model)
 
     # --- 5. Shop name ---
-    font_shop = load_font("Segoe.UI_p30download.com.ttf", 50)
+    font_shop = load_font("Segoe.UI.Semibold_p30download.com.ttf", 50)
     bbox = font_shop.getbbox(shop_name_en)
     shop_x = (W - (bbox[2]-bbox[0])) // 2
     draw.text((shop_x, 255), shop_name_en, fill=shades[3], font=font_shop)
@@ -77,7 +78,7 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
         else:
             sizes_list = sizes  # already a list
 
-        font_mid = load_font("Segoe.UI_p30download.com.ttf", 40)
+        font_mid = load_font("Segoe.UI.Semibold_p30download.com.ttf", 40)
         title_text = "Size:"
         bbox = font_mid.getbbox(title_text)
         title_w, title_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
