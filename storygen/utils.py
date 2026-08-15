@@ -296,32 +296,28 @@ def add_user_logo(canvas, logo_path=None,
 
 # 11. Draw text
 def draw_text(canvas, text,
-                   font_path_eng, font_size_eng,
-                   font_path_per, font_size_per,
-                   pos=(None, None), rotation=0, fill=(0,0,0),
-                   spacing=20, padding=10):
+              font_path_eng, font_size_eng,
+              font_path_per, font_size_per,
+              pos=(None, None), rotation=0, fill=(0,0,0),
+              spacing=20, padding=10):
     """
     Draw shop name text with rotation, auto-centering, language detection,
     line spacing, and padding.
-    - canvas: PIL Image
-    - text: shop name string (can contain '\n' for multiple lines)
-    - font_path_eng: path to English font
-    - font_size_eng: font size for English text
-    - font_path_per: path to Persian font
-    - font_size_per: font size for Persian text
-    - pos: (x,y) coordinates; use None for auto-centering
-    - rotation: rotation angle in degrees (e.g. 90, 270)
-    - fill: text color (default black)
-    - spacing: extra pixels between lines
-    - padding: extra pixels around text box (top/bottom/left/right)
     """
 
-    # Detect Persian vs English
-    if any('\u0600' <= ch <= '\u06FF' for ch in text):
-        font = ImageFont.truetype(str(font_path_per), font_size_per)
-    else:
-        font = ImageFont.truetype(str(font_path_eng), font_size_eng)
+    # Resolve fonts relative to storygen/fonts
+    font_path_eng = files("storygen.fonts").joinpath(font_path_eng)
+    font_path_per = files("storygen.fonts").joinpath(font_path_per)
 
+    # Detect Persian vs English
+    try:
+        if any('\u0600' <= ch <= '\u06FF' for ch in text):
+            font = ImageFont.truetype(str(font_path_per), font_size_per)
+        else:
+            font = ImageFont.truetype(str(font_path_eng), font_size_eng)
+    except OSError:
+        print("Warning: font not found, using default")
+        font = ImageFont.load_default()
 
     # Split into lines
     lines = text.split("\n")
