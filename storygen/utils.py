@@ -318,9 +318,10 @@ def draw_text(canvas, text,
 
     # Detect Persian vs English
     if any('\u0600' <= ch <= '\u06FF' for ch in text):
-        font = ImageFont.truetype(font_path_per, font_size_per)
+        font = ImageFont.truetype(str(font_path_per), font_size_per)
     else:
-        font = ImageFont.truetype(font_path_eng, font_size_eng)
+        font = ImageFont.truetype(str(font_path_eng), font_size_eng)
+
 
     # Split into lines
     lines = text.split("\n")
