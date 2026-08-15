@@ -1,3 +1,5 @@
+import cairo
+import random
 from storygen.processing import remove_background, extract_colors
 from storygen.utils import lighten_color, load_font
 from storygen.utils import (
@@ -6,7 +8,7 @@ from storygen.utils import (
     draw_trapezoid, add_user_logo, draw_text
 )
 
-def template_2b(photo_1, photo_2, model_name, shop_name, sizes, brand, username):
+def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=None):
     W, H = 1080, 1920
 
     # --- 1. Background image ---
@@ -34,7 +36,7 @@ def template_2b(photo_1, photo_2, model_name, shop_name, sizes, brand, username)
 
     # --- 6. Shop name ---
     draw_text(canvas,
-               text=shop_name,
+               text=shop_name_en,
                font_path_eng="Segoe.UI_p30download.com.ttf",
                font_size_eng=55,
                font_path_per="A Mitra 04.ttf",
@@ -89,9 +91,8 @@ def template_2b(photo_1, photo_2, model_name, shop_name, sizes, brand, username)
 
     # --- 9. User logo ---
     add_user_logo(canvas,
-                  username=username,
-                  base_folder="/content/drive/MyDrive/1080",
-                  pos=(None, 600),
+                  logo_path=logo,
+                  pos=(None, 1300),
                   max_size=(180,180),
                   center_x=False)
 
