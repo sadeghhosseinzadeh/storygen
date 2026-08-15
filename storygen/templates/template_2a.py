@@ -1,8 +1,6 @@
 import cairo
 import random
 from PIL import Image, ImageDraw
-from storygen.processing import remove_background, extract_colors
-from storygen.utils import lighten_color, load_font
 from storygen.utils import (
     remove_background, extract_colors, lighten_color, darken_color,
     adjust_saturation, load_font, add_brand_logo, place_shoe,
