@@ -60,7 +60,7 @@ def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
                    font_size_eng=55,
                    font_path_per="A Mitra 04.ttf",
                    font_size_per=60,
-                   pos=(None, 445),
+                   pos=(None, 645),
                    rotation=0,
                    fill=(0,0,0))
     
