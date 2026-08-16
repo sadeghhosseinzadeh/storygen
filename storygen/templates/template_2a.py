@@ -51,8 +51,8 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     add_brand_logo(canvas, brand, mode=0, opacity=60, color=(0,0,0), max_size=(950,800))
 
     # --- 3. Shoe photos ---
-    place_shoe(canvas, photo_1_rem, pos=(None,550), max_size=(600,400), angle=0, center_x=True)
-    place_shoe(canvas, photo_2_rem, pos=(None,950), max_size=(600,400), angle=0, center_x=True)
+    place_shoe(canvas, photo_1_rem, pos=(None,550), max_size=(800,600), angle=0, center_x=True)
+    place_shoe(canvas, photo_2_rem, pos=(None,950), max_size=(800,600), angle=0, center_x=True)
 
 
     # --- 4. Model name ---
