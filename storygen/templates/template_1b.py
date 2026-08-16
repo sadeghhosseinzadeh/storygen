@@ -25,7 +25,7 @@ def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
     brand_text = brand.upper()
     
     # Start with a base font size
-    font_size = 150
+    font_size = 300
     font_big = load_font("Segoe.UI.Bold_p30download.com.ttf", font_size)
     
     # Measure width
