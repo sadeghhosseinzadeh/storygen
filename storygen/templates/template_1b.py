@@ -3,7 +3,7 @@ import cairo
 import random
 from storygen.utils import lighten_color, draw_text, load_font, place_shoe, remove_background, extract_colors
 
-def template_1a(photo_1, model_name, sizes, shop_name_en, brand):
+def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
     W, H = 1080, 1920
 
     # Background: 15% main color blended with white
