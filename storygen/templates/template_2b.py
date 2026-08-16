@@ -31,8 +31,8 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     add_brand_logo(canvas, brand, mode=0, opacity=255, pos=(720, 940), color=(0,0,0), max_size=(180,180))
 
     # --- 4. Shoe photos ---
-    place_shoe(canvas, photo_1_rem, pos=(None,225), max_size=(650,450), angle=0, center_x=True)
-    place_shoe(canvas, photo_2_rem, pos=(None,1310), max_size=(650,450), angle=0, center_x=True)
+    place_shoe(canvas, photo_1_rem, pos=(None,225), max_size=(700,480), angle=0, center_x=True)
+    place_shoe(canvas, photo_2_rem, pos=(None,1310), max_size=(700,480), angle=0, center_x=True)
 
     # --- 5. Model name ---
     font_model = load_font("Segoe.UI.Bold_p30download.com.ttf", 70)
