@@ -35,7 +35,7 @@ def prepare_shoe(photo, angle=-31, baseline_y=700, max_size=(750,600)):
 
 
 
-def template_1norm(photo_1, model_name, sizes, shop_name_en, brand):
+def template_1nor(photo_1, model_name, sizes, shop_name_en, brand):
     W, H = 1080, 1920
 
     # Background: 15% main color blended with white
