@@ -53,7 +53,7 @@ def normalize_shoe(img, padding=50):
 
 
 
-def template_1rem(photo_1):
+def template_1norm(photo_1):
     """
     This version ONLY removes the background of the given photo
     and returns the cleaned image.
@@ -66,4 +66,4 @@ def template_1rem(photo_1):
         photo_1_rem = photo_1_rem.convert("RGBA")
     '''
   
-    return photo_1_rem
+    return photo_1_norm
