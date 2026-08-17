@@ -91,7 +91,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     draw.polygon(bottom_shape_points, fill=second_color)
 
     # 4. Shoe photo (NEW BASELINE SYSTEM)
-    shoe_img, offset_y = prepare_shoe(photo_1)
+    shoe_img, offset_y = prepare_shoe(photo_1, baseline_y=970)
 
     # Center horizontally
     shoe_x = (W - shoe_img.width) // 2
