@@ -18,6 +18,7 @@ def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
     font_mid = load_font("Segoe.UI_p30download.com.ttf", 35)
     font_fid = load_font("A Mitra 04.ttf", 38)
     font_bid = load_font("Segoe.UI_p30download.com.ttf", 55)
+    font_brand = load_font("Segoe.UI.Semibold_p30download.com.ttf", 55)
 
     text_color = main_color
 
@@ -51,19 +52,14 @@ def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
     bbox = font_bid.getbbox(model_name)
     model_w = bbox[2] - bbox[0]
     model_x = (W - model_w) // 2
-    draw.text((model_x, 640), model_name, fill=second_color, font=font_bid)
+    draw.text((model_x, 570), model_name, fill=second_color, font=font_bid)
 
     # 2.5 shop name
-    draw_text(canvas,
-                   text=shop_name_en,
-                   font_path_eng="Segoe.UI.Semibold_p30download.com.ttf",
-                   font_size_eng=55,
-                   font_path_per="A Mitra 04.ttf",
-                   font_size_per=60,
-                   pos=(None, 645),
-                   rotation=0,
-                   fill=(0,0,0))
-    
+    bbox = font_bid.getbbox(shop_name_en)
+    shop_name_en_w = bbox[2] - bbox[0]
+    shop_name_en_x = (W - shop_name_en_w) // 2
+    draw.text((shop_name_en_x, 645), shop_name_en, fill=second_color, font=font_brand)
+
     # 3. Bottom polygon
     bottom_shape_points = [(0, H), (W, H), (W, H - 300), (0, H - 950)]
     draw.polygon(bottom_shape_points, fill=second_color)
