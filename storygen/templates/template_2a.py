@@ -66,7 +66,7 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     font_shop = load_font("Segoe.UI.Semibold_p30download.com.ttf", 50)
     bbox = font_shop.getbbox(shop_name_en)
     shop_x = (W - (bbox[2]-bbox[0])) // 2
-    draw.text((shop_x, 270), shop_name_en, fill=shades[3], font=font_shop)
+    draw.text((shop_x, 290), shop_name_en, fill=shades[3], font=font_shop)
 
 
     # --- 6. Sizes box ---
