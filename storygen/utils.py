@@ -75,10 +75,16 @@ def adjust_saturation(color, factor):
 # 6. Load font 
 def load_font(font_filename, size):
     try:
+        # Try package resource first
         font_path = files("storygen.fonts").joinpath(font_filename)
+        if not Path(font_path).exists():
+            # Fallback: direct path relative to storygen module
+            package_root = Path(storygen.__file__).parent
+            font_path = package_root / "fonts" / font_filename
+
         return ImageFont.truetype(str(font_path), size)
-    except OSError:
-        print(f"Warning: font {font_filename} not found, using default")
+    except Exception as e:
+        print(f"Warning: font {font_filename} not found or unreadable ({e}), using default")
         return ImageFont.load_default()
 
 # 7. add brand logo
