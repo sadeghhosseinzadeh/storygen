@@ -96,13 +96,23 @@ def load_font(font_filename, size):
 def add_brand_logo(canvas, brand, variant=1, mode=0, opacity=255, color=(0,0,0), pos=None, max_size=(400,400)):
     W, H = canvas.size
     brand = brand.lower()
-    # Construct filename like "nike-1.svg", "nike-2.svg"
-    logo_filename = f"{brand}-{variant}.svg"
+
+    # --- Variant fallback logic ---
+    requested_filename = f"{brand}-{variant}.svg"
+    default_filename   = f"{brand}-1.svg"
+
     package_root = Path(storygen.__file__).parent
-    logo_path = package_root / "brands" / logo_filename
+    requested_path = package_root / "brands" / requested_filename
+    default_path   = package_root / "brands" / default_filename
+
+    # If requested variant doesn't exist → use default variant 1
+    if requested_path.exists():
+        logo_path = requested_path
+    else:
+        logo_path = default_path
+    # -------------------------------
 
     if mode == 0 and logo_path.exists():
-        # Convert SVG to PNG at target size
         if logo_path.suffix.lower() == ".svg":
             png_bytes = cairosvg.svg2png(url=str(logo_path),
                                          output_width=max_size[0],
@@ -111,40 +121,33 @@ def add_brand_logo(canvas, brand, variant=1, mode=0, opacity=255, color=(0,0,0),
         else:
             logo_img = Image.open(logo_path).convert("RGBA")
 
-        # Resize to fit max_size
         lw, lh = logo_img.size
         ratio = min(max_size[0]/lw, max_size[1]/lh)
         logo_img = logo_img.resize((int(lw*ratio), int(lh*ratio)))
 
-        # Auto-center if pos not provided
         if pos is None:
             pos_x = (W - logo_img.size[0]) // 2
             pos_y = (H - logo_img.size[1]) // 2 - 65
             pos = (pos_x, pos_y)
 
-        # Tint using alpha mask
         r, g, b = color
         colored_logo = Image.new("RGBA", logo_img.size, (r, g, b, opacity))
         logo_img = Image.composite(colored_logo,
                                    Image.new("RGBA", logo_img.size, (0,0,0,0)),
                                    logo_img)
 
-        # Paste onto canvas
         canvas.paste(logo_img, pos, logo_img)
 
     else:
-        # Fallback: text overlay
         font_logo = load_font("Segoe.UI_p30download.com.ttf", 220)
         bbox = font_logo.getbbox(brand.upper())
         logo_w = bbox[2] - bbox[0]
         logo_h = bbox[3] - bbox[1]
 
-        # Resize text if too big
         if logo_w > max_size[0]:
             scale = max_size[0]/logo_w
             font_logo = load_font("Segoe.UI_p30download.com.ttf", int(220*scale))
 
-        # Auto-center text if pos not provided
         if pos is None:
             pos_x = (W - logo_w) // 2
             pos_y = (H - logo_h) // 2
@@ -156,6 +159,7 @@ def add_brand_logo(canvas, brand, variant=1, mode=0, opacity=255, color=(0,0,0),
                        fill=(color[0], color[1], color[2], opacity),
                        font=font_logo)
         canvas.paste(temp_logo, (0,0), temp_logo)
+
 
 
 # 8. place shoe
