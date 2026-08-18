@@ -13,7 +13,7 @@ from pathlib import Path
 import storygen
 
 # 1. Remove background 
-def remove_background2(path: str, pad: int = 50):
+def remove_background(path: str, pad: int = 50):
     # Step 1: Remove background
     with open(path, "rb") as f:
         input_bytes = f.read()
