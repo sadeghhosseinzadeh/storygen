@@ -12,29 +12,27 @@ import cairo
 from pathlib import Path
 import storygen
 
-# 1. Remove background
-def remove_background(path: str, margin: int = 50):
+# 1. Remove background 
+def remove_background2(path: str, pad: int = 50):
     # Step 1: Remove background
     with open(path, "rb") as f:
         input_bytes = f.read()
     output_bytes = remove(input_bytes)
     img = Image.open(BytesIO(output_bytes)).convert("RGBA")
 
-    # Step 2: Get bounding box of non-transparent pixels
+    # Step 2: Crop tightly to the shoe edges (margin = 0)
     bbox = img.getbbox()
     if bbox:
-        x1, y1, x2, y2 = bbox
+        img = img.crop(bbox)
 
-        # Step 3: Expand bounding box by margin
-        x1 = max(0, x1 - margin)
-        y1 = max(0, y1 - margin)
-        x2 = min(img.width, x2 + margin)
-        y2 = min(img.height, y2 + margin)
+    # Step 3: Add transparent padding around all sides
+    new_w = img.width + pad * 2
+    new_h = img.height + pad * 2
+    padded = Image.new("RGBA", (new_w, new_h), (0, 0, 0, 0))
+    padded.paste(img, (pad, pad), img)
 
-        # Step 4: Crop to expanded bounding box
-        img = img.crop((x1, y1, x2, y2))
-
-    return img
+    return padded
+    
 # 2. Extract main + secondary colors
 def extract_colors(img: Image.Image):
     img = img.convert("RGBA")
