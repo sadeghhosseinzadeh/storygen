@@ -104,7 +104,7 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     # --- 7. Footer text ---
     rand_num = random.randint(100, 999)
     footer_text = f"برای اطلاعات بیشتر\n {rand_num} رو دایرکت کن!"
-    font_footer = load_font("ARLRDBD.TTF", 45)
+    font_footer = load_font("Homa.ttf", 45)
     draw.multiline_text((W//2 + 50, H-340), footer_text, fill=shades[0] , font=font_footer, align="center", spacing=20)
 
     # --- 8. User logo ---
