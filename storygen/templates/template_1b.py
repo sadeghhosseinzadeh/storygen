@@ -37,7 +37,7 @@ def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
     max_width = 900
     
     # Reduce font size until it fits
-    while brand_w > max_width and font_size > 50:  # prevent going too small
+    while brand_w > max_width and font_size > 50:  
         font_size -= 10
         font_big = load_font("Segoe.UI.Bold_p30download.com.ttf", font_size)
         bbox = font_big.getbbox(brand_text)
@@ -65,7 +65,7 @@ def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
     draw.polygon(bottom_shape_points, fill=second_color)
 
     # 3.5. brand logo
-    add_brand_logo(canvas, brand, variant=2, mode=0,pos=(720, 1500) , color=main_color, max_size=(200,200))
+    add_brand_logo(canvas, brand, variant=2, mode=0,pos=(720, 1535) , color=main_color, max_size=(200,200))
     
     # 4. Shoe photo (background removed + placed)
     place_shoe(canvas, photo_1_rem,
