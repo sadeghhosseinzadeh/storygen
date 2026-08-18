@@ -76,13 +76,18 @@ def adjust_saturation(color, factor):
 def load_font(font_filename, size):
     try:
         # Try package resource first
-        font_path = files("storygen.fonts").joinpath(font_filename)
-        if not Path(font_path).exists():
-            # Fallback: direct path relative to storygen module
+        try:
+            font_path = files("storygen.fonts").joinpath(font_filename)
+        except:
+            font_path = None
+
+        # If resource lookup failed, fallback to direct path
+        if not font_path or not Path(font_path).exists():
             package_root = Path(storygen.__file__).parent
             font_path = package_root / "fonts" / font_filename
 
         return ImageFont.truetype(str(font_path), size)
+
     except Exception as e:
         print(f"Warning: font {font_filename} not found or unreadable ({e}), using default")
         return ImageFont.load_default()
