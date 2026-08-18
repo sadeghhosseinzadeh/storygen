@@ -6,37 +6,14 @@ from storygen.utils import (
     adjust_saturation, load_font, add_brand_logo, place_shoe,
     draw_trapezoid, add_user_logo, draw_text
 )
-from rembg import remove
-from io import BytesIO
-
-# 1. Remove background (with fixed padding)
-def remove_background2(path: str, pad: int = 50):
-    # Step 1: Remove background
-    with open(path, "rb") as f:
-        input_bytes = f.read()
-    output_bytes = remove(input_bytes)
-    img = Image.open(BytesIO(output_bytes)).convert("RGBA")
-
-    # Step 2: Crop tightly to the shoe edges (margin = 0)
-    bbox = img.getbbox()
-    if bbox:
-        img = img.crop(bbox)
-
-    # Step 3: Add transparent padding around all sides
-    new_w = img.width + pad * 2
-    new_h = img.height + pad * 2
-    padded = Image.new("RGBA", (new_w, new_h), (0, 0, 0, 0))
-    padded.paste(img, (pad, pad), img)
-
-    return padded
 
 
 def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=None):
     W, H = 1080, 1920
 
     # Remove background and get colors
-    photo_1_rem = remove_background2(photo_1)
-    photo_2_rem = remove_background2(photo_2)
+    photo_1_rem = remove_background(photo_1)
+    photo_2_rem = remove_background(photo_2)
     main_color, second_color = extract_colors(photo_1_rem)
 
 
