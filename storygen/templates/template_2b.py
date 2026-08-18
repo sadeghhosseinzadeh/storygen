@@ -41,15 +41,17 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     draw.text((model_x, 757), model_name, fill=(0,0,0), font=font_model)
 
     # --- 6. Shop name ---
-    draw_text(canvas,
-               text=shop_name_en,
-               font_path_eng="Segoe.UI.Semibold_p30download.com.ttf",
-               font_size_eng=55,
-               font_path_per="A Mitra 04.ttf",
-               font_size_per=60,
-               pos=(None, 845),
-               rotation=0,
-               fill=(0,0,0))
+    if shop_name_en and shop_name_en.strip():
+        draw_text(canvas,
+                   text=shop_name_en,
+                   font_path_eng="Segoe.UI.Semibold_p30download.com.ttf",
+                   font_size_eng=55,
+                   font_path_per="A Mitra 04.ttf",
+                   font_size_per=60,
+                   pos=(None, 845),
+                   rotation=0,
+                   fill=(0,0,0))
+
 
 
     # --- 7. Sizes box ---
