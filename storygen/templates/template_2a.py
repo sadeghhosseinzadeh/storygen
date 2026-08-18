@@ -57,13 +57,13 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
 
 
     # --- 4. Model name ---
-    font_model = load_font("Segoe.UI.Bold_p30download.com.ttf", 70)
+    font_model = load_font("GOTHICB.TTF", 70)
     bbox = font_model.getbbox(model_name)
     model_x = (W - (bbox[2]-bbox[0])) // 2
     draw.text((model_x, 190), model_name, fill=shades[3], font=font_model)
 
     # --- 5. Shop name ---
-    font_shop = load_font("Segoe.UI.Semibold_p30download.com.ttf", 50)
+    font_shop = load_font("GOTHIC.TTF", 50)
     bbox = font_shop.getbbox(shop_name_en)
     shop_x = (W - (bbox[2]-bbox[0])) // 2
     draw.text((shop_x, 290), shop_name_en, fill=shades[3], font=font_shop)
@@ -77,7 +77,7 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
         else:
             sizes_list = sizes  # already a list
 
-        font_mid = load_font("Segoe.UI.Semibold_p30download.com.ttf", 40)
+        font_mid = load_font("GOTHICB.TTF", 35)
         title_text = "Size:"
         bbox = font_mid.getbbox(title_text)
         title_w, title_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
@@ -104,7 +104,7 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     # --- 7. Footer text ---
     rand_num = random.randint(100, 999)
     footer_text = f"برای اطلاعات بیشتر\n {rand_num} رو دایرکت کن!"
-    font_footer = load_font("A Mitra 04.ttf", 42)
+    font_footer = load_font("ARLRDBD.TTF", 45)
     draw.multiline_text((W//2 + 50, H-340), footer_text, fill=shades[0] , font=font_footer, align="center", spacing=20)
 
     # --- 8. User logo ---
