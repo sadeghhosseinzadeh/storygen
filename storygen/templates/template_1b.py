@@ -55,10 +55,12 @@ def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
     draw.text((model_x, 570), model_name, fill=second_color, font=font_bid)
 
     # 2.5 shop name
-    bbox = font_bid.getbbox(shop_name_en)
-    shop_name_en_w = bbox[2] - bbox[0]
-    shop_name_en_x = (W - shop_name_en_w) // 2
-    draw.text((shop_name_en_x, 645), shop_name_en, fill=second_color, font=font_brand)
+    if shop_name_en:   
+        bbox = font_bid.getbbox(shop_name_en)
+        shop_name_en_w = bbox[2] - bbox[0]
+        shop_name_en_x = (W - shop_name_en_w) // 2
+        draw.text((shop_name_en_x, 645), shop_name_en, fill=second_color, font=font_brand)
+
 
     # 3. Bottom polygon
     bottom_shape_points = [(0, H), (W, H), (W, H - 300), (0, H - 950)]
