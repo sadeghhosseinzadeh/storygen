@@ -65,7 +65,7 @@ def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
     draw.polygon(bottom_shape_points, fill=second_color)
 
     # 3.5. brand logo
-    add_brand_logo(canvas, brand, variant=2, mode=0,pos=(720, 940) , color=main_color, max_size=(200,200))
+    add_brand_logo(canvas, brand, variant=2, mode=0,pos=(720, 1400) , color=main_color, max_size=(200,200))
     
     # 4. Shoe photo (background removed + placed)
     place_shoe(canvas, photo_1_rem,
