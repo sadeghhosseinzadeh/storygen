@@ -14,9 +14,9 @@ def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
     draw = ImageDraw.Draw(canvas)
 
     # Fonts
-    font_big = load_font("Segoe.UI.Bold_p30download.com.ttf", 300)
+
     font_mid = load_font("Segoe.UI_p30download.com.ttf", 35)
-    font_fid = load_font("A Mitra 04.ttf", 38)
+    font_fid = load_font("Homa.ttf", 38)
     font_bid = load_font("Segoe.UI_p30download.com.ttf", 55)
     font_brand = load_font("Segoe.UI.Semibold_p30download.com.ttf", 55)
 
