@@ -12,45 +12,7 @@ from storygen.utils import (
     draw_trapezoid, add_user_logo, draw_text
 )
 
-def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height, start_pos, fill):
-    # Try decreasing font size until it fits
-    for size in range(max_font_size, 10, -2):
-        font = load_font(font_path, size)
-        lines = []
-        words = text.split()
 
-        # Try single line first
-        bbox = font.getbbox(text)
-        w = bbox[2] - bbox[0]
-        h = bbox[3] - bbox[1]
-
-        if w <= max_width and h <= max_height:
-            lines = [text]
-        else:
-            # Multi-line fallback
-            line = ""
-            for word in words:
-                test = line + " " + word if line else word
-                bbox = font.getbbox(test)
-                if (bbox[2]-bbox[0]) <= max_width:
-                    line = test
-                else:
-                    lines.append(line)
-                    line = word
-            if line:
-                lines.append(line)
-
-            total_h = sum([font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines]) + (len(lines)-1)*10
-            if total_h > max_height:
-                continue  # too tall → try smaller font
-
-        # Draw final lines
-        y = start_pos[1]
-        for l in lines:
-            bbox = font.getbbox(l)
-            draw.text((start_pos[0], y), l, fill=fill, font=font)
-            y += (bbox[3]-bbox[1]) + 10
-        return
         
 def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=None):
     W, H = 1080, 1920
@@ -68,24 +30,33 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     photo_2_rem = remove_background(photo_2)
     main_color, second_color = extract_colors(photo_1_rem)
     # --- 3. Brand logo overlay ---
-    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(70, 500), color=main_color, max_size=(180,180))
+    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(70, 600), color=main_color, max_size=(180,180))
 
     # --- 4. Shoe photos ---
-    place_shoe(canvas, photo_1_rem, pos=(600,500), max_size=(750,500), angle=0, center_x=True)
-    place_shoe(canvas, photo_2_rem, pos=(80,1110), max_size=(650,450), angle=0, center_x=True)
+    place_shoe(canvas, photo_1_rem, pos=(600,500), max_size=(750,500), angle=0, center_x=False)
+    place_shoe(canvas, photo_2_rem, pos=(80,1110), max_size=(650,450), angle=0, center_x=False)
 
     # --- 5. Model and BRAND name ---
-    # BRAND NAME (top-left)
-    draw_scaled_text(
-        draw,
-        text=brand.upper(),
-        font_path="Lava%20Arabic%20v1.00.ttf",
-        max_font_size=300,
-        max_width=450,
-        max_height=260,
-        start_pos=(60, 120),
-        fill=(0,0,0)
-    )
+    #  Big brand name text with limit 
+    brand_text = brand.upper()
+    
+    # Start with a base font size
+    font_size = 300
+    font_big = load_font("Lava%20Arabic%20v1.00.ttf", font_size)
+    # Measure width
+    bbox = font_big.getbbox(brand_text)
+    brand_w = bbox[2] - bbox[0]
+     # Define max allowed width (e.g. 900 pixels)
+    max_width = 300   
+    # Reduce font size until it fits
+    while brand_w > max_width and font_size > 50:  
+        font_size -= 10
+        font_big = load_font("Lava%20Arabic%20v1.00.ttf", font_size)
+        bbox = font_big.getbbox(brand_text)
+        brand_w = bbox[2] - bbox[0]
+    # Center and draw
+    brand_x = (W - brand_w) // 2
+    draw.text((brand_x, 240), brand_text, fill=second_color, font=font_big)
     
     # --- B. Subtext (top-right) ---
     draw_scaled_text(
@@ -107,7 +78,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
                    font_size_eng=55,
                    font_path_per="A Mitra 04.ttf",
                    font_size_per=60,
-                   pos=(None, 545),
+                   pos=(None, 400),
                    rotation=0,
                    fill=main_color)
 
@@ -127,7 +98,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         title_w, title_h = bbox_title[2]-bbox_title[0], bbox_title[3]-bbox_title[1]
     
         rect_x1 = 600
-        rect_y1 = 1350
+        rect_y1 = 1500
         rect_w = 400
     
         # Center the red title
@@ -154,8 +125,8 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     footer_number = str(rand_num)
     
     # Base position
-    base_x = 100
-    base_y = 1550
+    base_x = 120
+    base_y = 1580
     
     # Fonts
     font_main = load_font("Homa.ttf", 45)
