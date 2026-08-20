@@ -67,7 +67,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     photo_1_rem = remove_background(photo_1)
     photo_2_rem = remove_background(photo_2)
     main_color, second_color = extract_colors(photo_1_rem)
-    darken_color = darken_color(main_color, 0.55)
+    darken_co = darken_color(main_color, 0.55)
     # --- 3. Brand logo overlay ---
     add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(100, 675), color=(0,0,0), max_size=(200,200))
 
@@ -87,7 +87,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         max_width=400,
         max_height=200,
         start_pos=(70, 220),
-        fill=darken_color
+        fill=darken_co
     )
     # --- B. Subtext (top-right) ---
     draw_scaled_text(
@@ -98,7 +98,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         max_width=600,
         max_height=200,
         start_pos=(450, 280),
-        fill=darken_color
+        fill=darken_co
     )
 
     # --- 6. Shop name ---
