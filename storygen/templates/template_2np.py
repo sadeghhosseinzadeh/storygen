@@ -62,7 +62,8 @@ def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height
 
         return total_drawn_h, max_line_w
 
-    return 0, 0  
+    return 0, 0  # fallback if nothing fits
+
 
         
 def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=None):
@@ -99,13 +100,13 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         max_font_size=230,
         max_width=400,
         max_height=200,
-        start_pos=(80, 220),
+        start_pos=(100, 220),
         fill=darken_co
     )
     
     # Now place second text EXACTLY 50px to the right of the first
-    second_x = 80 + brand_w + 40
-    second_y = 245  
+    second_x = 100 + brand_w + 40
+    second_y = 220  
     
     draw_scaled_text(
         draw,
