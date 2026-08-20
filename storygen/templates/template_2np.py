@@ -9,7 +9,7 @@ import storygen
 from storygen.utils import (
     remove_background, extract_colors, lighten_color, darken_color,
     adjust_saturation, load_font, add_brand_logo, place_shoe,
-    draw_trapezoid, add_user_logo, draw_text
+    draw_trapezoid, add_user_logo, draw_text, draw_sizes_box
 )
 
 
@@ -29,11 +29,12 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     photo_1_rem = remove_background(photo_1)
     photo_2_rem = remove_background(photo_2)
     main_color, second_color = extract_colors(photo_1_rem)
+    adjusted_color = adjust_saturation(darken_color(main_color, 0.55), 0.25)
     # --- 3. Brand logo overlay ---
-    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(80, 675), color=main_color, max_size=(180,180))
+    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(80, 675), color=adjusted_color, max_size=(180,180))
 
     # --- 4. Shoe photos ---
-    place_shoe(canvas, photo_1_rem, pos=(350,530), max_size=(750,500), angle=0, center_x=False)
+    place_shoe(canvas, photo_1_rem, pos=(320,530), max_size=(750,500), angle=0, center_x=False)
     place_shoe(canvas, photo_2_rem, pos=(80,1110), max_size=(630,450), angle=0, center_x=False)
 
     # --- 5. Model and BRAND name ---
@@ -41,7 +42,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     brand_text = brand.upper()
     
     # Start with a base font size
-    font_size = 300
+    font_size = 1100
     font_big = load_font("Lava%20Arabic%20v1.00.ttf", font_size)
     # Measure width
     bbox = font_big.getbbox(brand_text)
@@ -85,45 +86,25 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
 
 
     # --- 7. Sizes box ---
-    if sizes:
-        if isinstance(sizes, str):
-            sizes_list = [s.strip() for s in sizes.split(",") if s.strip()]
-        else:
-            sizes_list = sizes
-    
-        # Bigger + red title font
-        font_title = load_font("Segoe.UI.Semibold_p30download.com.ttf", 60)
-        title_text = "Size:"
-        bbox_title = font_title.getbbox(title_text)
-        title_w, title_h = bbox_title[2]-bbox_title[0], bbox_title[3]-bbox_title[1]
-    
-        rect_x1 = 600
-        rect_y1 = 1500
-        rect_w = 400
-    
-        # Center the red title
-        title_x = rect_x1 + (rect_w - title_w)//2
-        title_y = rect_y1 + 20
-        draw.text((title_x, title_y), title_text, fill=(220,0,0), font=font_title)
-    
-        # Sizes use your original font + logic
-        font_mid = load_font("Segoe.UI.Semibold_p30download.com.ttf", 45)
-    
-        current_y = title_y + title_h + 30
-        for size in sizes_list:
-            bbox = font_mid.getbbox(size)
-            size_w, size_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
-            size_x = rect_x1 + (rect_w - size_w)//2
-            draw.text((size_x, current_y), size, fill=(0,0,0), font=font_mid)
-            current_y += size_h + 15
+    draw_sizes_box(
+        canvas,
+        sizes=sizes,
+        pos=(600, 1500),            
+        show_box=False,
+        max_height=None,
+        min_height=None,
+        title_font_size=60,
+        title_color=(220,0,0),
+        size_font_size=45,
+        size_color=(0,0,0))
 
 
     # --- 8. Footer text ---
     rand_num = random.randint(100, 999)
 
     footer_main = "استعلام قیمت "
-    footer_number = str(rand_num)
-    
+    footer_number = f"({rand_num})"
+
     # Base position
     base_x = 120
     base_y = 1580
