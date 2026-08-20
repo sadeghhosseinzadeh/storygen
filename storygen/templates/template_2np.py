@@ -32,7 +32,7 @@ def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height
             for word in words:
                 test = line + " " + word if line else word
                 bbox = font.getbbox(test)
-                if (bbox[2]-bbox[0]) <= max_width:
+                if (bbox[2] - bbox[0]) <= max_width:
                     line = test
                 else:
                     lines.append(line)
@@ -46,11 +46,24 @@ def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height
 
         # Draw final lines
         y = start_pos[1]
+        total_drawn_h = 0
+        max_line_w = 0
+
         for l in lines:
             bbox = font.getbbox(l)
+            lw = bbox[2] - bbox[0]
+            lh = bbox[3] - bbox[1]
+
             draw.text((start_pos[0], y), l, fill=fill, font=font)
-            y += (bbox[3]-bbox[1]) + 10
-        return
+
+            y += lh + 10
+            total_drawn_h += lh + 10
+            max_line_w = max(max_line_w, lw)
+
+        return total_drawn_h, max_line_w
+
+    return 0, 0  
+
         
 def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=None):
     W, H = 1080, 1920
@@ -76,10 +89,10 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     place_shoe(canvas, photo_2_rem, pos=(80,1110), max_size=(630,450), angle=0, center_x=False)
 
     # --- 5. Model and BRAND name ---
-    #  Big brand name text with limit 
     brand_text = brand.upper()
     
-    draw_scaled_text(
+    # Draw first text and get its width
+    brand_h, brand_w = draw_scaled_text(
         draw,
         text=brand_text,
         font_path="Lava Arabic v1.00.ttf",
@@ -89,7 +102,11 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         start_pos=(70, 220),
         fill=darken_co
     )
-    # --- B. Subtext (top-right) ---
+    
+    # Now place second text EXACTLY 50px to the right of the first
+    second_x = 70 + brand_w + 50
+    second_y = 220  # same vertical line
+    
     draw_scaled_text(
         draw,
         text=model_name,
@@ -97,9 +114,10 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         max_font_size=150,
         max_width=600,
         max_height=200,
-        start_pos=(450, 280),
+        start_pos=(second_x, second_y),
         fill=darken_co
     )
+
 
     # --- 6. Shop name ---
     if shop_name_en and shop_name_en.strip():
