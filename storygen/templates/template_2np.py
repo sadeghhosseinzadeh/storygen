@@ -12,19 +12,42 @@ from storygen.utils import (
     draw_trapezoid, add_user_logo, draw_text, draw_sizes_box
 )
 
-def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height, start_pos, fill):
+def draw_scaled_text(
+    draw,
+    text,
+    font_path,
+    max_font_size,
+    max_width,
+    max_height,
+    start_pos,
+    fill,
+    allow_multiline=True
+):
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
-        lines = []
-        words = text.split()
 
+        # Measure full text
         bbox = font.getbbox(text)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
 
+        # --- SINGLE LINE MODE ---
+        if not allow_multiline:
+            # Only accept if the single line fits
+            if w <= max_width and h <= max_height:
+                draw.text(start_pos, text, fill=fill, font=font)
+                return h, w, font
+            else:
+                continue  # try smaller font
+
+        # --- MULTILINE MODE (current behavior) ---
+        lines = []
+        words = text.split()
+
         if w <= max_width and h <= max_height:
             lines = [text]
         else:
+            # Word wrapping
             line = ""
             for word in words:
                 test = line + " " + word if line else word
@@ -37,7 +60,10 @@ def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height
             if line:
                 lines.append(line)
 
-            total_h = sum([font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines]) + (len(lines)-1)*10
+            # Check total height
+            total_h = sum([font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines]) \
+                      + (len(lines)-1)*10
+
             if total_h > max_height:
                 continue
 
@@ -60,6 +86,7 @@ def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height
         return total_drawn_h, max_line_w, font
 
     return 0, 0, None
+
 
         
 def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=None):
@@ -119,7 +146,8 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         max_width=600,
         max_height=200,
         start_pos=(second_x, second_y),
-        fill=darken_co
+        fill=darken_co,
+        allow_multiline=False
     )
 
 
