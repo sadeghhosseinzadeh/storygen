@@ -33,8 +33,8 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(70, 600), color=main_color, max_size=(180,180))
 
     # --- 4. Shoe photos ---
-    place_shoe(canvas, photo_1_rem, pos=(600,500), max_size=(750,500), angle=0, center_x=False)
-    place_shoe(canvas, photo_2_rem, pos=(80,1110), max_size=(650,450), angle=0, center_x=False)
+    place_shoe(canvas, photo_1_rem, pos=(400,500), max_size=(750,500), angle=0, center_x=False)
+    place_shoe(canvas, photo_2_rem, pos=(80,1110), max_size=(630,450), angle=0, center_x=False)
 
     # --- 5. Model and BRAND name ---
     #  Big brand name text with limit 
