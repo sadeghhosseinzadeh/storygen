@@ -18,7 +18,7 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     # --- 1. Background image ---
     # Load a background PNG/JPG from your folder
     package_root = Path(storygen.__file__).parent
-    bg_path = package_root / "bg" / "template2b_bg.png"
+    bg_path = package_root / "bg" / "template2np_bg.png"
     
     canvas = Image.open(bg_path).convert("RGBA").resize((W, H))
     draw = ImageDraw.Draw(canvas)
@@ -26,13 +26,13 @@ def template_2b(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     # --- 2. Remove shoe backgrounds ---
     photo_1_rem = remove_background(photo_1)
     photo_2_rem = remove_background(photo_2)
-
+    main_color, second_color = extract_colors(photo_1_rem)
     # --- 3. Brand logo overlay ---
-    add_brand_logo(canvas, brand, mode=0, opacity=255, pos=(720, 940), color=(0,0,0), max_size=(180,180))
+    add_brand_logo(canvas, brand, mode=0, opacity=255, pos=(70, 500), color=main_color, max_size=(180,180))
 
     # --- 4. Shoe photos ---
     place_shoe(canvas, photo_1_rem, pos=(None,225), max_size=(700,480), angle=0, center_x=True)
-    place_shoe(canvas, photo_2_rem, pos=(None,1310), max_size=(700,480), angle=0, center_x=True)
+    place_shoe(canvas, photo_2_rem, pos=(None,1310), max_size=(600,400), angle=0, center_x=True)
 
     # --- 5. Model name ---
     font_model = load_font("Segoe.UI.Bold_p30download.com.ttf", 70)
