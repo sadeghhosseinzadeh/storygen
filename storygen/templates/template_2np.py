@@ -67,9 +67,9 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     photo_1_rem = remove_background(photo_1)
     photo_2_rem = remove_background(photo_2)
     main_color, second_color = extract_colors(photo_1_rem)
-    adjusted_color = adjust_saturation(main_color, 1.5)
+
     # --- 3. Brand logo overlay ---
-    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(80, 675), color=adjusted_color, max_size=(200,200))
+    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(100, 675), color=(0,0,0), max_size=(200,200))
 
     # --- 4. Shoe photos ---
     place_shoe(canvas, photo_1_rem, pos=(320,530), max_size=(750,500), angle=0, center_x=False)
@@ -79,24 +79,6 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     #  Big brand name text with limit 
     brand_text = brand.upper()
     
-    # Start with a base font size
-    font_size = 260
-    font_big = load_font("Lava Arabic v1.00.ttf", font_size)
-    # Measure width
-    bbox = font_big.getbbox(brand_text)
-    brand_w = bbox[2] - bbox[0]
-     # Define max allowed width (e.g. 900 pixels)
-    max_width = 500   
-    # Reduce font size until it fits
-    while brand_w > max_width and font_size > 50:  
-        font_size -= 10
-        font_big = load_font("Lava Arabic v1.00.ttf", font_size)
-        bbox = font_big.getbbox(brand_text)
-        brand_w = bbox[2] - bbox[0]
-    # Center and draw
-
-    draw.text((70, 240), brand_text, fill=second_color, font=font_big)
-
     draw_scaled_text(
         draw,
         text=brand_text,
@@ -105,7 +87,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         max_width=400,
         max_height=200,
         start_pos=(70, 240),
-        fill=adjusted_color
+        fill=main_color
     )
     # --- B. Subtext (top-right) ---
     draw_scaled_text(
@@ -116,7 +98,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         max_width=600,
         max_height=200,
         start_pos=(580, 300),
-        fill=adjusted_color
+        fill=main_color
     )
 
     # --- 6. Shop name ---
