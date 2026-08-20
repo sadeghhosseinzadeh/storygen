@@ -13,13 +13,11 @@ from storygen.utils import (
 )
 
 def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height, start_pos, fill):
-    # Try decreasing font size until it fits
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
         lines = []
         words = text.split()
 
-        # Try single line first
         bbox = font.getbbox(text)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
@@ -27,7 +25,6 @@ def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height
         if w <= max_width and h <= max_height:
             lines = [text]
         else:
-            # Multi-line fallback
             line = ""
             for word in words:
                 test = line + " " + word if line else word
@@ -42,7 +39,7 @@ def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height
 
             total_h = sum([font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines]) + (len(lines)-1)*10
             if total_h > max_height:
-                continue  # too tall → try smaller font
+                continue
 
         # Draw final lines
         y = start_pos[1]
@@ -60,10 +57,9 @@ def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height
             total_drawn_h += lh + 10
             max_line_w = max(max_line_w, lw)
 
-        return total_drawn_h, max_line_w
+        return total_drawn_h, max_line_w, font
 
-    return 0, 0  # fallback if nothing fits
-
+    return 0, 0, None
 
         
 def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=None):
@@ -93,7 +89,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     brand_text = brand.upper()
     
     # Draw first text and get its width
-    brand_h, brand_w = draw_scaled_text(
+    brand_h, brand_w, brand_font = draw_scaled_text(
         draw,
         text=brand_text,
         font_path="Lava Arabic v1.00.ttf",
@@ -103,10 +99,17 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         start_pos=(100, 220),
         fill=darken_co
     )
+
+    # Measure second text height BEFORE drawing
+    test_font = load_font("Lava Arabic v1.00.ttf", 150)
+    bbox = test_font.getbbox(model_name)
+    model_h = bbox[3] - bbox[1]
     
+    # Align bottoms
+    second_y = 220 + (brand_h - model_h)
     # Now place second text EXACTLY 50px to the right of the first
     second_x = 100 + brand_w + 40
-    second_y = 220  
+
     
     draw_scaled_text(
         draw,
