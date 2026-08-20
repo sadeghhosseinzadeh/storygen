@@ -29,9 +29,9 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     photo_1_rem = remove_background(photo_1)
     photo_2_rem = remove_background(photo_2)
     main_color, second_color = extract_colors(photo_1_rem)
-    adjusted_color = adjust_saturation(darken_color(main_color, 0.55), 0.25)
+    adjusted_color = adjust_saturation(main_color, 0.25)
     # --- 3. Brand logo overlay ---
-    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(80, 675), color=adjusted_color, max_size=(180,180))
+    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(80, 675), color=adjusted_color, max_size=(200,200))
 
     # --- 4. Shoe photos ---
     place_shoe(canvas, photo_1_rem, pos=(320,530), max_size=(750,500), angle=0, center_x=False)
@@ -42,8 +42,8 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     brand_text = brand.upper()
     
     # Start with a base font size
-    font_size = 1100
-    font_big = load_font("Lava%20Arabic%20v1.00.ttf", font_size)
+    font_size = 300
+    font_big = load_font("Lava Arabic v1.00.ttf", font_size)
     # Measure width
     bbox = font_big.getbbox(brand_text)
     brand_w = bbox[2] - bbox[0]
@@ -52,7 +52,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     # Reduce font size until it fits
     while brand_w > max_width and font_size > 50:  
         font_size -= 10
-        font_big = load_font("Lava%20Arabic%20v1.00.ttf", font_size)
+        font_big = load_font("Lava Arabic v1.00.ttf", font_size)
         bbox = font_big.getbbox(brand_text)
         brand_w = bbox[2] - bbox[0]
     # Center and draw
@@ -89,7 +89,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     draw_sizes_box(
         canvas,
         sizes=sizes,
-        pos=(750, 1630),            
+        pos=(900, 1580),            
         show_box=False,
         max_height=None,
         min_height=None,
@@ -103,7 +103,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     # --- 8. Footer text ---
     rand_num = random.randint(100, 999)
 
-    footer_main = "استعلام قیمت "
+    footer_main = "استعلام قیمت عدد"
     footer_number = f"({rand_num})"
 
     # Base position
