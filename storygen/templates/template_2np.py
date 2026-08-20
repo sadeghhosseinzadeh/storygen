@@ -97,15 +97,25 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
 
     draw.text((70, 240), brand_text, fill=second_color, font=font_big)
 
+    draw_scaled_text(
+        draw,
+        text=brand_text,
+        font_path="Lava Arabic v1.00.ttf",
+        max_font_size=230,
+        max_width=400,
+        max_height=200,
+        start_pos=(70, 240),
+        fill=adjusted_color
+    )
     # --- B. Subtext (top-right) ---
     draw_scaled_text(
         draw,
         text=model_name,
         font_path="Lava Arabic v1.00.ttf",
-        max_font_size=190,
+        max_font_size=150,
         max_width=600,
         max_height=200,
-        start_pos=(580, 60),
+        start_pos=(580, 300),
         fill=adjusted_color
     )
 
@@ -145,7 +155,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     footer_number = f"({rand_num})"
 
     # Base position
-    base_x = 120
+    base_x = 250
     base_y = 1580
     
     # Fonts
