@@ -12,7 +12,45 @@ from storygen.utils import (
     draw_trapezoid, add_user_logo, draw_text, draw_sizes_box
 )
 
+def draw_scaled_text(draw, text, font_path, max_font_size, max_width, max_height, start_pos, fill):
+    # Try decreasing font size until it fits
+    for size in range(max_font_size, 10, -2):
+        font = load_font(font_path, size)
+        lines = []
+        words = text.split()
 
+        # Try single line first
+        bbox = font.getbbox(text)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
+
+        if w <= max_width and h <= max_height:
+            lines = [text]
+        else:
+            # Multi-line fallback
+            line = ""
+            for word in words:
+                test = line + " " + word if line else word
+                bbox = font.getbbox(test)
+                if (bbox[2]-bbox[0]) <= max_width:
+                    line = test
+                else:
+                    lines.append(line)
+                    line = word
+            if line:
+                lines.append(line)
+
+            total_h = sum([font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines]) + (len(lines)-1)*10
+            if total_h > max_height:
+                continue  # too tall → try smaller font
+
+        # Draw final lines
+        y = start_pos[1]
+        for l in lines:
+            bbox = font.getbbox(l)
+            draw.text((start_pos[0], y), l, fill=fill, font=font)
+            y += (bbox[3]-bbox[1]) + 10
+        return
         
 def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=None):
     W, H = 1080, 1920
@@ -29,7 +67,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     photo_1_rem = remove_background(photo_1)
     photo_2_rem = remove_background(photo_2)
     main_color, second_color = extract_colors(photo_1_rem)
-    adjusted_color = adjust_saturation(main_color, 0.25)
+    adjusted_color = adjust_saturation(main_color, 1.5)
     # --- 3. Brand logo overlay ---
     add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(80, 675), color=adjusted_color, max_size=(200,200))
 
@@ -42,13 +80,13 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     brand_text = brand.upper()
     
     # Start with a base font size
-    font_size = 300
+    font_size = 260
     font_big = load_font("Lava Arabic v1.00.ttf", font_size)
     # Measure width
     bbox = font_big.getbbox(brand_text)
     brand_w = bbox[2] - bbox[0]
      # Define max allowed width (e.g. 900 pixels)
-    max_width = 650   
+    max_width = 500   
     # Reduce font size until it fits
     while brand_w > max_width and font_size > 50:  
         font_size -= 10
@@ -58,19 +96,19 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     # Center and draw
 
     draw.text((70, 240), brand_text, fill=second_color, font=font_big)
-    '''
+
     # --- B. Subtext (top-right) ---
     draw_scaled_text(
         draw,
         text=model_name,
-        font_path="Lava%20Arabic%20v1.00.ttf",
-        max_font_size=200,
+        font_path="Lava Arabic v1.00.ttf",
+        max_font_size=190,
         max_width=600,
         max_height=200,
         start_pos=(580, 60),
-        fill=(0,0,0)
+        fill=adjusted_color
     )
-'''
+
     # --- 6. Shop name ---
     if shop_name_en and shop_name_en.strip():
         draw_text(canvas,
@@ -89,7 +127,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     draw_sizes_box(
         canvas,
         sizes=sizes,
-        pos=(900, 1580),            
+        pos=(875, 1580),            
         show_box=False,
         max_height=None,
         min_height=None,
@@ -129,7 +167,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     
     # --- Center number under the main text ---
     num_x = base_x + (main_w - num_w) // 2
-    num_y = base_y + bbox_main[3] - bbox_main[1] + 10   # 10px below main text
+    num_y = base_y + bbox_main[3] - bbox_main[1] + 10   
     
     draw.text((num_x, num_y), footer_number, fill=(220,0,0), font=font_num)
     
