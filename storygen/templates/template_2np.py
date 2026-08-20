@@ -57,7 +57,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     # Center and draw
     brand_x = (W - brand_w) // 2
     draw.text((brand_x, 240), brand_text, fill=second_color, font=font_big)
-    
+    '''
     # --- B. Subtext (top-right) ---
     draw_scaled_text(
         draw,
@@ -69,7 +69,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         start_pos=(580, 60),
         fill=(0,0,0)
     )
-
+'''
     # --- 6. Shop name ---
     if shop_name_en and shop_name_en.strip():
         draw_text(canvas,
