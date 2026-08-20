@@ -68,11 +68,11 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     photo_2_rem = remove_background(photo_2)
     main_color, second_color = extract_colors(photo_1_rem)
     # --- 3. Brand logo overlay ---
-    add_brand_logo(canvas, brand, mode=0, opacity=255, pos=(70, 500), color=main_color, max_size=(180,180))
+    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(70, 500), color=main_color, max_size=(180,180))
 
     # --- 4. Shoe photos ---
-    place_shoe(canvas, photo_1_rem, pos=(None,225), max_size=(700,480), angle=0, center_x=True)
-    place_shoe(canvas, photo_2_rem, pos=(None,1310), max_size=(600,400), angle=0, center_x=True)
+    place_shoe(canvas, photo_1_rem, pos=(600,500), max_size=(750,500), angle=0, center_x=True)
+    place_shoe(canvas, photo_2_rem, pos=(80,1110), max_size=(650,450), angle=0, center_x=True)
 
     # --- 5. Model and BRAND name ---
     # BRAND NAME (top-left)
@@ -80,10 +80,10 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         draw,
         text=brand.upper(),
         font_path="Lava%20Arabic%20v1.00.ttf",
-        max_font_size=180,
+        max_font_size=300,
         max_width=450,
         max_height=260,
-        start_pos=(50, 40),
+        start_pos=(60, 120),
         fill=(0,0,0)
     )
     
@@ -92,8 +92,8 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         draw,
         text=model_name,
         font_path="Lava%20Arabic%20v1.00.ttf",
-        max_font_size=80,
-        max_width=450,
+        max_font_size=200,
+        max_width=600,
         max_height=200,
         start_pos=(580, 60),
         fill=(0,0,0)
@@ -107,9 +107,9 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
                    font_size_eng=55,
                    font_path_per="A Mitra 04.ttf",
                    font_size_per=60,
-                   pos=(None, 845),
+                   pos=(None, 545),
                    rotation=0,
-                   fill=(0,0,0))
+                   fill=main_color)
 
 
 
@@ -126,8 +126,8 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         bbox_title = font_title.getbbox(title_text)
         title_w, title_h = bbox_title[2]-bbox_title[0], bbox_title[3]-bbox_title[1]
     
-        rect_x1 = 50
-        rect_y1 = 900
+        rect_x1 = 600
+        rect_y1 = 1350
         rect_w = 400
     
         # Center the red title
@@ -154,12 +154,12 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     footer_number = str(rand_num)
     
     # Base position
-    base_x = 20
-    base_y = 1350
+    base_x = 100
+    base_y = 1550
     
     # Fonts
-    font_main = load_font("Homa.ttf", 40)
-    font_num = load_font("Homa.ttf", 70)
+    font_main = load_font("Homa.ttf", 45)
+    font_num = load_font("Homa.ttf", 62)
 
     
     # --- Draw main Persian text ---
@@ -169,9 +169,16 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     bbox_main = font_main.getbbox(footer_main)
     main_w = bbox_main[2] - bbox_main[0]
     
-    # --- Draw red number next to it ---
-    num_x = base_x + main_w + 10
-    draw.text((num_x, base_y), footer_number, fill=(220,0,0), font=font_num)
+    # Measure number width
+    bbox_num = font_num.getbbox(footer_number)
+    num_w = bbox_num[2] - bbox_num[0]
+    num_h = bbox_num[3] - bbox_num[1]
+    
+    # --- Center number under the main text ---
+    num_x = base_x + (main_w - num_w) // 2
+    num_y = base_y + bbox_main[3] - bbox_main[1] + 10   # 10px below main text
+    
+    draw.text((num_x, num_y), footer_number, fill=(220,0,0), font=font_num)
     
 
     # --- 9. User logo ---
