@@ -67,7 +67,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     photo_1_rem = remove_background(photo_1)
     photo_2_rem = remove_background(photo_2)
     main_color, second_color = extract_colors(photo_1_rem)
-
+    darken_color = darken_color(main_color, 0.55)
     # --- 3. Brand logo overlay ---
     add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(100, 675), color=(0,0,0), max_size=(200,200))
 
@@ -86,8 +86,8 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         max_font_size=230,
         max_width=400,
         max_height=200,
-        start_pos=(70, 240),
-        fill=main_color
+        start_pos=(70, 220),
+        fill=darken_color
     )
     # --- B. Subtext (top-right) ---
     draw_scaled_text(
@@ -97,8 +97,8 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         max_font_size=150,
         max_width=600,
         max_height=200,
-        start_pos=(580, 300),
-        fill=main_color
+        start_pos=(450, 280),
+        fill=darken_color
     )
 
     # --- 6. Shop name ---
@@ -119,7 +119,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     draw_sizes_box(
         canvas,
         sizes=sizes,
-        pos=(875, 1580),            
+        pos=(850, 1580),            
         show_box=False,
         max_height=None,
         min_height=None,
@@ -137,7 +137,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     footer_number = f"({rand_num})"
 
     # Base position
-    base_x = 250
+    base_x = 230
     base_y = 1580
     
     # Fonts
