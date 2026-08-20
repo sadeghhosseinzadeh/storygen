@@ -69,7 +69,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     main_color, second_color = extract_colors(photo_1_rem)
     darken_co = darken_color(main_color, 0.55)
     # --- 3. Brand logo overlay ---
-    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(100, 675), color=(0,0,0), max_size=(200,200))
+    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(100, 635), color=(0,0,0), max_size=(200,200))
 
     # --- 4. Shoe photos ---
     place_shoe(canvas, photo_1_rem, pos=(320,530), max_size=(750,500), angle=0, center_x=False)
@@ -109,7 +109,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
                    font_size_eng=55,
                    font_path_per="A Mitra 04.ttf",
                    font_size_per=60,
-                   pos=(None, 400),
+                   pos=(70, 470),
                    rotation=0,
                    fill=(0,0,0))
 
