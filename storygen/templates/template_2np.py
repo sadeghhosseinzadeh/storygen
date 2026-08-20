@@ -111,7 +111,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
                    font_size_per=60,
                    pos=(None, 400),
                    rotation=0,
-                   fill=(0,0,0)
+                   fill=(0,0,0))
 
 
 
