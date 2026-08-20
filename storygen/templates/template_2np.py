@@ -30,10 +30,10 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     photo_2_rem = remove_background(photo_2)
     main_color, second_color = extract_colors(photo_1_rem)
     # --- 3. Brand logo overlay ---
-    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(70, 600), color=main_color, max_size=(180,180))
+    add_brand_logo(canvas, brand, mode=0, variant=2, opacity=255, pos=(80, 675), color=main_color, max_size=(180,180))
 
     # --- 4. Shoe photos ---
-    place_shoe(canvas, photo_1_rem, pos=(400,500), max_size=(750,500), angle=0, center_x=False)
+    place_shoe(canvas, photo_1_rem, pos=(350,530), max_size=(750,500), angle=0, center_x=False)
     place_shoe(canvas, photo_2_rem, pos=(80,1110), max_size=(630,450), angle=0, center_x=False)
 
     # --- 5. Model and BRAND name ---
@@ -47,7 +47,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     bbox = font_big.getbbox(brand_text)
     brand_w = bbox[2] - bbox[0]
      # Define max allowed width (e.g. 900 pixels)
-    max_width = 300   
+    max_width = 650   
     # Reduce font size until it fits
     while brand_w > max_width and font_size > 50:  
         font_size -= 10
@@ -55,8 +55,8 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
         bbox = font_big.getbbox(brand_text)
         brand_w = bbox[2] - bbox[0]
     # Center and draw
-    brand_x = (W - brand_w) // 2
-    draw.text((brand_x, 240), brand_text, fill=second_color, font=font_big)
+
+    draw.text((70, 240), brand_text, fill=second_color, font=font_big)
     '''
     # --- B. Subtext (top-right) ---
     draw_scaled_text(
