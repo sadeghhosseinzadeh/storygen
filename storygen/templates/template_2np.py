@@ -89,14 +89,15 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     draw_sizes_box(
         canvas,
         sizes=sizes,
-        pos=(600, 1500),            
+        pos=(750, 1630),            
         show_box=False,
         max_height=None,
         min_height=None,
         title_font_size=60,
         title_color=(220,0,0),
         size_font_size=45,
-        size_color=(0,0,0))
+        size_color=(0,0,0),
+        spacing=15 )
 
 
     # --- 8. Footer text ---
