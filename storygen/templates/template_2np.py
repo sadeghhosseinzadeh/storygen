@@ -108,7 +108,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
     # Align bottoms
     second_y = 220 + (brand_h - model_h)
     # Now place second text EXACTLY 50px to the right of the first
-    second_x = 100 + brand_w + 20
+    second_x = 100 + brand_w + 13
 
     
     draw_scaled_text(
@@ -131,7 +131,7 @@ def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=
                    font_size_eng=55,
                    font_path_per="A Mitra 04.ttf",
                    font_size_per=60,
-                   pos=(70, 470),
+                   pos=(100, 470),
                    rotation=0,
                    fill=(0,0,0))
 
