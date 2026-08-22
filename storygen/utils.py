@@ -550,10 +550,12 @@ def draw_scaled_text(
     max_font_size,
     max_width,
     max_height,
-    start_pos,
+    start_pos,     
     fill,
     allow_multiline=True
 ):
+    canvas_w, canvas_h = draw.im.size
+
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
 
@@ -564,14 +566,18 @@ def draw_scaled_text(
 
         # --- SINGLE LINE MODE ---
         if not allow_multiline:
-            # Only accept if the single line fits
             if w <= max_width and h <= max_height:
-                draw.text(start_pos, text, fill=fill, font=font)
+
+                # Smart centering
+                x = start_pos[0] if start_pos[0] is not None else (canvas_w - w) // 2
+                y = start_pos[1] if start_pos[1] is not None else (canvas_h - h) // 2
+
+                draw.text((x, y), text, fill=fill, font=font)
                 return h, w, font
             else:
-                continue  # try smaller font
+                continue
 
-        # --- MULTILINE MODE (current behavior) ---
+        # --- MULTILINE MODE ---
         lines = []
         words = text.split()
 
@@ -591,29 +597,30 @@ def draw_scaled_text(
             if line:
                 lines.append(line)
 
-            # Check total height
+            # Total height
             total_h = sum([font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines]) \
                       + (len(lines)-1)*10
 
             if total_h > max_height:
                 continue
 
-        # Draw final lines
-        y = start_pos[1]
-        total_drawn_h = 0
-        max_line_w = 0
+        # Compute max line width
+        max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
 
+        # Smart centering
+        x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
+        y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
+
+        # Draw lines
+        yy = y
         for l in lines:
             bbox = font.getbbox(l)
             lw = bbox[2] - bbox[0]
             lh = bbox[3] - bbox[1]
 
-            draw.text((start_pos[0], y), l, fill=fill, font=font)
+            draw.text((x, yy), l, fill=fill, font=font)
+            yy += lh + 10
 
-            y += lh + 10
-            total_drawn_h += lh + 10
-            max_line_w = max(max_line_w, lw)
-
-        return total_drawn_h, max_line_w, font
+        return total_h, max_line_w, font
 
     return 0, 0, None
