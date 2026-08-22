@@ -227,15 +227,9 @@ def place_shoe2(canvas, img, pos=None, max_size=(800,600), angle=0,
                center_x=True, center_y=False, shadow=True):
     """
     Place a shoe image onto the canvas.
-    - canvas: PIL Image (background/template)
-    - img: PIL Image (shoe, background removed)
-    - pos: (x,y) top-left position. If None, auto-centers based on flags.
-    - max_size: (max_w, max_h) bounding box for shoe
-    - angle: rotation in degrees (positive = clockwise, negative = counter-clockwise)
-    - center_x: if True, auto-center horizontally
-    - center_y: if True, auto-center vertically
     """
 
+    import numpy as np
     W, H = canvas.size
 
     # --- Resize shoe ---
@@ -248,58 +242,61 @@ def place_shoe2(canvas, img, pos=None, max_size=(800,600), angle=0,
     new_w, new_h = int(sw * ratio), int(sh * ratio)
     shoe = img.resize((new_w, new_h), Image.LANCZOS)
 
-    # --- Step 1: place BEFORE rotation ---
+    # --- Find bottom-middle pixel ---
+    arr = np.array(shoe)
+    alpha = arr[:,:,3]
+
+    ys, xs = np.where(alpha > 0)
+    bottom_y = ys.max()
+
+    xs_bottom = xs[ys == bottom_y]
+    bottom_mid_x = int((xs_bottom.min() + xs_bottom.max()) / 2)
+
+    # --- Determine target Y (user provided) ---
     if pos is None:
-        # Horizontal centering
-        pos_x = (W - new_w) // 2 if center_x else 0
-
-        # Vertical centering OR bottom anchor
-        if center_y:
-            pos_y = (H - new_h) // 2
-        else:
-            # bottom anchor line (same behavior as before)
-            pos_y = (H - new_h) // 2
+        target_y = (H // 2) if center_y else (H // 2)
     else:
-        pos_x, pos_y = pos
-        if center_x:
-            pos_x = (W - new_w) // 2
-        if center_y:
-            pos_y = (H - new_h) // 2
+        _, target_y = pos
 
-    # --- Step 2: rotate AFTER placement ---
+    # --- Initial placement BEFORE rotation ---
+    # Place bottom-middle at target_y
+    pos_x = (W - new_w) // 2 if center_x else 0
+    pos_y = target_y - bottom_y
+
+    # --- Rotate AFTER placement ---
     if angle != 0:
         rotated = shoe.rotate(angle, expand=True)
         rw, rh = rotated.size
 
-        # Re-anchor bottom so rotation doesn't shift the shoe unpredictably
-        # Keep horizontal center the same
-        if center_x:
-            pos_x = (W - rw) // 2
+        # Recompute bottom-middle after rotation
+        arr2 = np.array(rotated)
+        alpha2 = arr2[:,:,3]
+        ys2, xs2 = np.where(alpha2 > 0)
+        new_bottom_y = ys2.max()
+        xs2_bottom = xs2[ys2 == new_bottom_y]
+        new_bottom_mid_x = int((xs2_bottom.min() + xs2_bottom.max()) / 2)
 
-        # Keep bottom aligned with original bottom
-        original_bottom = pos_y + new_h
-        pos_y = original_bottom - rh
+        # Re-anchor bottom-middle to target_y
+        pos_y = target_y - new_bottom_y
+
+        # Re-center horizontally
+        pos_x = (W - rw) // 2 if center_x else pos_x
 
         shoe = rotated
 
     # --- SHADOW ---
     if shadow:
         sh_img = shoe.convert("RGBA")
-
-        # Reduce alpha → 50% shadow
         shadow_data = [(0,0,0,int(px[3]*0.5)) for px in sh_img.getdata()]
         sh_img.putdata(shadow_data)
-
-        # Blur shadow
         sh_img = sh_img.filter(ImageFilter.GaussianBlur(10))
-
-        # Offset shadow slightly
         canvas.paste(sh_img, (pos_x + 5, pos_y + 20), sh_img)
 
     # --- Paste shoe ---
     canvas.paste(shoe, (pos_x, pos_y), shoe)
 
     return canvas
+
 
 
 # 9. draw trapezoid
