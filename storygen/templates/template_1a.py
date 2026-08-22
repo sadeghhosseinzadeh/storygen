@@ -41,8 +41,8 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
     # --- 3. Background color ---
     # Lighten main color → protect from becoming white
-    lighten = lighten_color(main_color, 0.35)
-    bg = protect_color(lighten)
+    bg = lighten_color(main_color, 0.35)
+    #bg = protect_color(lighten)
 
     canvas = Image.new("RGB", (W, H), bg)
     draw = ImageDraw.Draw(canvas)
@@ -53,26 +53,27 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     draw_scaled_text(
         draw,
         text=brand_text,
-        font_path="Lava Arabic v1.00.ttf",
+        font_path="GILSANUB.TTF",
         max_font_size=300,
-        max_width=600,
-        max_height=200,
-        start_pos=(240, 200),
+        max_width=1000,
+        max_height=400,
+        start_pos=(None, 200),
         fill=(255, 255, 255),
         allow_multiline=True
     )
+
 
     # --- 5. Model name (rotated) ---
     draw_text(
         canvas,
         text=model_name,
-        font_path_eng="Lava Arabic v1.00.ttf",
+        font_path_eng="GILLUBCD.TTF",
         font_size_eng=55,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
         pos=(None, 350),
-        rotation=-22,
-        fill=(0, 0, 0)
+        rotation=22,
+        fill=(255, 255, 255)
     )
 
     # --- 6. Shop name ---
@@ -80,13 +81,13 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         draw_text(
             canvas,
             text=shop_name_en,
-            font_path_eng="Segoe.UI.Semibold_p30download.com.ttf",
-            font_size_eng=55,
+            font_path_eng="GILLUBCD.TTF",
+            font_size_eng=50,
             font_path_per="A Mitra 04.ttf",
             font_size_per=60,
             pos=(100, 470),
             rotation=0,
-            fill=(0, 0, 0)
+            fill=((255, 255, 255)
         )
 
     add_brand_logo(
@@ -95,27 +96,25 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
                 mode=0,
                 variant=2,
                 opacity=255,
-                pos=(100, 635),
-                color=(0, 0, 0),
+                pos=(800, 190),
+                color=saturated_color,
                 max_size=(200, 200)
             )
 
     place_shoe(canvas, blurred_photo_1,
-               pos=(None, 160),  
+               pos=(1, 220),  
                max_size=(850, 600),
-               angle=-30,
-               center_x=True)
+               angle=-25,
+               center_x=False)
 
     place_shoe(canvas, blurred_photo_1,
-               pos=(None, 1060),  
+               pos=(1030, 1800),  
                max_size=(850, 600),
-               angle=-30,
-               center_x=True)
+               angle=0,
+               center_x=False)
     
     # --- 6.5 Dotted overlay PNG ---
-    from pathlib import Path
-    import storygen
-    
+
     package_root = Path(storygen.__file__).parent
     overlay_path = package_root / "bg" / "template1a_bg.png"
     
@@ -126,15 +125,15 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     draw_sizes_box(
         canvas,
         sizes=sizes,
-        pos=(850, 1580),
+        pos=(200, 1550),
         show_box=True,
         max_height=None,
         min_height=None,
-        title_font_size=60,
+        title_font_size=55,
         title_color=(220, 0, 0),
-        size_font_size=45,
+        size_font_size=40,
         size_color=(0, 0, 0),
-        spacing=15
+        spacing=5
     )
 
     # --- 8. Footer text ---
@@ -142,8 +141,8 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     footer_main = "استعلام قیمت عدد"
     footer_number = f"({rand_num})"
 
-    base_x = 230
-    base_y = 1580
+    base_x = 500
+    base_y = 1700
 
     font_main = load_font("Homa.ttf", 45)
     font_num = load_font("Homa.ttf", 62)
@@ -173,7 +172,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     place_shoe(canvas, photo_1_rem,
                pos=(None, 1360),  
                max_size=(850, 600),
-               angle=-30,
+               angle=30,
                center_x=True)
 
     return canvas
