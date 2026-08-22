@@ -87,7 +87,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
             font_size_per=60,
             pos=(100, 470),
             rotation=0,
-            fill=((255, 255, 255)
+            fill=(255, 255, 255)
         )
 
     add_brand_logo(
