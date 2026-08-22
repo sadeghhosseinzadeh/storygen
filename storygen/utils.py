@@ -34,23 +34,49 @@ def remove_background(path: str, pad: int = 50):
     return padded
     
 # 2. Extract main + secondary colors
-def extract_colors(img: Image.Image):
+def extract_colors(img: Image.Image, n_clusters=4, include_saturated=False):
     img = img.convert("RGBA")
     arr = np.array(img)
     alpha = arr[:, :, 3]
     mask = alpha > 0
     pixels = arr[mask][:, :3]
 
-    kmeans = KMeans(n_clusters=3, n_init=5)
+    # Cluster colors
+    kmeans = KMeans(n_clusters=n_clusters, n_init=5)
     kmeans.fit(pixels)
-
     centers = kmeans.cluster_centers_.astype(int)
     labels, counts = np.unique(kmeans.labels_, return_counts=True)
     idx = np.argsort(-counts)
 
+    # Most frequent colors
     main = tuple(int(c) for c in centers[idx[0]])
     second = tuple(int(c) for c in centers[idx[1]])
-    return main, second
+
+    # Find most saturated color
+    def saturation(c):
+        r, g, b = [x/255.0 for x in c]
+        h, l, s = colorsys.rgb_to_hls(r, g, b)
+        return s
+
+    sat_idx = max(range(len(centers)), key=lambda i: saturation(centers[i]))
+    saturated = tuple(int(c) for c in centers[sat_idx])
+
+    if include_saturated:
+        return main, second, saturated
+    else:
+        return main, second
+
+# 2.5 protect color
+def protect_color(color, sat_boost=1.4, darken_factor=0.25, threshold=220):
+    r, g, b = color
+    if r > threshold and g > threshold and b > threshold:
+        color = (
+            int(r * (1 - darken_factor)),
+            int(g * (1 - darken_factor)),
+            int(b * (1 - darken_factor))
+        )
+        color = adjust_saturation(color, sat_boost)
+    return color
 
 # 3. Lighten color
 def lighten_color(color, strength=0.15):
