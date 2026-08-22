@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import cairo
 import random
-from storygen.utils import lighten_color, load_font, place_shoe, remove_background, extract_colors
+from storygen.utils import lighten_color, load_font, place_shoe2, remove_background, extract_colors
 
 def template_1a(photo_1, model_name, sizes):
     W, H = 1080, 1920
@@ -39,7 +39,7 @@ def template_1a(photo_1, model_name, sizes):
     draw.polygon(bottom_shape_points, fill=second_color)
 
     # 4. Shoe photo (background removed + placed)
-    place_shoe(canvas, photo_1_rem,
+    place_shoe2(canvas, photo_1_rem,
                pos=(None, 700),  
                max_size=(750, 600),
                angle=-31,
