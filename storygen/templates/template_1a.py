@@ -57,7 +57,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         max_font_size=300,
         max_width=600,
         max_height=200,
-        pos=(240, 200),  
+        start_pos=(240, 200),
         fill=(255, 255, 255),
         allow_multiline=True
     )
