@@ -39,7 +39,7 @@ def template_1a(photo_1, model_name, sizes):
     draw.polygon(bottom_shape_points, fill=second_color)
 
     # 4. Shoe photo (background removed + placed)
-    place_shoe2(canvas, photo_1_rem,
+    place_shoe(canvas, photo_1_rem,
                pos=(None, 1360),  
                max_size=(850, 600),
                angle=-30,
