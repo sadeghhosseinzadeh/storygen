@@ -104,9 +104,32 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
 
     # --- 7. Footer text ---
     rand_num = random.randint(100, 999)
-    footer_text = f"برای اطلاعات بیشتر\n {rand_num} رو دایرکت کن!"
-    font_footer = load_font("Homa.ttf", 45)
-    draw.multiline_text((W//2 + 50, H-340), footer_text, fill=shades[0] , font=font_footer, align="center", spacing=20)
+    
+    # Text parts
+    footer_main = "برای اطلاعات بیشتر"
+    footer_end  = "رو دایرکت کن!"
+    
+    # Fonts
+    font_main = load_font("Homa.ttf", 45)
+    font_num  = load_font("Homa.ttf", 70)   # BIGGER NUMBER
+    
+    # Base position
+    base_x = W//2 + 50
+    base_y = H - 340 
+    # --- Draw main text ---
+    draw.text((base_x, base_y), footer_main, fill=shades[0], font=font_main) 
+    # Measure main text width
+    bbox_main = font_main.getbbox(footer_main)
+    main_w = bbox_main[2] - bbox_main[0] 
+    # --- Draw BIG number next to it ---
+    num_x = base_x + main_w + 10
+    draw.text((num_x, base_y), str(rand_num), fill=shades[0], font=font_num)
+    # Measure number width
+    bbox_num = font_num.getbbox(str(rand_num))
+    num_w = bbox_num[2] - bbox_num[0]
+    # --- Draw ending text ---
+    end_x = num_x + num_w + 10
+    draw.text((end_x, base_y), footer_end, fill=shades[0], font=font_main)
 
     # --- 8. User logo ---
     add_user_logo(canvas,
