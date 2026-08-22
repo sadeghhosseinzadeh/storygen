@@ -71,9 +71,9 @@ def template_1b(photo_1, model_name, sizes, shop_name_en, brand):
     
     # 4. Shoe photo (background removed + placed)
     place_shoe(canvas, photo_1_rem,
-               pos=(None, 700),  
-               max_size=(750, 600),
-               angle=-31,
+               pos=(None, 1360),  
+               max_size=(850, 600),
+               angle=-30,
                center_x=True)
 
     # 5. Sizes box
