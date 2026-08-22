@@ -9,84 +9,8 @@ import storygen
 from storygen.utils import (
     remove_background, extract_colors, lighten_color, darken_color,
     adjust_saturation, load_font, add_brand_logo, place_shoe,
-    draw_trapezoid, add_user_logo, draw_text, draw_sizes_box
+    draw_trapezoid, add_user_logo, draw_text, draw_sizes_box, draw_scaled_text
 )
-
-def draw_scaled_text(
-    draw,
-    text,
-    font_path,
-    max_font_size,
-    max_width,
-    max_height,
-    start_pos,
-    fill,
-    allow_multiline=True
-):
-    for size in range(max_font_size, 10, -2):
-        font = load_font(font_path, size)
-
-        # Measure full text
-        bbox = font.getbbox(text)
-        w = bbox[2] - bbox[0]
-        h = bbox[3] - bbox[1]
-
-        # --- SINGLE LINE MODE ---
-        if not allow_multiline:
-            # Only accept if the single line fits
-            if w <= max_width and h <= max_height:
-                draw.text(start_pos, text, fill=fill, font=font)
-                return h, w, font
-            else:
-                continue  # try smaller font
-
-        # --- MULTILINE MODE (current behavior) ---
-        lines = []
-        words = text.split()
-
-        if w <= max_width and h <= max_height:
-            lines = [text]
-        else:
-            # Word wrapping
-            line = ""
-            for word in words:
-                test = line + " " + word if line else word
-                bbox = font.getbbox(test)
-                if (bbox[2] - bbox[0]) <= max_width:
-                    line = test
-                else:
-                    lines.append(line)
-                    line = word
-            if line:
-                lines.append(line)
-
-            # Check total height
-            total_h = sum([font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines]) \
-                      + (len(lines)-1)*10
-
-            if total_h > max_height:
-                continue
-
-        # Draw final lines
-        y = start_pos[1]
-        total_drawn_h = 0
-        max_line_w = 0
-
-        for l in lines:
-            bbox = font.getbbox(l)
-            lw = bbox[2] - bbox[0]
-            lh = bbox[3] - bbox[1]
-
-            draw.text((start_pos[0], y), l, fill=fill, font=font)
-
-            y += lh + 10
-            total_drawn_h += lh + 10
-            max_line_w = max(max_line_w, lw)
-
-        return total_drawn_h, max_line_w, font
-
-    return 0, 0, None
-
 
         
 def template_2np(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=None):
