@@ -1,7 +1,9 @@
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import random
 import numpy as np
 import colorsys
+from pathlib import Path
+import storygen
 
 from storygen.utils import (
     lighten_color,
@@ -17,13 +19,20 @@ from storygen.utils import (
     protect_color
 )
 
+def motion_blur(img, radius=25, angle=-30):
+    # Rotate → blur → rotate back
+    rotated = img.rotate(angle, expand=True)
+    blurred = rotated.filter(ImageFilter.GaussianBlur(radius))
+    return blurred.rotate(-angle, expand=True)
+    
 
 def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     W, H = 1080, 1920
 
     # --- 1. Remove background ---
     photo_1_rem = remove_background(photo_1)
-
+    blurred_photo_1 = motion_blur(photo_1_rem, radius=25, angle=-30)
+    
     # --- 2. Extract colors (safe version) ---
     main_color, second_color, saturated_color = extract_colors(
         photo_1_rem,
@@ -88,6 +97,28 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
                 color=(0, 0, 0),
                 max_size=(200, 200)
             )
+
+    place_shoe(canvas, blurred_photo_1,
+               pos=(None, 160),  
+               max_size=(850, 600),
+               angle=-30,
+               center_x=True)
+
+    place_shoe(canvas, blurred_photo_1,
+               pos=(None, 1060),  
+               max_size=(850, 600),
+               angle=-30,
+               center_x=True)
+    
+    # --- 6.5 Dotted overlay PNG ---
+    from pathlib import Path
+    import storygen
+    
+    package_root = Path(storygen.__file__).parent
+    overlay_path = package_root / "bg" / "template1a_bg.png"
+    
+    overlay = Image.open(overlay_path).convert("RGBA").resize((W, H))
+    canvas.paste(overlay, (0, 0), overlay)
 
     # --- 7. Sizes box ---
     draw_sizes_box(
