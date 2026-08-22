@@ -222,6 +222,85 @@ def place_shoe(canvas, img, pos=None, max_size=(800,600), angle=0,
 
     return canvas
 
+# 8. place shoe 2
+def place_shoe2(canvas, img, pos=None, max_size=(800,600), angle=0,
+               center_x=True, center_y=False, shadow=True):
+    """
+    Place a shoe image onto the canvas.
+    - canvas: PIL Image (background/template)
+    - img: PIL Image (shoe, background removed)
+    - pos: (x,y) top-left position. If None, auto-centers based on flags.
+    - max_size: (max_w, max_h) bounding box for shoe
+    - angle: rotation in degrees (positive = clockwise, negative = counter-clockwise)
+    - center_x: if True, auto-center horizontally
+    - center_y: if True, auto-center vertically
+    """
+
+    W, H = canvas.size
+
+    # --- Resize shoe ---
+    sw, sh = img.size
+    max_w, max_h = max_size
+    ratio = min(max_w/sw, max_h/sh)
+    if ratio > 1:
+        ratio = min(max_w/sw, max_h/sh)
+
+    new_w, new_h = int(sw * ratio), int(sh * ratio)
+    shoe = img.resize((new_w, new_h), Image.LANCZOS)
+
+    # --- Step 1: place BEFORE rotation ---
+    if pos is None:
+        # Horizontal centering
+        pos_x = (W - new_w) // 2 if center_x else 0
+
+        # Vertical centering OR bottom anchor
+        if center_y:
+            pos_y = (H - new_h) // 2
+        else:
+            # bottom anchor line (same behavior as before)
+            pos_y = (H - new_h) // 2
+    else:
+        pos_x, pos_y = pos
+        if center_x:
+            pos_x = (W - new_w) // 2
+        if center_y:
+            pos_y = (H - new_h) // 2
+
+    # --- Step 2: rotate AFTER placement ---
+    if angle != 0:
+        rotated = shoe.rotate(angle, expand=True)
+        rw, rh = rotated.size
+
+        # Re-anchor bottom so rotation doesn't shift the shoe unpredictably
+        # Keep horizontal center the same
+        if center_x:
+            pos_x = (W - rw) // 2
+
+        # Keep bottom aligned with original bottom
+        original_bottom = pos_y + new_h
+        pos_y = original_bottom - rh
+
+        shoe = rotated
+
+    # --- SHADOW ---
+    if shadow:
+        sh_img = shoe.convert("RGBA")
+
+        # Reduce alpha → 50% shadow
+        shadow_data = [(0,0,0,int(px[3]*0.5)) for px in sh_img.getdata()]
+        sh_img.putdata(shadow_data)
+
+        # Blur shadow
+        sh_img = sh_img.filter(ImageFilter.GaussianBlur(10))
+
+        # Offset shadow slightly
+        canvas.paste(sh_img, (pos_x + 5, pos_y + 20), sh_img)
+
+    # --- Paste shoe ---
+    canvas.paste(shoe, (pos_x, pos_y), shoe)
+
+    return canvas
+
 
 # 9. draw trapezoid
 def draw_trapezoid(ctx, x_left, y_top, x_right, y_top_right, y_bottom_left, y_bottom_right, color, radius=77):
