@@ -1,97 +1,146 @@
 from PIL import Image, ImageDraw, ImageFont
-import cairo
 import random
-from storygen.utils import lighten_color, load_font, place_shoe, remove_background, extract_colors
+import numpy as np
+import colorsys
 
-def template_1a(photo_1, model_name, sizes):
+from storygen.utils import (
+    lighten_color,
+    load_font,
+    place_shoe,
+    remove_background,
+    extract_colors,   
+    draw_text,
+    draw_scaled_text,
+    draw_sizes_box,
+    add_brand_logo,
+    add_user_logo,
+    protect_color
+)
+
+
+def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     W, H = 1080, 1920
 
-    # Background: 15% main color blended with white
+    # --- 1. Remove background ---
     photo_1_rem = remove_background(photo_1)
-    main_color, second_color = extract_colors(photo_1_rem)
-    bg = lighten_color(main_color, 0.15)
+
+    # --- 2. Extract colors (safe version) ---
+    main_color, second_color, saturated_color = extract_colors(
+        photo_1_rem,
+        include_saturated=True
+    )
+
+    # --- 3. Background color ---
+    # Lighten main color → protect from becoming white
+    lighten = lighten_color(main_color, 0.35)
+    bg = protect_color(lighten)
+
     canvas = Image.new("RGB", (W, H), bg)
     draw = ImageDraw.Draw(canvas)
 
-    # Fonts
-    font_big = load_font("Segoe.UI.Bold_p30download.com.ttf", 300)
-    font_mid = load_font("Segoe.UI_p30download.com.ttf", 35)
-    font_fid = load_font("A Mitra 04.ttf", 38)
-    font_bid = load_font("Segoe.UI_p30download.com.ttf", 55)
+    # --- 4. Big brand text (centered) ---
+    brand_text = brand.upper()
 
-    text_color = main_color
+    draw_scaled_text(
+        draw,
+        text=brand_text,
+        font_path="Lava Arabic v1.00.ttf",
+        max_font_size=300,
+        max_width=600,
+        max_height=200,
+        pos=(240, 200),  
+        fill=(255, 255, 255),
+        allow_multiline=True
+    )
 
-    # 1. Big NIKE text
-    nike_text = "NIKE"
-    bbox = font_big.getbbox(nike_text)
-    nike_w = bbox[2] - bbox[0]
-    nike_x = (W - nike_w) // 2
-    draw.text((nike_x, 240), nike_text, fill=second_color, font=font_big)
+    # --- 5. Model name (rotated) ---
+    draw_text(
+        canvas,
+        text=model_name,
+        font_path_eng="Lava Arabic v1.00.ttf",
+        font_size_eng=55,
+        pos=(None, 350),
+        rotation=-22,
+        fill=(0, 0, 0)
+    )
 
-    # 2. Model name
-    bbox = font_bid.getbbox(model_name)
-    model_w = bbox[2] - bbox[0]
-    model_x = (W - model_w) // 2
-    draw.text((model_x, 640), model_name, fill=second_color, font=font_bid)
+    # --- 6. Shop name ---
+    if shop_name_en and shop_name_en.strip():
+        draw_text(
+            canvas,
+            text=shop_name_en,
+            font_path_eng="Segoe.UI.Semibold_p30download.com.ttf",
+            font_size_eng=55,
+            font_path_per="A Mitra 04.ttf",
+            font_size_per=60,
+            pos=(100, 470),
+            rotation=0,
+            fill=(0, 0, 0)
+        )
 
-    # 3. Bottom polygon
-    bottom_shape_points = [(0, H), (W, H), (W, H - 300), (0, H - 950)]
-    draw.polygon(bottom_shape_points, fill=second_color)
+    add_brand_logo(
+                canvas,
+                brand,
+                mode=0,
+                variant=2,
+                opacity=255,
+                pos=(100, 635),
+                color=(0, 0, 0),
+                max_size=(200, 200)
+            )
 
-    # 4. Shoe photo (background removed + placed)
+    # --- 7. Sizes box ---
+    draw_sizes_box(
+        canvas,
+        sizes=sizes,
+        pos=(850, 1580),
+        show_box=True,
+        max_height=None,
+        min_height=None,
+        title_font_size=60,
+        title_color=(220, 0, 0),
+        size_font_size=45,
+        size_color=(0, 0, 0),
+        spacing=15
+    )
+
+    # --- 8. Footer text ---
+    rand_num = random.randint(100, 999)
+    footer_main = "استعلام قیمت عدد"
+    footer_number = f"({rand_num})"
+
+    base_x = 230
+    base_y = 1580
+
+    font_main = load_font("Homa.ttf", 45)
+    font_num = load_font("Homa.ttf", 62)
+
+    draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
+
+    bbox_main = font_main.getbbox(footer_main)
+    main_w = bbox_main[2] - bbox_main[0]
+
+    bbox_num = font_num.getbbox(footer_number)
+    num_w = bbox_num[2] - bbox_num[0]
+
+    num_x = base_x + (main_w - num_w) // 2
+    num_y = base_y + bbox_main[3] - bbox_main[1] + 10
+
+    draw.text((num_x, num_y), footer_number, fill=(220, 0, 0), font=font_num)
+
+    # --- 9. User logo ---
+    add_user_logo(
+        canvas,
+        logo_path=logo,
+        pos=(None, 1300),
+        max_size=(180, 180),
+        center_x=True
+    )
+
     place_shoe(canvas, photo_1_rem,
                pos=(None, 1360),  
                max_size=(850, 600),
                angle=-30,
                center_x=True)
-
-    # 5. Sizes box
-    if sizes:
-        # Ensure sizes is a list split only by commas
-        if isinstance(sizes, str):
-            sizes = [s.strip() for s in sizes.split(",") if s.strip()]
-    
-        rect_w = 350
-        rect_x1 = 60
-        rect_y1 = 1550
-        rect_color = lighten_color(main_color, 0.15)
-    
-        title_text = "Size:"
-        bbox = font_mid.getbbox(title_text)
-        title_w, title_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
-    
-        line_spacing = 10
-        sizes_heights = [font_mid.getbbox(s)[3]-font_mid.getbbox(s)[1] for s in sizes]
-        total_text_h = title_h + sum(sizes_heights) + line_spacing*(len(sizes)-1)
-    
-        rect_h = total_text_h + 20 + 20 + 40
-        rect_x2 = rect_x1 + rect_w
-        rect_y2 = rect_y1 + rect_h
-    
-        draw.rounded_rectangle([rect_x1, rect_y1, rect_x2, rect_y2],
-                               radius=15, fill=rect_color)
-    
-        title_x = rect_x1 + (rect_w - title_w)//2
-        title_y = rect_y1 + 20
-        draw.text((title_x, title_y), title_text, fill=second_color, font=font_mid)
-    
-        current_y = title_y + title_h + 20
-        for size in sizes:
-            bbox = font_mid.getbbox(size)
-            size_w, size_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
-            size_x = rect_x1 + (rect_w - size_w)//2
-            draw.text((size_x, current_y), size, fill=second_color, font=font_mid)
-            current_y += size_h + line_spacing
-
-
-    # 6. Footer text (unchanged)
-    rand_num = random.randint(100, 999)
-    footer_text = f"برای اطلاعات بیشتر، {rand_num} رو دایرکت کن"
-    temp_img = Image.new("RGBA", (W, H), (255, 255, 255, 0))
-    temp_draw = ImageDraw.Draw(temp_img)
-    bbox = font_mid.getbbox(footer_text)
-    temp_draw.text((10, 1370), footer_text, fill=rect_color, font=font_fid)
-    rotated_text = temp_img.rotate(-31, expand=True)
-    canvas.paste(rotated_text, (0, 0), rotated_text)
 
     return canvas
