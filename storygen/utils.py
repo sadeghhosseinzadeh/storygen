@@ -550,7 +550,7 @@ def draw_scaled_text(
     max_font_size,
     max_width,
     max_height,
-    start_pos,     
+    start_pos,
     fill,
     allow_multiline=True
 ):
@@ -578,13 +578,16 @@ def draw_scaled_text(
                 continue
 
         # --- MULTILINE MODE ---
-        lines = []
         words = text.split()
 
         if w <= max_width and h <= max_height:
+            # Single line fits → compute total height
             lines = [text]
+            total_h = h
+            max_line_w = w
         else:
             # Word wrapping
+            lines = []
             line = ""
             for word in words:
                 test = line + " " + word if line else word
@@ -597,15 +600,14 @@ def draw_scaled_text(
             if line:
                 lines.append(line)
 
-            # Total height
-            total_h = sum([font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines]) \
+            # Compute total height
+            total_h = sum(font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines) \
                       + (len(lines)-1)*10
 
             if total_h > max_height:
                 continue
 
-        # Compute max line width
-        max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
+            max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
 
         # Smart centering
         x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
@@ -615,9 +617,7 @@ def draw_scaled_text(
         yy = y
         for l in lines:
             bbox = font.getbbox(l)
-            lw = bbox[2] - bbox[0]
             lh = bbox[3] - bbox[1]
-
             draw.text((x, yy), l, fill=fill, font=font)
             yy += lh + 10
 
