@@ -624,3 +624,24 @@ def draw_scaled_text(
         return total_h, max_line_w, font
 
     return 0, 0, None
+
+# detect shoe direction
+def detect_shoe_direction(img):
+    """
+    Returns 'left' if the shoe is pointing left,
+    Returns 'right' if the shoe is pointing right.
+    """
+    arr = np.array(img)
+    alpha = arr[:,:,3]
+
+    h, w = alpha.shape
+    mid = w // 2
+
+    left_pixels  = np.sum(alpha[:, :mid] > 0)
+    right_pixels = np.sum(alpha[:, mid:] > 0)
+
+    # Narrow side = front of shoe
+    if left_pixels < right_pixels:
+        return "left"
+    else:
+        return "right"
