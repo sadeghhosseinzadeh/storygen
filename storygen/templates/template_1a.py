@@ -169,7 +169,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         text=brand_text,
         font_path="GILSANUB.TTF",
         max_font_size=300,
-        max_width=500,
+        max_width=800,
         max_height=400,
         start_pos=(None, 550),
         fill=(255, 255, 255),
@@ -284,9 +284,9 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     # Base anchor under shoe
     text_y = 1050   
     if direction == "left":
-        text_x = 500    # shoe points left → text more to left
+        text_x = 100    # shoe points left → text more to left
     else:
-        text_x = 100      # shoe points right → text more to right
+        text_x = 500      # shoe points right → text more to right
 
 
     if shop_name_en and shop_name_en.strip():
@@ -297,7 +297,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
             font_size_eng=60,
             font_path_per="A Mitra 04.ttf",
             font_size_per=60,
-            pos=(text_x, 470),
+            pos=(text_x, 1500),
             rotation=0,
             fill=(255, 255, 255)
         )
@@ -311,7 +311,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
         pos=(100, 470),
-        rotation=model_angle,
+        rotation=0,
         fill=(255, 255, 255)
     )
 
