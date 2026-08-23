@@ -227,12 +227,12 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         max_height=None,
         min_height=None,
         title_font_size=55,
-        title_color=saturated_color,
+        title_color=(0, 0, 0),
         size_font_size=40,
         size_color=(0, 0, 0),
-        spacing=10,
-        padding_x=30,
-        padding_y=20
+        spacing=15,
+        padding_x=40,
+        padding_y=30
     )
 
     
