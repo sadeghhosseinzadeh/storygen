@@ -192,16 +192,6 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
             fill=(255, 255, 255)
         )
 
-    add_brand_logo(
-                canvas,
-                brand,
-                mode=0,
-                variant=2,
-                opacity=255,
-                pos=(800, 190),
-                color=saturated_color,
-                max_size=(200, 200)
-            )
 
     place_shoe(canvas, blurred_photo_1,
                pos=(1, 220),  
@@ -223,26 +213,42 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     overlay = Image.open(overlay_path).convert("RGBA").resize((W, H))
     canvas.paste(overlay, (0, 0), overlay)
 
+    
+    add_brand_logo(
+                canvas,
+                brand,
+                mode=0,
+                variant=2,
+                opacity=255,
+                pos=(800, 190),
+                color=saturated_color,
+                max_size=(200, 200)
+            )
+    
     # --- 7. Sizes box ---
     if direction == "left":
         sizes_pos = (800, 1500)   # shoe points left → box on right
     else:
-        sizes_pos = (200, 1500)   # shoe points right → box on left
+        sizes_pos = (300, 1500)   # shoe points right → box on left
     
     draw_sizes_box(
         canvas,
         sizes=sizes,
         pos=sizes_pos,
         show_box=True,
+        box_radius=18,
         max_height=None,
         min_height=None,
         title_font_size=55,
         title_color=saturated_color,
         size_font_size=40,
         size_color=(0, 0, 0),
-        spacing=5
+        spacing=10,
+        padding_x=30,
+        padding_y=20
     )
 
+    
 
     # --- 8. Footer text ---
     rand_num = random.randint(100, 999)
@@ -288,11 +294,11 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     model_angle = 23 if direction == "left" else -23
     
     # Base anchor under shoe
-    text_y = 1000   
+    text_y = 1050   
     if direction == "left":
         text_x = 500    # shoe points left → text more to left
     else:
-        text_x = 200      # shoe points right → text more to right
+        text_x = 100      # shoe points right → text more to right
     
     draw_text(
         canvas,
