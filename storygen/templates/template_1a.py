@@ -225,9 +225,9 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
     # --- 7. Sizes box ---
     if direction == "left":
-        sizes_pos = (850, 1550)   # shoe points left → box on right
+        sizes_pos = (800, 1500)   # shoe points left → box on right
     else:
-        sizes_pos = (100, 1550)   # shoe points right → box on left
+        sizes_pos = (200, 1500)   # shoe points right → box on left
     
     draw_sizes_box(
         canvas,
@@ -279,26 +279,26 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
     place_shoe_mod(canvas, photo_1_rem,
                pos=(None, 1250),  
-               max_size=(950, 600),
-               angle_left=25,
-               angle_right=-25,
+               max_size=(1000, 600),
+               angle_left=23,
+               angle_right=-23,
                center_x=True)
 
     # --- 5. Model name (attached to shoe) ---
-    model_angle = 25 if direction == "left" else -25
+    model_angle = 23 if direction == "left" else -23
     
     # Base anchor under shoe
-    text_y = 1250 + 250   # a bit under the shoe
+    text_y = 1255    # a bit under the shoe
     if direction == "left":
         text_x = 200      # shoe points left → text more to left
     else:
-        text_x = 600      # shoe points right → text more to right
+        text_x = W - 200      # shoe points right → text more to right
     
     draw_text(
         canvas,
         text=model_name,
         font_path_eng="GILLUBCD.TTF",
-        font_size_eng=55,
+        font_size_eng=70,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
         pos=(text_x, text_y),
