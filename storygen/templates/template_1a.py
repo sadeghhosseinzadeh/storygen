@@ -169,7 +169,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         text=brand_text,
         font_path="GILSANUB.TTF",
         max_font_size=300,
-        max_width=800,
+        max_width= W-200,
         max_height=400,
         start_pos=(None, 550),
         fill=(255, 255, 255),
@@ -278,29 +278,25 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
                center_x=True)
 
     
-    
     # --- 6. Shop name ---
-    model_angle = 23 if direction == "left" else -23
-    # Base anchor under shoe
-    text_y = 1050   
-    if direction == "left":
-        text_x = 100    # shoe points left → text more to left
-    else:
-        text_x = 500      # shoe points right → text more to right
-
-
     if shop_name_en and shop_name_en.strip():
-        draw_text(
-            canvas,
-            text=shop_name_en,
-            font_path_eng="GILLUBCD.TTF",
-            font_size_eng=60,
-            font_path_per="A Mitra 04.ttf",
-            font_size_per=60,
-            pos=(text_x, 1500),
-            rotation=0,
-            fill=(255, 255, 255)
-        )
+        font_eng = load_font("GILLUBCD.TTF", 60)
+        bbox = font_eng.getbbox(shop_name_en)
+        text_w = bbox[2] - bbox[0]
+        text_h = bbox[3] - bbox[1]
+    
+        # Fixed anchor logic
+        if direction == "left":
+            # left side → keep 100px margin from left edge
+            text_x = 100
+        else:
+            # right side → keep 100px margin from right edge
+            text_x = W - text_w - 100
+    
+        text_y = 1500
+    
+        draw.text((text_x, text_y), shop_name_en, fill=(255, 255, 255), font=font_eng)
+    
 
     # --- 5. Model name  ---
     draw_text(
