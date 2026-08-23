@@ -567,11 +567,9 @@ def draw_scaled_text(
         # --- SINGLE LINE MODE ---
         if not allow_multiline:
             if w <= max_width and h <= max_height:
-
                 # Smart centering
                 x = start_pos[0] if start_pos[0] is not None else (canvas_w - w) // 2
                 y = start_pos[1] if start_pos[1] is not None else (canvas_h - h) // 2
-
                 draw.text((x, y), text, fill=fill, font=font)
                 return h, w, font
             else:
@@ -585,6 +583,10 @@ def draw_scaled_text(
             lines = [text]
             total_h = h
             max_line_w = w
+
+            # Extra safeguard: if single word still too wide, skip
+            if len(words) == 1 and max_line_w > max_width:
+                continue
         else:
             # Word wrapping
             lines = []
@@ -609,6 +611,10 @@ def draw_scaled_text(
 
             max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
 
+        # Final safeguard: reject if width still exceeds max
+        if max_line_w > max_width:
+            continue
+
         # Smart centering
         x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
         y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
@@ -624,6 +630,7 @@ def draw_scaled_text(
         return total_h, max_line_w, font
 
     return 0, 0, None
+
 
 # detect shoe direction
 def detect_shoe_direction(img):
