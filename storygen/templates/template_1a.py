@@ -8,7 +8,6 @@ import storygen
 from storygen.utils import (
     lighten_color,
     load_font,
-    place_shoe,
     remove_background,
     extract_colors,   
     draw_text,
@@ -16,7 +15,9 @@ from storygen.utils import (
     draw_sizes_box,
     add_brand_logo,
     add_user_logo,
-    protect_color
+    protect_color,
+    detect_shoe_direction,
+    place_shoe
 )
 
 def motion_blur(img, radius=25, angle=-30):
@@ -24,7 +25,119 @@ def motion_blur(img, radius=25, angle=-30):
     rotated = img.rotate(angle, expand=True)
     blurred = rotated.filter(ImageFilter.GaussianBlur(radius))
     return blurred.rotate(-angle, expand=True)
-    
+
+def place_shoe_mod(canvas, img, pos=None, max_size=(800,600),
+               angle_left=20, angle_right=-20,
+               center_x=True, center_y=False, shadow=True):
+    """
+    Smart version:
+    - Detects shoe direction (left/right)
+    - Uses angle_left for left-facing shoes
+    - Uses angle_right for right-facing shoes
+    """
+    W, H = canvas.size
+
+    # --- Resize shoe ---
+    sw, sh = img.size
+    max_w, max_h = max_size
+    ratio = min(max_w/sw, max_h/sh)
+    if ratio > 1:
+        ratio = min(max_w/sw, max_h/sh)
+
+    new_w, new_h = int(sw * ratio), int(sh * ratio)
+    shoe = img.resize((new_w, new_h), Image.LANCZOS)
+
+    # ============================================================
+    #  AUTO DIRECTION DETECTION
+    # ============================================================
+    direction = detect_shoe_direction(shoe)
+
+    if direction == "left":
+        final_angle = angle_left
+    else:
+        final_angle = angle_right
+
+    # ============================================================
+    #  MODE 1: OLD BEHAVIOR (final_angle == 0)
+    # ============================================================
+    if final_angle == 0:
+        if pos is None:
+            pos_x = (W - new_w) // 2 if center_x else 0
+            pos_y = (H - new_h) // 2 if center_y else 0
+        else:
+            pos_x, pos_y = pos
+            if center_x:
+                pos_x = (W - new_w) // 2
+            if center_y:
+                pos_y = (H - new_h) // 2
+
+        if shadow:
+            sh_img = shoe.convert("RGBA")
+            shadow_data = [(0,0,0,int(px[3]*0.5)) for px in sh_img.getdata()]
+            sh_img.putdata(shadow_data)
+            sh_img = sh_img.filter(ImageFilter.GaussianBlur(10))
+            canvas.paste(sh_img, (pos_x + 5, pos_y + 20), sh_img)
+
+        canvas.paste(shoe, (pos_x, pos_y), shoe)
+        return canvas
+
+    # ============================================================
+    #  MODE 2: NEW BEHAVIOR (final_angle != 0)
+    # ============================================================
+
+    # --- Find bottom-middle pixel ---
+    arr = np.array(shoe)
+    alpha = arr[:,:,3]
+
+    ys, xs = np.where(alpha > 0)
+    bottom_y = ys.max()
+    xs_bottom = xs[ys == bottom_y]
+    bottom_mid_x = int((xs_bottom.min() + xs_bottom.max()) / 2)
+
+    # --- Determine target Y ---
+    if pos is None:
+        target_y = (H // 2) if center_y else (H // 2)
+    else:
+        _, target_y = pos
+
+    # --- Initial placement BEFORE rotation ---
+    pos_x = (W - new_w) // 2 if center_x else 0
+    pos_y = target_y - bottom_y
+
+    # --- Rotate AFTER placement ---
+    rotated = shoe.rotate(final_angle, expand=True)
+    rw, rh = rotated.size
+
+    # Recompute bottom-middle after rotation
+    arr2 = np.array(rotated)
+    alpha2 = arr2[:,:,3]
+    ys2, xs2 = np.where(alpha2 > 0)
+    new_bottom_y = ys2.max()
+    xs2_bottom = xs2[ys2 == new_bottom_y]
+    new_bottom_mid_x = int((xs2_bottom.min() + xs2_bottom.max()) / 2)
+
+    # Re-anchor bottom-middle to target_y
+    pos_y = target_y - new_bottom_y
+
+    # Re-center horizontally
+    pos_x = (W - rw) // 2 if center_x else pos_x
+
+    shoe = rotated
+
+    # --- SHADOW ---
+    if shadow:
+        sh_img = shoe.convert("RGBA")
+        shadow_data = [(0,0,0,int(px[3]*0.5)) for px in sh_img.getdata()]
+        sh_img.putdata(shadow_data)
+        sh_img = sh_img.filter(ImageFilter.GaussianBlur(10))
+        canvas.paste(sh_img, (pos_x + 5, pos_y + 20), sh_img)
+
+    # --- Paste shoe ---
+    canvas.paste(shoe, (pos_x, pos_y), shoe)
+
+    return canvas
+
+
 
 def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     W, H = 1080, 1920
@@ -41,7 +154,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
     # --- 3. Background color ---
     # Lighten main color → protect from becoming white
-    bg = lighten_color(main_color, 0.35)
+    bg = lighten_color(main_color, 0.45)
     #bg = protect_color(lighten)
 
     canvas = Image.new("RGB", (W, H), bg)
@@ -57,7 +170,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         max_font_size=300,
         max_width=1000,
         max_height=400,
-        start_pos=(None, 200),
+        start_pos=(None, 550),
         fill=(255, 255, 255),
         allow_multiline=True
     )
@@ -71,7 +184,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         font_size_eng=55,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 350),
+        pos=(None, 750),
         rotation=22,
         fill=(255, 255, 255)
     )
@@ -108,7 +221,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
                center_x=False)
 
     place_shoe(canvas, blurred_photo_1,
-               pos=(1030, 1800),  
+               pos=(900, 1700),  
                max_size=(850, 600),
                angle=0,
                center_x=False)
@@ -169,10 +282,11 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         center_x=True
     )
 
-    place_shoe(canvas, photo_1_rem,
+    place_shoe_mod(canvas, photo_1_rem,
                pos=(None, 1360),  
                max_size=(850, 600),
-               angle=30,
+               angle_left=30,
+               angle_right=-30,
                center_x=True)
 
     return canvas
