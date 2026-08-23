@@ -288,9 +288,9 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     model_angle = 23 if direction == "left" else -23
     
     # Base anchor under shoe
-    text_y = 1200    # a bit under the shoe
+    text_y = 1000   
     if direction == "left":
-        text_x = W - 200     # shoe points left → text more to left
+        text_x = 500    # shoe points left → text more to left
     else:
         text_x = 200      # shoe points right → text more to right
     
@@ -298,7 +298,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         canvas,
         text=model_name,
         font_path_eng="GILLUBCD.TTF",
-        font_size_eng=70,
+        font_size_eng=75,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
         pos=(text_x, text_y),
