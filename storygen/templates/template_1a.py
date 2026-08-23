@@ -184,8 +184,8 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         font_size_eng=55,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 750),
-        rotation=22,
+        pos=(100, 1550),
+        rotation=0,
         fill=(255, 255, 255)
     )
 
@@ -238,12 +238,12 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     draw_sizes_box(
         canvas,
         sizes=sizes,
-        pos=(200, 1550),
+        pos=(700, 1550),
         show_box=True,
         max_height=None,
         min_height=None,
         title_font_size=55,
-        title_color=(220, 0, 0),
+        title_color=saturated_color,
         size_font_size=40,
         size_color=(0, 0, 0),
         spacing=5
@@ -254,8 +254,8 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     footer_main = "استعلام قیمت عدد"
     footer_number = f"({rand_num})"
 
-    base_x = 500
-    base_y = 1700
+    base_x = 400
+    base_y = 1730
 
     font_main = load_font("Homa.ttf", 45)
     font_num = load_font("Homa.ttf", 62)
@@ -271,7 +271,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     num_x = base_x + (main_w - num_w) // 2
     num_y = base_y + bbox_main[3] - bbox_main[1] + 10
 
-    draw.text((num_x, num_y), footer_number, fill=(220, 0, 0), font=font_num)
+    draw.text((num_x, num_y), footer_number, fill=saturated_color, font=font_num)
 
     # --- 9. User logo ---
     add_user_logo(
@@ -283,10 +283,10 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     )
 
     place_shoe_mod(canvas, photo_1_rem,
-               pos=(None, 1360),  
-               max_size=(850, 600),
-               angle_left=30,
-               angle_right=-30,
+               pos=(None, 1250),  
+               max_size=(950, 600),
+               angle_left=27,
+               angle_right=-27,
                center_x=True)
 
     return canvas
