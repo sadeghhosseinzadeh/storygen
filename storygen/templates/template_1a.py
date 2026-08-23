@@ -156,7 +156,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     # --- 3. Background color ---
     # Lighten main color → protect from becoming white
     lighten = lighten_color(main_color, 0.25)
-    bg = protect_color(lighten)
+    bg = protect_color(lighten, sat_boost=1.5, darken_factor=0.25, threshold=235))
 
     canvas = Image.new("RGB", (W, H), bg)
     draw = ImageDraw.Draw(canvas)
@@ -169,7 +169,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         text=brand_text,
         font_path="GILSANUB.TTF",
         max_font_size=300,
-        max_width=900,
+        max_width=500,
         max_height=400,
         start_pos=(None, 550),
         fill=(255, 255, 255),
