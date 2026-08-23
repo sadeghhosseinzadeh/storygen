@@ -155,8 +155,8 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
     # --- 3. Background color ---
     # Lighten main color → protect from becoming white
-    bg = lighten_color(main_color, 0.45)
-    #bg = protect_color(lighten)
+    lighten = lighten_color(main_color, 0.25)
+    bg = protect_color(lighten)
 
     canvas = Image.new("RGB", (W, H), bg)
     draw = ImageDraw.Draw(canvas)
@@ -169,7 +169,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         text=brand_text,
         font_path="GILSANUB.TTF",
         max_font_size=300,
-        max_width=1000,
+        max_width=900,
         max_height=400,
         start_pos=(None, 550),
         fill=(255, 255, 255),
@@ -288,11 +288,11 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     model_angle = 23 if direction == "left" else -23
     
     # Base anchor under shoe
-    text_y = 1255    # a bit under the shoe
+    text_y = 1200    # a bit under the shoe
     if direction == "left":
-        text_x = 200      # shoe points left → text more to left
+        text_x = W - 200     # shoe points left → text more to left
     else:
-        text_x = W - 200      # shoe points right → text more to right
+        text_x = 200      # shoe points right → text more to right
     
     draw_text(
         canvas,
