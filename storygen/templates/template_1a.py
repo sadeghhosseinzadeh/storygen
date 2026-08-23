@@ -155,8 +155,8 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
     # --- 3. Background color ---
     # Lighten main color → protect from becoming white
-    lighten = lighten_color(main_color, 0.25)
-    bg = protect_color(lighten, sat_boost=1.5, darken_factor=0.25, threshold=235)
+    lighten = lighten_color(main_color, 0.75)
+    bg = protect_color(lighten, sat_boost=1.5, darken_factor=0.25, threshold=230)
 
     canvas = Image.new("RGB", (W, H), bg)
     draw = ImageDraw.Draw(canvas)
