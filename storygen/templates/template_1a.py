@@ -178,20 +178,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
 
 
-    # --- 6. Shop name ---
-    if shop_name_en and shop_name_en.strip():
-        draw_text(
-            canvas,
-            text=shop_name_en,
-            font_path_eng="GILLUBCD.TTF",
-            font_size_eng=50,
-            font_path_per="A Mitra 04.ttf",
-            font_size_per=60,
-            pos=(100, 470),
-            rotation=0,
-            fill=(255, 255, 255)
-        )
-
+    
 
     place_shoe(canvas, blurred_photo_1,
                pos=(1, 220),  
@@ -290,16 +277,32 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
                angle_right=-23,
                center_x=True)
 
-    # --- 5. Model name (attached to shoe) ---
-    model_angle = 23 if direction == "left" else -23
     
+    
+    # --- 6. Shop name ---
+    model_angle = 23 if direction == "left" else -23
     # Base anchor under shoe
     text_y = 1050   
     if direction == "left":
         text_x = 500    # shoe points left → text more to left
     else:
         text_x = 100      # shoe points right → text more to right
-    
+
+
+    if shop_name_en and shop_name_en.strip():
+        draw_text(
+            canvas,
+            text=shop_name_en,
+            font_path_eng="GILLUBCD.TTF",
+            font_size_eng=60,
+            font_path_per="A Mitra 04.ttf",
+            font_size_per=60,
+            pos=(text_x, 470),
+            rotation=0,
+            fill=(255, 255, 255)
+        )
+
+    # --- 5. Model name  ---
     draw_text(
         canvas,
         text=model_name,
@@ -307,7 +310,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         font_size_eng=75,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(text_x, text_y),
+        pos=(100, 470),
         rotation=model_angle,
         fill=(255, 255, 255)
     )
