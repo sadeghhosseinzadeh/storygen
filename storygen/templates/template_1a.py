@@ -37,7 +37,7 @@ def draw_sizes_box2(
     min_height=None,
     title_text="Size:",
     title_font_path="Segoe.UI.Semibold_p30download.com.ttf",
-    title_font_size=60,
+    title_font_size=55,
     title_color=(220,0,0),
     size_font_path="Segoe.UI.Semibold_p30download.com.ttf",
     size_font_size=45,
@@ -325,11 +325,11 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         box_radius=18,
         max_height=None,
         min_height=None,
-        title_font_size=55,
-        title_color=(0, 0, 0),
+        title_font_size=50,
+        title_color=(220, 0, 0),
         size_font_size=40,
         size_color=(0, 0, 0),
-        spacing=15,
+        spacing=10,
         padding_x=40,
         padding_y=30
     )
