@@ -47,26 +47,26 @@ def motion_blur(img, distance=140, angle=-30, steps=20):
 
     # draw trailing ghosts
     for i in range(steps, 0, -1):
-
+    
         t = i / steps
-
+    
         offset_x = int(dx * distance * t)
         offset_y = int(dy * distance * t)
-
+    
         ghost = img.copy()
-
+    
         alpha = ghost.getchannel("A")
         alpha = alpha.point(
-            lambda p: int(p * (0.03 + 0.25 * (1 - t)))
+            lambda p: int(p * (0.25 + 0.75 * (1 - t)))
         )
         ghost.putalpha(alpha)
-
+    
         ghost = ghost.filter(
             ImageFilter.GaussianBlur(
-                radius=(1 - t) * 10
+                radius=(1 - t) * 2
             )
         )
-
+    
         canvas.paste(
             ghost,
             (cx - offset_x, cy - offset_y),
