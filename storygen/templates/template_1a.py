@@ -340,7 +340,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     place_shoe(
         canvas,
         blurred_bottom,
-        pos=(700, 1500),
+        pos=(900, 1700),
         max_size=(850, 600),
         angle=-15,
         center_x=False,
