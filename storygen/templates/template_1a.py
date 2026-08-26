@@ -20,11 +20,65 @@ from storygen.utils import (
     place_shoe
 )
 
-def motion_blur(img, radius=25, angle=-30):
-    # Rotate → blur → rotate back
-    rotated = img.rotate(angle, expand=True)
-    blurred = rotated.filter(ImageFilter.GaussianBlur(radius))
-    return blurred.rotate(-angle, expand=True)
+def motion_blur(img, distance=140, angle=-30, steps=20):
+    """
+    Real directional motion blur.
+    Creates multiple fading copies along a vector.
+    Much closer to sports-ad motion blur.
+    """
+
+    img = img.convert("RGBA")
+
+    w, h = img.size
+
+    canvas = Image.new(
+        "RGBA",
+        (w + distance * 2, h + distance * 2),
+        (0, 0, 0, 0)
+    )
+
+    cx = distance
+    cy = distance
+
+    theta = np.radians(angle)
+
+    dx = np.cos(theta)
+    dy = np.sin(theta)
+
+    # draw trailing ghosts
+    for i in range(steps, 0, -1):
+
+        t = i / steps
+
+        offset_x = int(dx * distance * t)
+        offset_y = int(dy * distance * t)
+
+        ghost = img.copy()
+
+        alpha = ghost.getchannel("A")
+        alpha = alpha.point(
+            lambda p: int(p * (0.03 + 0.25 * (1 - t)))
+        )
+        ghost.putalpha(alpha)
+
+        ghost = ghost.filter(
+            ImageFilter.GaussianBlur(
+                radius=(1 - t) * 10
+            )
+        )
+
+        canvas.paste(
+            ghost,
+            (cx - offset_x, cy - offset_y),
+            ghost
+        )
+
+    # sharp main shoe
+    canvas.paste(img, (cx, cy), img)
+
+    bbox = canvas.getbbox()
+
+    return canvas.crop(bbox)
 
 def draw_sizes_box2(
     canvas,
@@ -243,7 +297,16 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
     # --- 1. Remove background ---
     photo_1_rem = remove_background(photo_1)
-    blurred_photo_1 = motion_blur(photo_1_rem, radius=25, angle=-30)
+    blurred_photo_1 = motion_blur(
+    photo_1_rem,
+    distance=220,
+    angle=160,
+    steps=30)
+    blurred_photo_2 = motion_blur(
+    photo_1_rem,
+    distance=220,
+    angle=-20,
+    steps=30)
     direction = detect_shoe_direction(photo_1_rem)
     
     # --- 2. Extract colors (safe version) ---
@@ -285,7 +348,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         blurred_top = blurred_top.transpose(Image.FLIP_LEFT_RIGHT)
     
     # Bottom shoe (always RIGHT)
-    blurred_bottom = blurred_photo_1
+    blurred_bottom = blurred_photo_2
     if direction != "right":
         blurred_bottom = blurred_bottom.transpose(Image.FLIP_LEFT_RIGHT)
     
