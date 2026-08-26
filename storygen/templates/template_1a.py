@@ -331,20 +331,20 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     place_shoe(
         canvas,
         blurred_top,
-        pos=(1, 220),
+        pos=(-300, 240),
         max_size=(850, 600),
         angle=-25,
-        center_x=False
-    )
+        center_x=False,
+        shadow=False)
     
     place_shoe(
         canvas,
         blurred_bottom,
         pos=(700, 1500),
         max_size=(850, 600),
-        angle=0,
-        center_x=False
-    )
+        angle=15,
+        center_x=False,
+        shadow=False)
     
     # --- 6.5 Dotted overlay PNG ---
 
