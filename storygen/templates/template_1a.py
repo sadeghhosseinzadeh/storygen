@@ -275,21 +275,37 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         allow_multiline=True
     )
 
-
-
     
-
-    place_shoe(canvas, blurred_photo_1,
-               pos=(1, 220),  
-               max_size=(850, 600),
-               angle=-25,
-               center_x=False)
-
-    place_shoe(canvas, blurred_photo_1,
-               pos=(900, 1700),  
-               max_size=(850, 600),
-               angle=0,
-               center_x=False)
+    # Force top shoe LEFT and bottom shoe RIGHT
+    # --------------------------------------------------
+    
+    # Top shoe (always LEFT)
+    blurred_top = blurred_photo_1
+    if direction != "left":
+        blurred_top = blurred_top.transpose(Image.FLIP_LEFT_RIGHT)
+    
+    # Bottom shoe (always RIGHT)
+    blurred_bottom = blurred_photo_1
+    if direction != "right":
+        blurred_bottom = blurred_bottom.transpose(Image.FLIP_LEFT_RIGHT)
+    
+    place_shoe(
+        canvas,
+        blurred_top,
+        pos=(1, 220),
+        max_size=(850, 600),
+        angle=-25,
+        center_x=False
+    )
+    
+    place_shoe(
+        canvas,
+        blurred_bottom,
+        pos=(700, 1500),
+        max_size=(850, 600),
+        angle=0,
+        center_x=False
+    )
     
     # --- 6.5 Dotted overlay PNG ---
 
