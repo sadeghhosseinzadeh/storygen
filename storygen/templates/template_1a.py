@@ -340,7 +340,8 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         blurred_top,
         pos=(-200, 240),
         max_size=(850, 600),
-        angle_left=-25, angle_right=-25
+        angle_left=-25,
+        angle_right=-25,
         center_x=False,
         center_y=False,
         shadow=False)
@@ -355,10 +356,6 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         center_x=False,
         center_y=False,
         shadow=False)
-
-    (canvas, img, pos=None, max_size=(800,600),
-               angle_left=20, angle_right=-20,
-               center_x=True, center_y=False, shadow=True)
 
     # --- 6.5 Dotted overlay PNG ---
 
