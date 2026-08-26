@@ -335,24 +335,31 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     if direction != "right":
         blurred_bottom = blurred_bottom.transpose(Image.FLIP_LEFT_RIGHT)
     
-    place_shoe(
+    place_shoe_mod(
         canvas,
         blurred_top,
         pos=(-200, 240),
         max_size=(850, 600),
-        angle=-25,
+        angle_left=-25, angle_right=-25
         center_x=False,
+        center_y=False,
         shadow=False)
     
-    place_shoe(
+    place_shoe_mod(
         canvas,
         blurred_bottom,
         pos=(900, 1700),
         max_size=(850, 600),
-        angle=-15,
+        angle_left=-15,
+        angle_right=-15,
         center_x=False,
+        center_y=False,
         shadow=False)
-    
+
+    (canvas, img, pos=None, max_size=(800,600),
+               angle_left=20, angle_right=-20,
+               center_x=True, center_y=False, shadow=True)
+
     # --- 6.5 Dotted overlay PNG ---
 
     package_root = Path(storygen.__file__).parent
