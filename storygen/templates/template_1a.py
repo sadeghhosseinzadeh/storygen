@@ -222,14 +222,20 @@ def place_shoe_mod(canvas, img, pos=None, max_size=(800,600),
     xs_bottom = xs[ys == bottom_y]
     bottom_mid_x = int((xs_bottom.min() + xs_bottom.max()) / 2)
 
-    # --- Determine target Y ---
+    # --- Determine target position ---
     if pos is None:
+        pos_x = (W - new_w) // 2 if center_x else 0
         target_y = (H // 2) if center_y else (H // 2)
     else:
-        _, target_y = pos
+        user_x, target_y = pos
+    
+        if center_x:
+            pos_x = (W - new_w) // 2
+        else:
+            pos_x = user_x
 
+    
     # --- Initial placement BEFORE rotation ---
-    pos_x = (W - new_w) // 2 if center_x else 0
     pos_y = target_y - bottom_y
 
     # --- Rotate AFTER placement ---
@@ -247,8 +253,9 @@ def place_shoe_mod(canvas, img, pos=None, max_size=(800,600),
     # Re-anchor bottom-middle to target_y
     pos_y = target_y - new_bottom_y
 
-    # Re-center horizontally
-    pos_x = (W - rw) // 2 if center_x else pos_x
+    # Re-center horizontally only when requested
+    if center_x:
+        pos_x = (W - rw) // 2
 
     shoe = rotated
 
