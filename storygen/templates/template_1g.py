@@ -268,35 +268,39 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # Footer Text
     # -------------------------
     rand_num = random.randint(100, 999)
-
-    footer_text = (
-        f"برای اطلاعات بیشتر، {rand_num} رو دایرکت کن"
-    )
-
+    
+    footer_text = f"برای اطلاعات بیشتر، {rand_num} رو دایرکت کن"
+    
+    if not is_left:
+        footer_angle = -31
+        footer_pos = (10, 1370)
+    else:
+        footer_angle = 31
+        footer_pos = (150, 1180)
+    
     temp_img = Image.new(
         "RGBA",
         (W, H),
         (255, 255, 255, 0)
     )
-
+    
     temp_draw = ImageDraw.Draw(temp_img)
-
+    
     temp_draw.text(
-        (10, 1370),
+        footer_pos,
         footer_text,
         fill=rect_color,
         font=font_fid
     )
-
+    
     rotated_text = temp_img.rotate(
         footer_angle,
         expand=True
     )
-
+    
     canvas.paste(
         rotated_text,
         (0, 0),
         rotated_text
     )
-
     return canvas
