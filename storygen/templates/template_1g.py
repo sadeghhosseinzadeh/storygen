@@ -126,11 +126,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         ]
 
         logo_pos = (720, 1550)
-
         sizes_box_x = 60
-
         shoe_angle = -30
-
         footer_angle = -31
 
     else:
@@ -139,9 +136,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
 
         bottom_shape_points = [
             (0, H),
-            (W, H),
             (0, H - 300),
-            (W, H - 950)
+            (W, H - 950),
+            (W, H)
         ]
 
         logo_pos = (160, 1550)
