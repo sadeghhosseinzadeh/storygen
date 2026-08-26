@@ -276,7 +276,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         footer_pos = (10, 1370)
     else:
         footer_angle = 31
-        footer_pos = (w-10, 1070)
+        footer_pos = (W-10, 1070)
     
     temp_img = Image.new(
         "RGBA",
