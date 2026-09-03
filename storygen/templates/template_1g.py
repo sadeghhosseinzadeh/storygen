@@ -24,7 +24,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # -------------------------
     photo_1_rem = remove_background(photo_1)
 
-    main_color, second_color, saturated_color = extract_colors(photo_1_rem)
+    main_color, second_color, saturated_color = extract_colors(photo_1_rem, include_saturated=True)
 
     bg = lighten_color(main_color, 0.15)
 
