@@ -140,7 +140,7 @@ def draw_sizes_box2(
 
     # Draw title
     title_x = center_x - title_w // 2
-    title_y = y1 + padding_y + TITLE_OFFSET_Y + 60
+    title_y = y1 + padding_y + TITLE_OFFSET_Y
     draw.text((title_x, title_y), title_text, fill=title_color, font=font_title)
 
     # Draw sizes
@@ -404,7 +404,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         title_color=(220, 0, 0),
         size_font_size=40,
         size_color=(0, 0, 0),
-        spacing=10,
+        spacing=40,
         padding_x=40,
         padding_y=30
     )
