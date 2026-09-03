@@ -144,7 +144,9 @@ def draw_sizes_box2(
     draw.text((title_x, title_y), title_text, fill=title_color, font=font_title)
 
     # Draw sizes
-    current_y = title_y + title_h + spacing
+    EXTRA_TITLE_GAP = 20
+    current_y = title_y + title_h + EXTRA_TITLE_GAP
+
     for s in sizes:
         b = font_size.getbbox(s)
         sw = b[2] - b[0]
@@ -152,6 +154,7 @@ def draw_sizes_box2(
         sx = center_x - sw // 2
         draw.text((sx, current_y + SIZE_OFFSET_Y), s, fill=size_color, font=font_size)
         current_y += sh + spacing
+
 
 
 def place_shoe_mod(canvas, img, pos=None, max_size=(800,600),
@@ -404,7 +407,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         title_color=(220, 0, 0),
         size_font_size=40,
         size_color=(0, 0, 0),
-        spacing=40,
+        spacing=10,
         padding_x=40,
         padding_y=30
     )
