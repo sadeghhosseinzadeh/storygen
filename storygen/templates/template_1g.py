@@ -24,7 +24,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # -------------------------
     photo_1_rem = remove_background(photo_1)
 
-    main_color, second_color = extract_colors(photo_1_rem)
+    main_color, second_color, saturated_color = extract_colors(photo_1_rem)
 
     bg = lighten_color(main_color, 0.15)
 
@@ -155,7 +155,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # -------------------------
     draw.polygon(
         bottom_shape_points,
-        fill=second_color
+        fill=saturated_color
     )
 
     # -------------------------
@@ -188,9 +188,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # Sizes Box
     # -------------------------
     if is_left:
-        sizes_pos = (W - 350, 1550)   # right side
+        sizes_pos = (W - 200, 1550)   # right side
     else:
-        sizes_pos = (350, 1550)       # left side
+        sizes_pos = (200, 1550)       # left side
 
     draw_sizes_box(
         canvas,
