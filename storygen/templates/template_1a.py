@@ -72,7 +72,7 @@ def draw_sizes_box2(
     size_font_size=45,
     size_color=(0,0,0),
     padding_x=40,
-    padding_y=30,
+    padding_y=20,
     spacing=10
 ):
     # Skip if no sizes
@@ -144,7 +144,7 @@ def draw_sizes_box2(
     draw.text((title_x, title_y), title_text, fill=title_color, font=font_title)
 
     # Draw sizes
-    EXTRA_TITLE_GAP = 20
+    EXTRA_TITLE_GAP = 50
     current_y = title_y + title_h + EXTRA_TITLE_GAP
 
     for s in sizes:
