@@ -46,7 +46,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     font_bid = load_font("Segoe.UI.Bold_p30download.com.ttf", 60)
     font_brand = load_font("Segoe.UI.Semibold_p30download.com.ttf", 50)
 
-    text_color = main_color
+    text_color = saturated_color
 
     # -------------------------
     # Brand Name
@@ -76,7 +76,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     draw.text(
         (brand_x, 240),
         brand_text,
-        fill=second_color,
+        fill=saturated_color,
         font=font_big
     )
 
@@ -91,7 +91,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     draw.text(
         (model_x, 570),
         model_name,
-        fill=second_color,
+        fill=saturated_color,
         font=font_bid
     )
 
@@ -108,7 +108,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         draw.text(
             (shop_name_en_x, 645),
             shop_name_en,
-            fill=second_color,
+            fill=saturated_color,
             font=font_brand
         )
 
@@ -167,7 +167,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         variant=2,
         mode=0,
         pos=logo_pos,
-        color=main_color,
+        color=bg,
         max_size=(200, 200)
     )
 
@@ -178,7 +178,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         canvas,
         photo_1_rem,
         pos=(None, 1360),
-        max_size=(850, 600),
+        max_size=(860, 600),
         angle=shoe_angle,
         center_x=True
     )
@@ -188,9 +188,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # Sizes Box
     # -------------------------
     if is_left:
-        sizes_pos = (W - 200, 1550)   # right side
+        sizes_pos = (W - 300, 1550)   # right side
     else:
-        sizes_pos = (200, 1550)       # left side
+        sizes_pos = (300, 1550)       # left side
 
     draw_sizes_box(
         canvas,
@@ -198,7 +198,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         show_box=True,
         box_color=bg,
         pos=sizes_pos,            
-        max_height=200,
+        max_height=800,
         min_height=None,
         title_font_size=60,
         title_color=(220,0,0),
@@ -219,7 +219,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         footer_pos = (10, 1370)
     else:
         footer_angle = 31
-        footer_pos = (10, 1070)
+        footer_pos = (-20, 1070)
     
     temp_img = Image.new(
         "RGBA",
