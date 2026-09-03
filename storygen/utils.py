@@ -652,3 +652,135 @@ def detect_shoe_direction(img):
         return "left"
     else:
         return "right"
+
+
+
+def draw_sizes_box3(
+    canvas,
+    sizes,
+    pos=None,
+    show_box=True,
+    box_color=None,
+    box_radius=15,
+
+    # Size limits
+    max_height=None,
+    min_height=None,
+
+    # Title
+    title_text="Size:",
+    title_font_path="Segoe.UI.Semibold_p30download.com.ttf",
+    title_font_size=55,
+    title_color=(220,0,0),
+
+    # Sizes
+    size_font_path="Segoe.UI.Semibold_p30download.com.ttf",
+    size_font_size=45,
+    size_color=(0,0,0),
+
+    # Padding controls
+    padding_left=40,
+    padding_right=40,
+    padding_top=30,
+    padding_bottom=30,
+
+    # Spacing controls
+    gap_title_to_sizes=30,   # space under "Size:"
+    spacing=10,              # space between sizes
+
+    # Auto shrink settings
+    max_sizes_before_shrink=7,
+    min_size_font=30
+):
+    if not sizes:
+        return
+
+    # Normalize sizes input
+    if isinstance(sizes, str):
+        sizes = [s.strip() for s in sizes.split(",") if s.strip()]
+
+    draw = ImageDraw.Draw(canvas)
+    W, H = canvas.size
+
+    # Load fonts
+    font_title = load_font(title_font_path, title_font_size)
+    font_size = load_font(size_font_path, size_font_size)
+
+    # Baseline correction
+    TITLE_OFFSET_Y = -6
+    SIZE_OFFSET_Y = -4
+
+    # Measure title
+    bbox_title = font_title.getbbox(title_text)
+    title_w = bbox_title[2] - bbox_title[0]
+    title_h = bbox_title[3] - bbox_title[1]
+
+    # Measure sizes
+    def measure_sizes(font):
+        heights = []
+        widths = []
+        for s in sizes:
+            b = font.getbbox(s)
+            widths.append(b[2] - b[0])
+            heights.append(b[3] - b[1])
+        return widths, heights
+
+    size_widths, size_heights = measure_sizes(font_size)
+
+    # Auto shrink if too many sizes
+    if len(sizes) > max_sizes_before_shrink:
+        while len(sizes) > max_sizes_before_shrink and size_font_size > min_size_font:
+            size_font_size -= 2
+            font_size = load_font(size_font_path, size_font_size)
+            size_widths, size_heights = measure_sizes(font_size)
+
+    # Total height
+    total_sizes_h = sum(size_heights) + spacing * (len(sizes) - 1)
+
+    block_w = max(title_w, max(size_widths)) + padding_left + padding_right
+    block_h = (
+        padding_top +
+        title_h +
+        gap_title_to_sizes +
+        total_sizes_h +
+        padding_bottom
+    )
+
+    # Apply height limits
+    if max_height and block_h > max_height:
+        block_h = max_height
+    if min_height and block_h < min_height:
+        block_h = min_height
+
+    # Position
+    if pos is None:
+        center_x = W // 2
+        center_y = H // 2
+    else:
+        center_x, center_y = pos
+
+    x1 = center_x - block_w // 2
+    y1 = center_y - block_h // 2
+    x2 = x1 + block_w
+    y2 = y1 + block_h
+
+    # Draw box
+    if show_box:
+        if box_color is None:
+            box_color = (240, 240, 240)
+        draw.rounded_rectangle([x1, y1, x2, y2], radius=box_radius, fill=box_color)
+
+    # Draw title
+    title_x = x1 + (block_w - title_w) // 2
+    title_y = y1 + padding_top + TITLE_OFFSET_Y
+    draw.text((title_x, title_y), title_text, fill=title_color, font=font_title)
+
+    # Draw sizes
+    current_y = title_y + title_h + gap_title_to_sizes
+    for s in sizes:
+        b = font_size.getbbox(s)
+        sw = b[2] - b[0]
+        sh = b[3] - b[1]
+        sx = x1 + (block_w - sw) // 2
+        draw.text((sx, current_y + SIZE_OFFSET_Y), s, fill=size_color, font=font_size)
+        current_y += sh + spacing
