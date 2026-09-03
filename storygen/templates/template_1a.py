@@ -395,21 +395,27 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     else:
         sizes_pos = (300, 1500)   # shoe points right → box on left
     
-    draw_sizes_box2(
+    draw_sizes_box3(
         canvas,
         sizes=sizes,
         pos=sizes_pos,
         show_box=True,
         box_radius=18,
-        max_height=None,
+        max_height=700,
         min_height=None,
         title_font_size=50,
         title_color=(220, 0, 0),
         size_font_size=40,
         size_color=(0, 0, 0),
-        spacing=10,
-        padding_x=40,
-        padding_y=40
+
+        padding_left=40,
+        padding_right=40,
+        padding_top=30,
+        padding_bottom=30,
+        gap_title_to_sizes=30,  # space under "Size:" 
+        spacing=10,              # space between sizes
+        max_sizes_before_shrink=8,
+        min_size_font=25
     )
 
     
