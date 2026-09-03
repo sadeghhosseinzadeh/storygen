@@ -198,7 +198,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         show_box=True,
         box_color=bg,
         pos=sizes_pos,            
-        max_height=None,
+        max_height=200,
         min_height=None,
         title_font_size=60,
         title_color=(220,0,0),
