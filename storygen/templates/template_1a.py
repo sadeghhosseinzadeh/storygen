@@ -357,6 +357,15 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         center_y=False,
         shadow=False)
 
+        # --- 9. User logo ---
+    add_user_logo(
+        canvas,
+        logo_path=logo,
+        pos=(100, 190),
+        max_size=(180, 180),
+        center_x=True
+    )
+    
     # --- 6.5 Dotted overlay PNG ---
 
     package_root = Path(storygen.__file__).parent
@@ -426,14 +435,6 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
     draw.text((num_x, num_y), footer_number, fill=(0,0,0), font=font_num)
 
-    # --- 9. User logo ---
-    add_user_logo(
-        canvas,
-        logo_path=logo,
-        pos=(None, 1300),
-        max_size=(180, 180),
-        center_x=True
-    )
 
     place_shoe_mod(canvas, photo_1_rem,
                pos=(None, 1250),  
