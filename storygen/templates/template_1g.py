@@ -242,6 +242,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     draw_sizes_box(
         canvas,
         sizes=sizes,
+        box_color=bg,
         pos=(350, 1550),            
         show_box=False,
         max_height=None,
