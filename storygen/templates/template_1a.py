@@ -140,7 +140,7 @@ def draw_sizes_box2(
 
     # Draw title
     title_x = center_x - title_w // 2
-    title_y = y1 + padding_y + TITLE_OFFSET_Y
+    title_y = y1 + padding_y + TITLE_OFFSET_Y + 60
     draw.text((title_x, title_y), title_text, fill=title_color, font=font_title)
 
     # Draw sizes
@@ -363,7 +363,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         logo_path=logo,
         pos=(100, 190),
         max_size=(180, 180),
-        center_x=True
+        center_x=False
     )
     
     # --- 6.5 Dotted overlay PNG ---
