@@ -10,7 +10,8 @@ from storygen.utils import (
     remove_background,
     extract_colors,
     add_brand_logo,
-    detect_shoe_direction)
+    detect_shoe_direction,
+    draw_sizes_box)
 
 
 
@@ -181,89 +182,75 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         angle=shoe_angle,
         center_x=True
     )
+    # # -------------------------
+    # # Sizes Box
+    # # -------------------------
+    # if sizes:
+    #     if isinstance(sizes, str):
+    #         sizes = [
+    #             s.strip()
+    #             for s in sizes.split(",")
+    #             if s.strip()]
+    #     rect_w = 350
+    #     rect_x1 = sizes_box_x
+    #     rect_y1 = 1550
+    #     rect_color = lighten_color(main_color, 0.15)
+    #     title_text = "Size:"
+    #     bbox = font_mid.getbbox(title_text)
+    #     title_w = bbox[2] - bbox[0]
+    #     title_h = bbox[3] - bbox[1]
+    #     line_spacing = 10
+    #     sizes_heights = [
+    #         font_mid.getbbox(s)[3] -
+    #         font_mid.getbbox(s)[1]
+    #         for s in sizes]
+    #     total_text_h = (
+    #         title_h
+    #         + sum(sizes_heights)
+    #         + line_spacing * (len(sizes) - 1)
+    #     )
+    #     rect_h = total_text_h + 80
+    #     rect_x2 = rect_x1 + rect_w
+    #     rect_y2 = rect_y1 + rect_h
+    #     draw.rounded_rectangle(
+    #         [rect_x1, rect_y1, rect_x2, rect_y2],
+    #         radius=15,
+    #         fill=rect_color)
+    #     title_x = rect_x1 + (rect_w - title_w) // 2
+    #     title_y = rect_y1 + 20
+    #     draw.text(
+    #         (title_x, title_y),
+    #         title_text,
+    #         fill=second_color,
+    #         font=font_mid)
 
-    # -------------------------
-    # Sizes Box
-    # -------------------------
-    if sizes:
+    #     current_y = title_y + title_h + 20
+    #     for size in sizes:
+    #         bbox = font_mid.getbbox(size)
+    #         size_w = bbox[2] - bbox[0]
+    #         size_h = bbox[3] - bbox[1]
+    #         size_x = rect_x1 + (rect_w - size_w) // 2
+    #         draw.text(
+    #             (size_x, current_y),
+    #             size,
+    #             fill=second_color,
+    #             font=font_mid)
+    #         current_y += size_h + line_spacing
 
-        if isinstance(sizes, str):
-            sizes = [
-                s.strip()
-                for s in sizes.split(",")
-                if s.strip()
-            ]
-
-        rect_w = 350
-
-        rect_x1 = sizes_box_x
-        rect_y1 = 1550
-
-        rect_color = lighten_color(main_color, 0.15)
-
-        title_text = "Size:"
-
-        bbox = font_mid.getbbox(title_text)
-
-        title_w = bbox[2] - bbox[0]
-        title_h = bbox[3] - bbox[1]
-
-        line_spacing = 10
-
-        sizes_heights = [
-            font_mid.getbbox(s)[3] -
-            font_mid.getbbox(s)[1]
-            for s in sizes
-        ]
-
-        total_text_h = (
-            title_h
-            + sum(sizes_heights)
-            + line_spacing * (len(sizes) - 1)
-        )
-
-        rect_h = total_text_h + 80
-
-        rect_x2 = rect_x1 + rect_w
-        rect_y2 = rect_y1 + rect_h
-
-        draw.rounded_rectangle(
-            [rect_x1, rect_y1, rect_x2, rect_y2],
-            radius=15,
-            fill=rect_color
-        )
-
-        title_x = rect_x1 + (rect_w - title_w) // 2
-
-        title_y = rect_y1 + 20
-
-        draw.text(
-            (title_x, title_y),
-            title_text,
-            fill=second_color,
-            font=font_mid
-        )
-
-        current_y = title_y + title_h + 20
-
-        for size in sizes:
-
-            bbox = font_mid.getbbox(size)
-
-            size_w = bbox[2] - bbox[0]
-            size_h = bbox[3] - bbox[1]
-
-            size_x = rect_x1 + (rect_w - size_w) // 2
-
-            draw.text(
-                (size_x, current_y),
-                size,
-                fill=second_color,
-                font=font_mid
-            )
-
-            current_y += size_h + line_spacing
-
+    # --- 7. Sizes box ---
+    draw_sizes_box(
+        canvas,
+        sizes=sizes,
+        pos=(350, 1550),            
+        show_box=False,
+        max_height=None,
+        min_height=None,
+        title_font_size=60,
+        title_color=(220,0,0),
+        size_font_size=45,
+        size_color=(0,0,0),
+        spacing=15 )
+    
     # -------------------------
     # Footer Text
     # -------------------------
