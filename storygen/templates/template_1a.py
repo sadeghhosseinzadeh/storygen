@@ -12,7 +12,7 @@ from storygen.utils import (
     extract_colors,   
     draw_text,
     draw_scaled_text,
-    draw_sizes_box,
+    draw_sizes_box3,
     add_brand_logo,
     add_user_logo,
     protect_color,
