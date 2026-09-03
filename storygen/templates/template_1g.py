@@ -43,8 +43,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # -------------------------
     font_mid = load_font("Segoe.UI_p30download.com.ttf", 35)
     font_fid = load_font("Homa.ttf", 38)
-    font_bid = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)
-    font_brand = load_font("Segoe.UI.Semibold_p30download.com.ttf", 55)
+    font_bid = load_font("Segoe.UI.Bold_p30download.com.ttf", 60)
+    font_brand = load_font("Segoe.UI.Semibold_p30download.com.ttf", 50)
 
     text_color = main_color
 
