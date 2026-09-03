@@ -182,6 +182,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         angle=shoe_angle,
         center_x=True
     )
+    rect_color = lighten_color(main_color, 0.15)
     # # -------------------------
     # # Sizes Box
     # # -------------------------
