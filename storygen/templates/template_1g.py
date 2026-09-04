@@ -208,64 +208,64 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         max_sizes_before_shrink=8,
         min_size_font=25)
 
-        # -------------------------
-        # Footer Text (single line, RTL correct + aligned)
-        # -------------------------
-        rand_num = random.randint(100, 999)
-        footer_main = "استعلام قیمت عدد"
-        footer_number = f"({to_english_digits(str(rand_num))})"
         
-        # Colors
-        main_color_footer = rect_color
-        number_color_footer = (255, 140, 0)   # orange
-        
-        # Fonts
-        font_main = load_font("Homa.ttf", 45)                          # Persian font
-        font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 50)  # English font
-        
-        # Measure both parts
-        bbox_main = font_main.getbbox(footer_main)
-        main_w = bbox_main[2] - bbox_main[0]
-        main_h = bbox_main[3] - bbox_main[1]
-        
-        bbox_num = font_num.getbbox(footer_number)
-        num_w = bbox_num[2] - bbox_num[0]
-        num_h = bbox_num[3] - bbox_num[1]
-        
-        # Vertical alignment: match centers
-        max_h = max(main_h, num_h)
-        main_y = (max_h - main_h) // 2
-        num_y  = (max_h - num_h) // 2
-        
-        # RTL order: number first, then Persian text
-        total_w = num_w + 20 + main_w
-        
-        # Extra bottom padding to prevent clipping
-        BOTTOM_PAD = 12
-        
-        temp_img = Image.new("RGBA", (total_w + 20, max_h + 20 + BOTTOM_PAD), (0,0,0,0))
-        temp_draw = ImageDraw.Draw(temp_img)
-        
-        # Draw number (right side in RTL)
-        num_x = 10
-        temp_draw.text((num_x, num_y), footer_number, fill=number_color_footer, font=font_num)
-        
-        # Draw Persian text (left side in RTL)
-        main_x = num_x + num_w + 20
-        temp_draw.text((main_x, main_y), footer_main, fill=main_color_footer, font=font_main)
-        
-        # Rotation logic
-        if not is_left:
-            footer_angle = -31
-            footer_pos = (200, 1070)
-        else:
-            footer_angle = 31
-            footer_pos = (200, 1070)
-        
-        rotated_text = temp_img.rotate(footer_angle, expand=True)
-        
-        canvas.paste(rotated_text, footer_pos, rotated_text)
-
+    # -------------------------
+    # Footer Text (single line, RTL correct + aligned)
+    # -------------------------
+    rand_num = random.randint(100, 999)
+    footer_main = "استعلام قیمت عدد"
+    footer_number = f"({to_english_digits(str(rand_num))})"
+    
+    # Colors
+    main_color_footer = rect_color
+    number_color_footer = (255, 140, 0)   # orange
+    
+    # Fonts
+    font_main = load_font("Homa.ttf", 45)                          # Persian font
+    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 50)  # English font
+    
+    # Measure both parts
+    bbox_main = font_main.getbbox(footer_main)
+    main_w = bbox_main[2] - bbox_main[0]
+    main_h = bbox_main[3] - bbox_main[1]
+    
+    bbox_num = font_num.getbbox(footer_number)
+    num_w = bbox_num[2] - bbox_num[0]
+    num_h = bbox_num[3] - bbox_num[1]
+    
+    # Vertical alignment: match centers
+    max_h = max(main_h, num_h)
+    main_y = (max_h - main_h) // 2
+    num_y  = (max_h - num_h) // 2
+    
+    # RTL order: number first, then Persian text
+    total_w = num_w + 20 + main_w
+    
+    # Extra bottom padding to prevent clipping
+    BOTTOM_PAD = 12
+    
+    temp_img = Image.new("RGBA", (total_w + 20, max_h + 20 + BOTTOM_PAD), (0,0,0,0))
+    temp_draw = ImageDraw.Draw(temp_img)
+    
+    # Draw number (right side in RTL)
+    num_x = 10
+    temp_draw.text((num_x, num_y), footer_number, fill=number_color_footer, font=font_num)
+    
+    # Draw Persian text (left side in RTL)
+    main_x = num_x + num_w + 20
+    temp_draw.text((main_x, main_y), footer_main, fill=main_color_footer, font=font_main)
+    
+    # Rotation logic
+    if not is_left:
+        footer_angle = -31
+        footer_pos = (200, 1070)
+    else:
+        footer_angle = 31
+        footer_pos = (200, 1070)
+    
+    rotated_text = temp_img.rotate(footer_angle, expand=True)
+    
+    canvas.paste(rotated_text, footer_pos, rotated_text)
 
 
     return canvas
