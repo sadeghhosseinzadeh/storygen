@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 from storygen.utils import (
     remove_background, extract_colors, lighten_color, darken_color,
     adjust_saturation, load_font, add_brand_logo, place_shoe,
-    draw_trapezoid, add_user_logo, draw_text, draw_sizes_box3
+    draw_trapezoid, add_user_logo, draw_text, draw_sizes_box3, to_english_digits
 )
 
 
