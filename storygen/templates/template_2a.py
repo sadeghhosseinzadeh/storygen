@@ -114,7 +114,8 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
                   logo_path=logo,
                   pos=(None, 1300),
                   max_size=(180,180),
-                  center_x=False)
+                  center_x=False,
+                  opacity=105)
 
 
 
