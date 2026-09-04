@@ -12,11 +12,12 @@ from storygen.utils import (
     add_brand_logo,
     detect_shoe_direction,
     draw_sizes_box3,
-    to_english_digits)
+    to_english_digits,
+    add_user_logo)
 
 
 
-def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
+def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
     W, H = 1080, 1920
 
@@ -124,6 +125,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         ]
 
         logo_pos = (720, 1550)
+        user_logo_pos = (720, 1300)
         sizes_box_x = 60
         shoe_angle = -30
         footer_angle = -31
@@ -140,7 +142,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         ]
 
         logo_pos = (160, 1700)
-
+        user_logo_pos = (160, 1300)
         sizes_box_x = W - 350 - 60
 
         shoe_angle = 30
@@ -167,6 +169,15 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         max_size=(200, 200))
 
     # -------------------------
+    #  User logo 
+    add_user_logo(
+        canvas,
+        logo_path=logo,
+        pos=user_logo_pos,
+        max_size=(180, 180),
+        center_x=False,
+        opacity=105)
+    # -------------------------
     # Shoe
     # -------------------------
     place_shoe(
@@ -182,9 +193,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # Sizes Box
     # -------------------------
     if is_left:
-        sizes_pos = (W - 300, 1600)   # right side
+        sizes_pos = (W - 300, 1650)   # right side
     else:
-        sizes_pos = (300, 1600)       # left side
+        sizes_pos = (300, 1650)       # left side
 
 
     draw_sizes_box3(
@@ -258,10 +269,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # Rotation logic
     if not is_left:
         footer_angle = -31
-        footer_pos = (200, 1070)
+        footer_pos = (250, 1150)
     else:
         footer_angle = 31
-        footer_pos = (200, 1070)
+        footer_pos = (250, 1150)
     
     rotated_text = temp_img.rotate(footer_angle, expand=True)
     
