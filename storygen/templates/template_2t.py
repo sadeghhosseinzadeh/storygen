@@ -57,7 +57,7 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
 
 
     # --- 4. Model name ---
-    font_model = load_font("GOTHICB.TTF", 70)
+    font_model = load_font("GOTHICB.TTF", 90)
     bbox = font_model.getbbox(model_name)
     model_x = (W - (bbox[2]-bbox[0])) // 2
     draw.text((model_x, 190), model_name, fill=shades[3], font=font_model)
@@ -67,7 +67,7 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     if shop_name_en:   # <-- skips if None, empty, or ""
         bbox = font_shop.getbbox(shop_name_en)
         shop_x = (W - (bbox[2]-bbox[0])) // 2
-        draw.text((shop_x, 290), shop_name_en, fill=shades[3], font=font_shop)
+        draw.text((shop_x, 295), shop_name_en, fill=shades[3], font=font_shop)
 
 
     # --- 6. Sizes box ---
