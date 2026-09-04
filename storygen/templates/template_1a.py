@@ -57,7 +57,7 @@ def motion_blur(img, length=80, angle=0):
 
 
 
-def place_shoe_mod(canvas, img, pos=None, max_size=(800,600),
+def place_shoe2(canvas, img, pos=None, max_size=(800,600),
                angle_left=20, angle_right=-20,
                center_x=True, center_y=False, shadow=True):
     """
@@ -238,7 +238,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     if direction != "right":
         blurred_bottom = blurred_bottom.transpose(Image.FLIP_LEFT_RIGHT)
     
-    place_shoe_mod(
+    place_shoe2(
         canvas,
         blurred_top,
         pos=(-400, 270),
@@ -249,7 +249,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         center_y=False,
         shadow=False)
     
-    place_shoe_mod(
+    place_shoe2(
         canvas,
         blurred_bottom,
         pos=(750, 2000),
@@ -266,7 +266,8 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         logo_path=logo,
         pos=(100, 190),
         max_size=(180, 180),
-        center_x=False
+        center_x=False,
+        opacity=155
     )
     
     # --- 6.5 Dotted overlay PNG ---
@@ -310,7 +311,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
         padding_left=40,
         padding_right=40,
-        padding_top=20,
+        padding_top=10,
         padding_bottom=20,
         gap_title_to_sizes=25,  # space under "Size:" 
         spacing=10,              # space between sizes
@@ -345,7 +346,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     draw.text((num_x, num_y), footer_number, fill=(0,0,0), font=font_num)
 
 
-    place_shoe_mod(canvas, photo_1_rem,
+    place_shoe2(canvas, photo_1_rem,
                pos=(None, 1250),  
                max_size=(1000, 600),
                angle_left=23,
