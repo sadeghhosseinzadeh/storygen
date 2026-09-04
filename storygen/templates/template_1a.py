@@ -369,7 +369,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
             # right side → keep 100px margin from right edge
             text_x = W - text_w - 100
     
-        text_y = 1470
+        text_y = 1465
     
         draw.text((text_x, text_y), shop_name_en, fill=(255, 255, 255), font=font_eng)
     
