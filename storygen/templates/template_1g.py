@@ -11,7 +11,7 @@ from storygen.utils import (
     extract_colors,
     add_brand_logo,
     detect_shoe_direction,
-    draw_sizes_box)
+    draw_sizes_box3)
 
 
 
@@ -44,7 +44,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     font_mid = load_font("Segoe.UI_p30download.com.ttf", 35)
     font_fid = load_font("Homa.ttf", 38)
     font_bid = load_font("Segoe.UI.Bold_p30download.com.ttf", 60)
-    font_brand = load_font("Segoe.UI.Semibold_p30download.com.ttf", 50)
+    font_brand = load_font("Segoe.UI.Bold_p30download.com.ttf", 50)
 
     text_color = saturated_color
 
@@ -192,20 +192,28 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     else:
         sizes_pos = (300, 1550)       # left side
 
-    draw_sizes_box(
+
+    draw_sizes_box3(
         canvas,
         sizes=sizes,
+        pos=sizes_pos,
         show_box=True,
-        box_color=bg,
-        pos=sizes_pos,            
-        max_height=800,
+        box_radius=18,
+        max_height=700,
         min_height=None,
-        title_font_size=60,
-        title_color=(220,0,0),
-        size_font_size=45,
-        size_color=(0,0,0),
-        spacing=15 )
-
+        title_font_size=50,
+        title_color=(0, 0, 0),
+        size_font_size=40,
+        size_color=(0, 0, 0),
+        padding_left=40,
+        padding_right=40,
+        padding_top=10,
+        padding_bottom=20,
+        gap_title_to_sizes=25,  # space under "Size:" 
+        spacing=10,              # space between sizes
+        max_sizes_before_shrink=8,
+        min_size_font=25
+    )
 
     # -------------------------
     # Footer Text
