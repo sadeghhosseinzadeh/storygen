@@ -291,7 +291,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         footer_pos = (250, 1178)
     else:
         footer_angle = 31
-        footer_pos = (333, 1231)
+        footer_pos = (333, 1227)
     
     rotated_text = temp_img.rotate(footer_angle, expand=True)
     canvas.paste(rotated_text, footer_pos, rotated_text)
