@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw
 from storygen.utils import (
     remove_background, extract_colors, lighten_color, darken_color,
     adjust_saturation, load_font, add_brand_logo, place_shoe,
-    draw_trapezoid, add_user_logo, draw_text
+    draw_trapezoid, add_user_logo, draw_text, draw_sizes_box3
 )
 
 
@@ -71,42 +71,87 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
 
 
     # --- 6. Sizes box ---
-    if sizes:
-        # If sizes is a string like "55, 56, 67", split it into a list
-        if isinstance(sizes, str):
-            sizes_list = [s.strip() for s in sizes.split(",") if s.strip()]
-        else:
-            sizes_list = sizes  # already a list
+    draw_sizes_box3(
+        canvas,
+        sizes=sizes,
+        pos=(80, H - 340),
+        show_box=False,
+        max_height=700,
+        title_font_size=50,
+        title_color=(0, 0, 0),
+        size_font_size=40,
+        size_color=(0, 0, 0),
+        padding_left=40,
+        padding_right=40,
+        padding_top=10,
+        padding_bottom=20,
+        gap_title_to_sizes=25,  # space under "Size:" 
+        spacing=10,              # space between sizes
+        max_sizes_before_shrink=8,
+        min_size_font=25)
+    
+       
 
-        font_mid = load_font("GOTHICB.TTF", 35)
-        title_text = "Size:"
-        bbox = font_mid.getbbox(title_text)
-        title_w, title_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
-
-        # Shift everything up and left by changing these anchors
-        rect_x1 = 80
-        rect_y1 = H - 400
-        rect_w = 400
-
-        # Position title
-        title_x = rect_x1 + (rect_w - title_w)//2
-        title_y = rect_y1 + 20
-        draw.text((title_x, title_y), title_text, fill=shades[0], font=font_mid)
-
-        # Draw each size below the title
-        current_y = title_y + title_h + 30
-        for size in sizes_list:
-            bbox = font_mid.getbbox(size)
-            size_w, size_h = bbox[2]-bbox[0], bbox[3]-bbox[1]
-            size_x = rect_x1 + (rect_w - size_w)//2
-            draw.text((size_x, current_y), size, fill=shades[0], font=font_mid)
-            current_y += size_h + 15
-
-    # --- 7. Footer text ---
+    # --- 7. Footer text (two-line, aligned, mixed fonts) ---
     rand_num = random.randint(100, 999)
-    footer_text = f"برای اطلاعات بیشتر\n {rand_num} رو دایرکت کن!"
-    font_footer = load_font("Homa.ttf", 45)
-    draw.multiline_text((W//2 + 50, H-340), footer_text, fill=shades[0] , font=font_footer, align="center", spacing=20)
+    
+    line1 = "برای اطلاعات بیشتر"
+    line2_main = "رو دایرکت کن!"
+    line2_num  = to_english_digits(str(rand_num))   # English digits
+    
+    # Colors
+    color_main = shades[0]
+    color_num  = (255, 140, 0)   # orange
+    
+    # Fonts
+    font_per = load_font("Homa.ttf", 55)   # Persian lines (bigger)
+    font_num = load_font("Segoe.UI.Bold_p30download.com.ttf", 60)  # English number
+    
+    # --- Render helper (visual-center aligned) ---
+    def render_text(text, font, color):
+        bbox = font.getbbox(text)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
+    
+        temp = Image.new("RGBA", (w + 20, h + 20), (0,0,0,0))
+        d = ImageDraw.Draw(temp)
+        d.text((10, 10), text, font=font, fill=color)
+    
+        alpha = np.array(temp)[:,:,3]
+        ys, xs = np.where(alpha > 0)
+        top = ys.min()
+        bottom = ys.max()
+    
+        visual_h = bottom - top
+        center_offset = (visual_h // 2) + top
+    
+        return temp, w, visual_h, center_offset
+    
+    # Render line 1 (Persian)
+    img_line1, w1, h1, c1 = render_text(line1, font_per, color_main)
+    
+    # Render line 2 → number + Persian text
+    img_num,  w_num,  h_num,  c_num  = render_text(line2_num, font_num, color_num)
+    img_main2, w_main2, h_main2, c_main2 = render_text(line2_main, font_per, color_main)
+    
+    # Combine line 2 horizontally
+    line2_w = w_num + 20 + w_main2
+    line2_h = max(h_num, h_main2)
+    
+    line2_img = Image.new("RGBA", (line2_w + 40, line2_h + 40), (0,0,0,0))
+    
+    num_y  = (line2_h // 2) - c_num
+    main2_y = (line2_h // 2) - c_main2
+    
+    line2_img.paste(img_num,  (10, num_y),  img_num)
+    line2_img.paste(img_main2, (10 + w_num + 20, main2_y), img_main2)
+    
+    # Final placement
+    footer_x = W//2 + 50
+    footer_y = H - 340
+    
+    canvas.paste(img_line1, (footer_x, footer_y), img_line1)
+    canvas.paste(line2_img, (footer_x, footer_y + h1 + 25), line2_img)
 
 
     # --- 8. User logo ---
@@ -116,7 +161,6 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
                   max_size=(180,180),
                   center_x=False,
                   opacity=105)
-
 
 
     return canvas
