@@ -56,11 +56,18 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     place_shoe(canvas, photo_2_rem, pos=(None,920), max_size=(770,400), angle=0, center_x=True)
 
 
-    # --- 4. Model name ---
+    # --- 4. Model name with brand: BRAND | MODEL ---
+    combined = f"{brand.upper()} | {model_name}"
+    
     font_model = load_font("GOTHICB.TTF", 90)
-    bbox = font_model.getbbox(model_name)
-    model_x = (W - (bbox[2]-bbox[0])) // 2
-    draw.text((model_x, 190), model_name, fill=shades[3], font=font_model)
+    
+    bbox = font_model.getbbox(combined)
+    combined_w = bbox[2] - bbox[0]
+    
+    model_x = (W - combined_w) // 2
+    
+    draw.text((model_x, 190), combined, fill=shades[3], font=font_model)
+
 
     # --- 5. Shop name ---
     font_shop = load_font("GOTHIC.TTF", 50)
