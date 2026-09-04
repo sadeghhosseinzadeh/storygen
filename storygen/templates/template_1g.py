@@ -45,7 +45,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     font_mid = load_font("Segoe.UI_p30download.com.ttf", 35)
     font_fid = load_font("Homa.ttf", 38)
-    font_bid = load_font("Segoe.UI.Semibold_p30download.com.ttf", 55)
+    font_bid = load_font("Segoe.UI.Semibold_p30download.com.ttf", 52)
     font_brand = load_font("Segoe.UI.Bold_p30download.com.ttf", 65)
 
     text_color = saturated_color
@@ -105,7 +105,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         shop_name_en_x = (W - shop_name_en_w) // 2
 
         draw.text(
-            (shop_name_en_x, 645),
+            (shop_name_en_x, 665),
             shop_name_en,
             fill=saturated_color,
             font=font_bid)
@@ -125,7 +125,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         ]
 
         logo_pos = (720, 1550)
-        user_logo_pos = (720, 1300)
+        user_logo_pos = (720, 900)
         sizes_box_x = 60
         shoe_angle = -30
         footer_angle = -31
@@ -142,7 +142,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         ]
 
         logo_pos = (160, 1700)
-        user_logo_pos = (160, 1300)
+        user_logo_pos = (160, 900)
         sizes_box_x = W - 350 - 60
 
         shoe_angle = 30
@@ -221,7 +221,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
         
     # -------------------------
-    # Footer Text (single line, RTL correct + aligned)
+    # Footer Text (single line, RTL correct + center aligned)
     # -------------------------
     rand_num = random.randint(100, 999)
     footer_main = "استعلام قیمت عدد"
@@ -244,7 +244,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     num_w = bbox_num[2] - bbox_num[0]
     num_h = bbox_num[3] - bbox_num[1]
     
-    # Vertical alignment: match centers
+    # Vertical center alignment
     max_h = max(main_h, num_h)
     main_y = (max_h - main_h) // 2
     num_y  = (max_h - num_h) // 2
@@ -253,7 +253,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     total_w = num_w + 20 + main_w
     
     # Extra bottom padding to prevent clipping
-    BOTTOM_PAD = 12
+    BOTTOM_PAD = 14
     
     temp_img = Image.new("RGBA", (total_w + 20, max_h + 20 + BOTTOM_PAD), (0,0,0,0))
     temp_draw = ImageDraw.Draw(temp_img)
@@ -269,14 +269,15 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Rotation logic
     if not is_left:
         footer_angle = -31
-        footer_pos = (250, 1150)
+        footer_pos = (250, 1170)
     else:
         footer_angle = 31
-        footer_pos = (250, 1150)
+        footer_pos = (250, 1170)
     
     rotated_text = temp_img.rotate(footer_angle, expand=True)
     
     canvas.paste(rotated_text, footer_pos, rotated_text)
+
 
 
     return canvas
