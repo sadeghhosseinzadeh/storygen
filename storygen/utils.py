@@ -338,10 +338,12 @@ def draw_trapezoid(ctx, x_left, y_top, x_right, y_top_right, y_bottom_left, y_bo
 # 10. Add user logo
 def add_user_logo(canvas, logo_path=None,
                   pos=(None, None), max_size=(200,200),
-                  center_x=False, center_y=False):
+                  center_x=False, center_y=False,
+                  opacity=255): 
     """
     Add a user logo PNG/SVG from the assets folder.
     If logo_path is None or invalid, skip gracefully.
+    Opacity: 0–255 (default 255 = fully opaque)
     """
     if not logo_path:
         return canvas
@@ -354,7 +356,6 @@ def add_user_logo(canvas, logo_path=None,
         else:
             logo = Image.open(logo_path).convert("RGBA")
     except Exception as e:
-        # Skip gracefully if file is corrupted or unreadable
         print(f"Warning: could not load logo {logo_path}: {e}")
         return canvas
 
@@ -364,6 +365,12 @@ def add_user_logo(canvas, logo_path=None,
     ratio = min(max_w/lw, max_h/lh)
     new_w, new_h = int(lw * ratio), int(lh * ratio)
     logo_resized = logo.resize((new_w, new_h), Image.LANCZOS)
+
+    # Apply opacity (ONLY CHANGE)
+    if opacity < 255:
+        alpha = logo_resized.split()[3]
+        alpha = alpha.point(lambda p: p * (opacity / 255.0))
+        logo_resized.putalpha(alpha)
 
     # Canvas size
     W, H = canvas.size
@@ -382,6 +389,7 @@ def add_user_logo(canvas, logo_path=None,
     # Paste
     canvas.paste(logo_resized, (pos_x, pos_y), logo_resized)
     return canvas
+
 
 # 11. Draw text
 def draw_text(canvas, text,
