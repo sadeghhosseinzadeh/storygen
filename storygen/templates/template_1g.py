@@ -44,8 +44,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # -------------------------
     font_mid = load_font("Segoe.UI_p30download.com.ttf", 35)
     font_fid = load_font("Homa.ttf", 38)
-    font_bid = load_font("Segoe.UI.Bold_p30download.com.ttf", 60)
-    font_brand = load_font("Segoe.UI.Bold_p30download.com.ttf", 60)
+    font_bid = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)
+    font_brand = load_font("Segoe.UI.Bold_p30download.com.ttf", 65)
 
     text_color = saturated_color
 
@@ -82,7 +82,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # -------------------------
     # Model Name
     # -------------------------
-    bbox = font_bid.getbbox(model_name)
+    bbox = font_brand.getbbox(model_name)
     model_w = bbox[2] - bbox[0]
 
     model_x = (W - model_w) // 2
@@ -91,14 +91,14 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         (model_x, 570),
         model_name,
         fill=saturated_color,
-        font=font_bid)
+        font=font_brand)
 
     # -------------------------
     # Shop Name
     # -------------------------
     if shop_name_en:
 
-        bbox = font_brand.getbbox(shop_name_en)
+        bbox = font_bid.getbbox(shop_name_en)
 
         shop_name_en_w = bbox[2] - bbox[0]
         shop_name_en_x = (W - shop_name_en_w) // 2
@@ -107,7 +107,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
             (shop_name_en_x, 645),
             shop_name_en,
             fill=saturated_color,
-            font=font_brand)
+            font=font_bid)
 
     # -------------------------
     # Mirrored Layout Settings
@@ -139,7 +139,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
             (W, H)
         ]
 
-        logo_pos = (160, 1650)
+        logo_pos = (160, 1700)
 
         sizes_box_x = W - 350 - 60
 
@@ -182,9 +182,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # Sizes Box
     # -------------------------
     if is_left:
-        sizes_pos = (W - 300, 1650)   # right side
+        sizes_pos = (W - 300, 1600)   # right side
     else:
-        sizes_pos = (300, 1650)       # left side
+        sizes_pos = (300, 1600)       # left side
 
 
     draw_sizes_box3(
@@ -209,7 +209,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         min_size_font=25)
 
     # -------------------------
-    # Footer Text (single line)
+    # Footer Text (single line, RTL correct)
     # -------------------------
     rand_num = random.randint(100, 999)
     footer_main = "استعلام قیمت عدد"
@@ -220,8 +220,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     number_color_footer = (255, 140, 0)   # orange
     
     # Fonts
-    font_main = load_font("Homa.ttf", 45)          # Persian font
-    font_num  = font_bid      # English font
+    font_main = load_font("Homa.ttf", 45)      # Persian font
+    font_num  = font_bid                       # English font
     
     # Measure both parts
     bbox_main = font_main.getbbox(footer_main)
@@ -230,26 +230,30 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     bbox_num = font_num.getbbox(footer_number)
     num_w = bbox_num[2] - bbox_num[0]
     
-    # Combined width
-    total_w = main_w + 20 + num_w   # 20px gap between texts
+    # RTL order: number goes BEFORE Persian text visually
+    # So layout = [number] [gap] [persian text]
+    
+    total_w = num_w + 20 + main_w
     total_h = max(
         bbox_main[3] - bbox_main[1],
         bbox_num[3] - bbox_num[1])
     
-    # Create transparent layer
+    # Transparent layer
     temp_img = Image.new("RGBA", (total_w + 20, total_h + 20), (0,0,0,0))
     temp_draw = ImageDraw.Draw(temp_img)
     
-    # Draw Persian part
-    temp_draw.text((10, 10), footer_main, fill=main_color_footer, font=font_main)
+    # Draw number on RIGHT side (RTL)
+    num_x = 10
+    temp_draw.text((num_x, 10), footer_number, fill=number_color_footer, font=font_num)
     
-    # Draw English number (orange)
-    temp_draw.text((10 + main_w + 20, 10), footer_number, fill=number_color_footer, font=font_num)
+    # Draw Persian text on LEFT side (RTL)
+    main_x = num_x + num_w + 20
+    temp_draw.text((main_x, 10), footer_main, fill=main_color_footer, font=font_main)
     
     # Rotation logic
     if not is_left:
         footer_angle = -31
-        footer_pos = (10, 1370)
+        footer_pos = (10, 1070)
     else:
         footer_angle = 31
         footer_pos = (-20, 1070)
@@ -257,5 +261,6 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     rotated_text = temp_img.rotate(footer_angle, expand=True)
     
     canvas.paste(rotated_text, footer_pos, rotated_text)
+
 
     return canvas
