@@ -396,10 +396,14 @@ def draw_text(canvas, text,
               font_path_eng, font_size_eng,
               font_path_per, font_size_per,
               pos=(None, None), rotation=0, fill=(0,0,0),
-              spacing=20, padding=10):
+              spacing=20,
+              padding_left=0,
+              padding_right=0,
+              padding_top=0,
+              padding_bottom=0):
     """
     Draw shop name text with rotation, auto-centering, language detection,
-    line spacing, and padding.
+    line spacing, and SEPARATE padding for each side.
     """
 
     # Resolve fonts relative to storygen/fonts
@@ -423,17 +427,21 @@ def draw_text(canvas, text,
     line_widths = [font.getbbox(line)[2] - font.getbbox(line)[0] for line in lines]
     line_heights = [font.getbbox(line)[3] - font.getbbox(line)[1] for line in lines]
 
-    text_w = max(line_widths) + 2*padding
-    text_h = sum(line_heights) + spacing * (len(lines)-1) + 2*padding
+    # Extra bottom offset to prevent clipping
+    BOTTOM_OFFSET = 12
+    BASELINE_OFFSET = -4
+
+    text_w = max(line_widths) + padding_left + padding_right
+    text_h = sum(line_heights) + spacing * (len(lines)-1) + padding_top + padding_bottom + BOTTOM_OFFSET
 
     # Transparent image for text
     text_img = Image.new("RGBA", (text_w, text_h), (0,0,0,0))
     text_draw = ImageDraw.Draw(text_img)
 
     # Draw each line with spacing and padding
-    current_y = padding
+    current_y = padding_top + BASELINE_OFFSET
     for line in lines:
-        text_draw.text((padding, current_y), line, font=font, fill=fill)
+        text_draw.text((padding_left, current_y), line, font=font, fill=fill)
         current_y += (font.getbbox(line)[3] - font.getbbox(line)[1]) + spacing
 
     # Rotate
@@ -444,12 +452,11 @@ def draw_text(canvas, text,
     rx, ry = rotated_text.size
     x, y = pos
 
-    if x is None:  # auto-center horizontally
+    if x is None:
         x = (W - rx)//2
-    if y is None:  # auto-center vertically
+    if y is None:
         y = (H - ry)//2
 
-    # Paste with transparency
     canvas.paste(rotated_text, (x,y), rotated_text)
     return canvas
 
