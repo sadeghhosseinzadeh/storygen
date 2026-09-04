@@ -44,7 +44,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     font_mid = load_font("Segoe.UI_p30download.com.ttf", 35)
     font_fid = load_font("Homa.ttf", 38)
     font_bid = load_font("Segoe.UI.Bold_p30download.com.ttf", 60)
-    font_brand = load_font("Segoe.UI.Bold_p30download.com.ttf", 50)
+    font_brand = load_font("Segoe.UI.Bold_p30download.com.ttf", 60)
 
     text_color = saturated_color
 
@@ -65,8 +65,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         font_size -= 10
         font_big = load_font(
             "Segoe.UI.Bold_p30download.com.ttf",
-            font_size
-        )
+            font_size)
 
         bbox = font_big.getbbox(brand_text)
         brand_w = bbox[2] - bbox[0]
@@ -77,8 +76,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         (brand_x, 240),
         brand_text,
         fill=saturated_color,
-        font=font_big
-    )
+        font=font_big)
 
     # -------------------------
     # Model Name
@@ -92,8 +90,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         (model_x, 570),
         model_name,
         fill=saturated_color,
-        font=font_bid
-    )
+        font=font_bid)
 
     # -------------------------
     # Shop Name
@@ -109,8 +106,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
             (shop_name_en_x, 645),
             shop_name_en,
             fill=saturated_color,
-            font=font_brand
-        )
+            font=font_brand)
 
     # -------------------------
     # Mirrored Layout Settings
@@ -142,7 +138,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
             (W, H)
         ]
 
-        logo_pos = (160, 1550)
+        logo_pos = (160, 1650)
 
         sizes_box_x = W - 350 - 60
 
@@ -155,8 +151,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
     # -------------------------
     draw.polygon(
         bottom_shape_points,
-        fill=saturated_color
-    )
+        fill=saturated_color)
 
     # -------------------------
     # Brand Logo
@@ -168,8 +163,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         mode=0,
         pos=logo_pos,
         color=bg,
-        max_size=(200, 200)
-    )
+        max_size=(200, 200))
 
     # -------------------------
     # Shoe
@@ -180,17 +174,16 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         pos=(None, 1360),
         max_size=(860, 600),
         angle=shoe_angle,
-        center_x=True
-    )
-    rect_color = lighten_color(main_color, 0.15)
+        center_x=True)
     
+    rect_color = lighten_color(main_color, 0.15)
     # -------------------------
     # Sizes Box
     # -------------------------
     if is_left:
-        sizes_pos = (W - 300, 1550)   # right side
+        sizes_pos = (W - 300, 1650)   # right side
     else:
-        sizes_pos = (300, 1550)       # left side
+        sizes_pos = (300, 1650)       # left side
 
 
     draw_sizes_box3(
@@ -212,16 +205,47 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         gap_title_to_sizes=25,  # space under "Size:" 
         spacing=10,              # space between sizes
         max_sizes_before_shrink=8,
-        min_size_font=25
-    )
+        min_size_font=25)
 
     # -------------------------
-    # Footer Text
+    # Footer Text (single line)
     # -------------------------
     rand_num = random.randint(100, 999)
+    footer_main = "استعلام قیمت عدد"
+    footer_number = f"({to_english_digits(str(rand_num))})"
     
-    footer_text = f"برای اطلاعات بیشتر، {rand_num} رو دایرکت کن"
+    # Colors
+    main_color_footer = rect_color
+    number_color_footer = (255, 140, 0)   # orange
     
+    # Fonts
+    font_main = load_font("Homa.ttf", 45)          # Persian font
+    font_num  = font_bid      # English font
+    
+    # Measure both parts
+    bbox_main = font_main.getbbox(footer_main)
+    main_w = bbox_main[2] - bbox_main[0]
+    
+    bbox_num = font_num.getbbox(footer_number)
+    num_w = bbox_num[2] - bbox_num[0]
+    
+    # Combined width
+    total_w = main_w + 20 + num_w   # 20px gap between texts
+    total_h = max(
+        bbox_main[3] - bbox_main[1],
+        bbox_num[3] - bbox_num[1])
+    
+    # Create transparent layer
+    temp_img = Image.new("RGBA", (total_w + 20, total_h + 20), (0,0,0,0))
+    temp_draw = ImageDraw.Draw(temp_img)
+    
+    # Draw Persian part
+    temp_draw.text((10, 10), footer_main, fill=main_color_footer, font=font_main)
+    
+    # Draw English number (orange)
+    temp_draw.text((10 + main_w + 20, 10), footer_number, fill=number_color_footer, font=font_num)
+    
+    # Rotation logic
     if not is_left:
         footer_angle = -31
         footer_pos = (10, 1370)
@@ -229,29 +253,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand):
         footer_angle = 31
         footer_pos = (-20, 1070)
     
-    temp_img = Image.new(
-        "RGBA",
-        (W, H),
-        (255, 255, 255, 0)
-    )
+    rotated_text = temp_img.rotate(footer_angle, expand=True)
     
-    temp_draw = ImageDraw.Draw(temp_img)
-    
-    temp_draw.text(
-        footer_pos,
-        footer_text,
-        fill=rect_color,
-        font=font_fid
-    )
-    
-    rotated_text = temp_img.rotate(
-        footer_angle,
-        expand=True
-    )
-    
-    canvas.paste(
-        rotated_text,
-        (0, 0),
-        rotated_text
-    )
+    canvas.paste(rotated_text, footer_pos, rotated_text)
+
     return canvas
