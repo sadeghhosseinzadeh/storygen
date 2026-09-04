@@ -20,6 +20,11 @@ from storygen.utils import (
     place_shoe
 )
 
+def to_english_digits(s):
+    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
+    english_digits = "0123456789"
+    table = str.maketrans(persian_digits, english_digits)
+    return s.translate(table)
 
 def motion_blur(img, length=80, angle=0):
     """
@@ -252,7 +257,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     place_shoe2(
         canvas,
         blurred_bottom,
-        pos=(750, 2000),
+        pos=(730, 2000),
         max_size=(850, 600),
         angle_left=-15,
         angle_right=-15,
@@ -324,7 +329,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     # --- 8. Footer text ---
     rand_num = random.randint(100, 999)
     footer_main = "استعلام قیمت عدد"
-    footer_number = f"({rand_num})"
+    footer_number = f"({to_english_digits(str(rand_num))})"
 
     base_x = 400
     base_y = 1730
