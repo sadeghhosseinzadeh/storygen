@@ -55,106 +55,6 @@ def motion_blur(img, length=80, angle=0):
 
     return Image.fromarray(result, "RGBA")
 
-def draw_sizes_box2(
-    canvas,
-    sizes,
-    pos=None,
-    show_box=True,
-    box_color=None,
-    box_radius=15,
-    max_height=None,
-    min_height=None,
-    title_text="Size:",
-    title_font_path="Segoe.UI.Semibold_p30download.com.ttf",
-    title_font_size=55,
-    title_color=(220,0,0),
-    size_font_path="Segoe.UI.Semibold_p30download.com.ttf",
-    size_font_size=45,
-    size_color=(0,0,0),
-    padding_x=40,
-    padding_y=20,
-    spacing=10
-):
-    # Skip if no sizes
-    if not sizes:
-        return
-
-    # Normalize sizes input
-    if isinstance(sizes, str):
-        sizes = [s.strip() for s in sizes.split(",") if s.strip()]
-
-    draw = ImageDraw.Draw(canvas)
-    W, H = canvas.size
-
-    # Load fonts
-    font_title = load_font(title_font_path, title_font_size)
-    font_size = load_font(size_font_path, size_font_size)
-
-    # Baseline correction (fixes weird top/bottom padding)
-    TITLE_OFFSET_Y = -8
-    SIZE_OFFSET_Y = -6
-
-    # Measure title
-    bbox_title = font_title.getbbox(title_text)
-    title_w = bbox_title[2] - bbox_title[0]
-    title_h = bbox_title[3] - bbox_title[1]
-
-    # Measure sizes
-    size_heights = []
-    size_widths = []
-    for s in sizes:
-        b = font_size.getbbox(s)
-        size_widths.append(b[2] - b[0])
-        size_heights.append(b[3] - b[1])
-
-    total_sizes_h = sum(size_heights) + spacing * (len(sizes) - 1)
-
-    # Total block size
-    block_w = max(title_w, max(size_widths)) + padding_x * 2
-    block_h = title_h + total_sizes_h + padding_y * 2
-
-    # Apply height limits
-    if max_height and block_h > max_height:
-        block_h = max_height
-    if min_height and block_h < min_height:
-        block_h = min_height
-
-    # Determine position
-    if pos is None:
-        center_x = W // 2
-        center_y = H // 2
-    else:
-        center_x, center_y = pos
-
-    # Top-left corner of block
-    x1 = center_x - block_w // 2
-    y1 = center_y - block_h // 2
-    x2 = x1 + block_w
-    y2 = y1 + block_h
-
-    # Draw background box
-    if show_box:
-        if box_color is None:
-            box_color = (240, 240, 240)
-        draw.rounded_rectangle([x1, y1, x2, y2], radius=box_radius, fill=box_color)
-
-    # Draw title
-    title_x = center_x - title_w // 2
-    title_y = y1 + padding_y + TITLE_OFFSET_Y
-    draw.text((title_x, title_y), title_text, fill=title_color, font=font_title)
-
-    # Draw sizes
-    EXTRA_TITLE_GAP = 25
-    current_y = title_y + title_h + EXTRA_TITLE_GAP
-
-    for s in sizes:
-        b = font_size.getbbox(s)
-        sw = b[2] - b[0]
-        sh = b[3] - b[1]
-        sx = center_x - sw // 2
-        draw.text((sx, current_y + SIZE_OFFSET_Y), s, fill=size_color, font=font_size)
-        current_y += sh + spacing
-
 
 
 def place_shoe_mod(canvas, img, pos=None, max_size=(800,600),
@@ -404,7 +304,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         max_height=700,
         min_height=None,
         title_font_size=50,
-        title_color=(220, 0, 0),
+        title_color=(0, 0, 0),
         size_font_size=40,
         size_color=(0, 0, 0),
 
@@ -412,7 +312,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         padding_right=40,
         padding_top=30,
         padding_bottom=30,
-        gap_title_to_sizes=30,  # space under "Size:" 
+        gap_title_to_sizes=25,  # space under "Size:" 
         spacing=10,              # space between sizes
         max_sizes_before_shrink=8,
         min_size_font=25
