@@ -105,7 +105,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         shop_name_en_x = (W - shop_name_en_w) // 2
 
         draw.text(
-            (shop_name_en_x, 665),
+            (shop_name_en_x, 670),
             shop_name_en,
             fill=saturated_color,
             font=font_bid)
@@ -124,8 +124,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
             (0, H - 950)
         ]
 
-        logo_pos = (720, 1550)
-        user_logo_pos = (720, 900)
+        logo_pos = (720, 1600)
+        user_logo_pos = (800, 670)
         sizes_box_x = 60
         shoe_angle = -30
         footer_angle = -31
@@ -141,8 +141,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
             (W, H)
         ]
 
-        logo_pos = (160, 1700)
-        user_logo_pos = (160, 900)
+        logo_pos = (160, 1600)
+        user_logo_pos = (100, 670)
         sizes_box_x = W - 350 - 60
 
         shoe_angle = 30
@@ -232,8 +232,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     number_color_footer = (255, 140, 0)   # orange
     
     # Fonts
-    font_main = load_font("Homa.ttf", 45)                          # Persian font
-    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 50)  # English font
+    font_main = load_font("Homa.ttf", 47)                          # Persian font
+    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 48)  # English font
     
     # Measure both parts
     bbox_main = font_main.getbbox(footer_main)
@@ -269,10 +269,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Rotation logic
     if not is_left:
         footer_angle = -31
-        footer_pos = (250, 1170)
+        footer_pos = (250, 1175)
     else:
         footer_angle = 31
-        footer_pos = (250, 1170)
+        footer_pos = (270, 1200)
     
     rotated_text = temp_img.rotate(footer_angle, expand=True)
     
