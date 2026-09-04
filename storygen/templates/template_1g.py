@@ -11,7 +11,8 @@ from storygen.utils import (
     extract_colors,
     add_brand_logo,
     detect_shoe_direction,
-    draw_sizes_box3)
+    draw_sizes_box3,
+    to_english_digits)
 
 
 
