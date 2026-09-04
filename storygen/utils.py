@@ -12,6 +12,13 @@ import cairo
 from pathlib import Path
 import storygen
 
+
+def to_english_digits(s):
+    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
+    english_digits = "0123456789"
+    table = str.maketrans(persian_digits, english_digits)
+    return s.translate(table)
+    
 # 1. Remove background 
 def remove_background(path: str, pad: int = 50):
     # Step 1: Remove background
