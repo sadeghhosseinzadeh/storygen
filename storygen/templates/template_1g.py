@@ -125,8 +125,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
             (0, H - 950)
         ]
 
-        logo_pos = (720, 1600)
-        user_logo_pos = (800, 635)
+        logo_pos = (720, 1590)
+        user_logo_pos = (800, 615)
         sizes_box_x = 60
         shoe_angle = -30
         footer_angle = -31
@@ -142,8 +142,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
             (W, H)
         ]
 
-        logo_pos = (160, 1600)
-        user_logo_pos = (100, 635)
+        logo_pos = (160, 1590)
+        user_logo_pos = (100, 615)
         sizes_box_x = W - 350 - 60
 
         shoe_angle = 30
@@ -233,8 +233,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     number_color_footer = (255, 140, 0)
     
     # Fonts
-    font_main = load_font("Homa.ttf", 47)
-    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 48)
+    font_main = load_font("Homa.ttf", 48)
+    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 49)
     
     # --- Render each text separately to measure REAL pixel center ---
     def render_and_center(text, font, color):
@@ -288,10 +288,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Rotation logic
     if not is_left:
         footer_angle = -31
-        footer_pos = (250, 1175)
+        footer_pos = (250, 1178)
     else:
         footer_angle = 31
-        footer_pos = (330, 1235)
+        footer_pos = (333, 1231)
     
     rotated_text = temp_img.rotate(footer_angle, expand=True)
     canvas.paste(rotated_text, footer_pos, rotated_text)
