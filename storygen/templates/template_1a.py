@@ -335,7 +335,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     base_y = 1730
     
     font_main = load_font("Homa.ttf", 45)          # Persian font
-    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 50)      # English font
+    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
     
     draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
     
