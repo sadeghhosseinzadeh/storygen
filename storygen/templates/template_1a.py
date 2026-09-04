@@ -17,14 +17,11 @@ from storygen.utils import (
     add_user_logo,
     protect_color,
     detect_shoe_direction,
-    place_shoe
+    place_shoe,
+    to_english_digits
 )
 
-def to_english_digits(s):
-    persian_digits = "۰۱۲۳۴۵۶۷۸۹"
-    english_digits = "0123456789"
-    table = str.maketrans(persian_digits, english_digits)
-    return s.translate(table)
+
 
 def motion_blur(img, length=80, angle=0):
     """
