@@ -267,7 +267,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         pos=(100, 190),
         max_size=(180, 180),
         center_x=False,
-        opacity=155
+        opacity=105
     )
     
     # --- 6.5 Dotted overlay PNG ---
@@ -369,7 +369,7 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
             # right side → keep 100px margin from right edge
             text_x = W - text_w - 100
     
-        text_y = 1500
+        text_y = 1470
     
         draw.text((text_x, text_y), shop_name_en, fill=(255, 255, 255), font=font_eng)
     
@@ -384,7 +384,9 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
         font_size_per=60,
         pos=(100, 470),
         rotation=0,
-        fill=(255, 255, 255)
+        fill=(255, 255, 255),
+        padding_top=3,
+        padding_bottom=5
     )
 
 
