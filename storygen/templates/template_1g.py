@@ -125,7 +125,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         ]
 
         logo_pos = (720, 1600)
-        user_logo_pos = (800, 670)
+        user_logo_pos = (800, 635)
         sizes_box_x = 60
         shoe_angle = -30
         footer_angle = -31
@@ -142,7 +142,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         ]
 
         logo_pos = (160, 1600)
-        user_logo_pos = (100, 670)
+        user_logo_pos = (100, 635)
         sizes_box_x = W - 350 - 60
 
         shoe_angle = 30
@@ -193,9 +193,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Sizes Box
     # -------------------------
     if is_left:
-        sizes_pos = (W - 300, 1650)   # right side
+        sizes_pos = (W - 300, 1670)   # right side
     else:
-        sizes_pos = (300, 1650)       # left side
+        sizes_pos = (300, 1670)       # left side
 
 
     draw_sizes_box3(
@@ -221,7 +221,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
         
     # -------------------------
-    # Footer Text (single line, RTL correct + center aligned)
+    # Footer Text (visual-center aligned)
     # -------------------------
     rand_num = random.randint(100, 999)
     footer_main = "استعلام قیمت عدد"
@@ -229,42 +229,60 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     
     # Colors
     main_color_footer = rect_color
-    number_color_footer = (255, 140, 0)   # orange
+    number_color_footer = (255, 140, 0)
     
     # Fonts
-    font_main = load_font("Homa.ttf", 47)                          # Persian font
-    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 48)  # English font
+    font_main = load_font("Homa.ttf", 47)
+    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 48)
     
-    # Measure both parts
-    bbox_main = font_main.getbbox(footer_main)
-    main_w = bbox_main[2] - bbox_main[0]
-    main_h = bbox_main[3] - bbox_main[1]
+    # --- Render each text separately to measure REAL pixel center ---
+    def render_and_center(text, font, color):
+        # Render text to a temporary image
+        bbox = font.getbbox(text)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
     
-    bbox_num = font_num.getbbox(footer_number)
-    num_w = bbox_num[2] - bbox_num[0]
-    num_h = bbox_num[3] - bbox_num[1]
+        temp = Image.new("RGBA", (w + 20, h + 20), (0,0,0,0))
+        d = ImageDraw.Draw(temp)
+        d.text((10, 10), text, font=font, fill=color)
     
-    # Vertical center alignment
+        # Convert to alpha mask
+        alpha = np.array(temp)[:,:,3]
+    
+        ys, xs = np.where(alpha > 0)
+        top = ys.min()
+        bottom = ys.max()
+    
+        # True visual height
+        visual_h = bottom - top
+    
+        # Visual center offset
+        center_offset = (visual_h // 2) + top
+    
+        return temp, w, visual_h, center_offset
+    
+    # Render both texts
+    img_main, main_w, main_h, main_center = render_and_center(footer_main, font_main, main_color_footer)
+    img_num,  num_w,  num_h,  num_center  = render_and_center(footer_number, font_num, number_color_footer)
+    
+    # Compute unified visual height
     max_h = max(main_h, num_h)
-    main_y = (max_h - main_h) // 2
-    num_y  = (max_h - num_h) // 2
     
-    # RTL order: number first, then Persian text
+    # Compute Y offsets so their visual centers match
+    main_y = (max_h // 2) - main_center
+    num_y  = (max_h // 2) - num_center
+    
+    # RTL order: number first
     total_w = num_w + 20 + main_w
     
-    # Extra bottom padding to prevent clipping
-    BOTTOM_PAD = 14
+    # Final footer image
+    temp_img = Image.new("RGBA", (total_w + 40, max_h + 40), (0,0,0,0))
     
-    temp_img = Image.new("RGBA", (total_w + 20, max_h + 20 + BOTTOM_PAD), (0,0,0,0))
-    temp_draw = ImageDraw.Draw(temp_img)
+    # Paste number
+    temp_img.paste(img_num, (10, num_y), img_num)
     
-    # Draw number (right side in RTL)
-    num_x = 10
-    temp_draw.text((num_x, num_y), footer_number, fill=number_color_footer, font=font_num)
-    
-    # Draw Persian text (left side in RTL)
-    main_x = num_x + num_w + 20
-    temp_draw.text((main_x, main_y), footer_main, fill=main_color_footer, font=font_main)
+    # Paste Persian text
+    temp_img.paste(img_main, (10 + num_w + 20, main_y), img_main)
     
     # Rotation logic
     if not is_left:
@@ -272,11 +290,11 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         footer_pos = (250, 1175)
     else:
         footer_angle = 31
-        footer_pos = (270, 1200)
+        footer_pos = (330, 1235)
     
     rotated_text = temp_img.rotate(footer_angle, expand=True)
-    
     canvas.paste(rotated_text, footer_pos, rotated_text)
+
 
 
 
