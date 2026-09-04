@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 import cairo
 import random
+import numpy as np
 
 from storygen.utils import (
     lighten_color,
