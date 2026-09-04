@@ -330,25 +330,26 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
     rand_num = random.randint(100, 999)
     footer_main = "استعلام قیمت عدد"
     footer_number = f"({to_english_digits(str(rand_num))})"
-
+    
     base_x = 400
     base_y = 1730
-
-    font_main = load_font("Homa.ttf", 45)
-    font_num = load_font("Homa.ttf", 62)
-
+    
+    font_main = load_font("Homa.ttf", 45)          # Persian font
+    font_num  = load_font("GILLUBCD.TTF", 62)      # English font
+    
     draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
-
+    
     bbox_main = font_main.getbbox(footer_main)
     main_w = bbox_main[2] - bbox_main[0]
-
+    
     bbox_num = font_num.getbbox(footer_number)
     num_w = bbox_num[2] - bbox_num[0]
-
+    
     num_x = base_x + (main_w - num_w) // 2
     num_y = base_y + bbox_main[3] - bbox_main[1] + 10
-
+    
     draw.text((num_x, num_y), footer_number, fill=(0,0,0), font=font_num)
+
 
 
     place_shoe2(canvas, photo_1_rem,
