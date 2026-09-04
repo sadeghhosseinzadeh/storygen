@@ -310,8 +310,8 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
         padding_left=40,
         padding_right=40,
-        padding_top=30,
-        padding_bottom=30,
+        padding_top=20,
+        padding_bottom=20,
         gap_title_to_sizes=25,  # space under "Size:" 
         spacing=10,              # space between sizes
         max_sizes_before_shrink=8,
