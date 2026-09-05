@@ -34,20 +34,32 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     lighten = lighten_color(main_color, 0.65)
     bg = protect_color(lighten, sat_boost=1.5, darken_factor=0.25, threshold=230)
     
-    canvas = Image.new("RGB", (W, H), bg)
+    canvas = Image.new("RGB", (W, H), (255,255,255))
     draw = ImageDraw.Draw(canvas)
 
     # -------------------------
     # Detect direction
     # -------------------------
     shoe_direction = detect_shoe_direction(photo_1_rem)
-
     is_left = shoe_direction == "left"
-
-
+    
     # -------------------------
     # Brand Name
     # -------------------------
+    brand_text = brand.upper()
+
+    draw_scaled_text(
+        draw,
+        text=brand_text,
+        font_path="GILSANUB.TTF",
+        max_font_size=550,
+        max_width= W-200,
+        max_height=400,
+        start_pos=(None, 550),
+        fill=(255, 255, 255),
+        allow_multiline=True,
+        rotation=90
+    )
     
     # -------------------------
     # Model Name
