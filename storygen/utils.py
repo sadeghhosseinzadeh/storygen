@@ -575,7 +575,7 @@ def draw_scaled_text(
     start_pos,
     fill,
     allow_multiline=True,
-    rotation=0   
+    rotation=0  
 ):
     canvas_w, canvas_h = draw.im.size
 
@@ -590,17 +590,19 @@ def draw_scaled_text(
         # --- SINGLE LINE MODE ---
         if not allow_multiline:
             if w <= max_width and h <= max_height:
-                # Smart centering
                 x = start_pos[0] if start_pos[0] is not None else (canvas_w - w) // 2
                 y = start_pos[1] if start_pos[1] is not None else (canvas_h - h) // 2
 
-                # --- ROTATION SUPPORT ---
+                # Render text to temp image
                 temp = Image.new("RGBA", (w + 20, h + 20), (0,0,0,0))
                 td = ImageDraw.Draw(temp)
                 td.text((10, 10), text, fill=fill, font=font)
 
+                # Rotate safely
                 rotated = temp.rotate(rotation, expand=True)
-                draw.im.paste(rotated, (x, y), rotated)
+
+                # Draw rotated image
+                draw.bitmap((x, y), rotated)
 
                 return h, w, font
             else:
@@ -610,7 +612,6 @@ def draw_scaled_text(
         words = text.split()
 
         if w <= max_width and h <= max_height:
-            # Single line fits → compute total height
             lines = [text]
             total_h = h
             max_line_w = w
@@ -618,7 +619,6 @@ def draw_scaled_text(
             if len(words) == 1 and max_line_w > max_width:
                 continue
         else:
-            # Word wrapping
             lines = []
             line = ""
             for word in words:
@@ -632,7 +632,6 @@ def draw_scaled_text(
             if line:
                 lines.append(line)
 
-            # Compute total height
             total_h = sum(font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines) \
                       + (len(lines)-1)*10
 
@@ -644,11 +643,10 @@ def draw_scaled_text(
         if max_line_w > max_width:
             continue
 
-        # Smart centering
         x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
         y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
 
-        # --- ROTATION SUPPORT FOR MULTILINE ---
+        # Render multiline text to temp image
         temp = Image.new("RGBA", (max_line_w + 40, total_h + 40), (0,0,0,0))
         td = ImageDraw.Draw(temp)
 
@@ -659,12 +657,16 @@ def draw_scaled_text(
             td.text((10, yy), l, fill=fill, font=font)
             yy += lh + 10
 
+        # Rotate safely
         rotated = temp.rotate(rotation, expand=True)
-        draw.im.paste(rotated, (x, y), rotated)
+
+        # Draw rotated image
+        draw.bitmap((x, y), rotated)
 
         return total_h, max_line_w, font
 
     return 0, 0, None
+
 
 
 
