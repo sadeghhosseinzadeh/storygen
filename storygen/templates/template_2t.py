@@ -100,7 +100,7 @@ def template_2t(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
         padding_bottom=20,
         gap_title_to_sizes=25,  # space under "Size:" 
         spacing=10,              # space between sizes
-        max_sizes_before_shrink=8,
+        max_sizes_before_shrink=9,
         min_size_font=25)
     
        
@@ -163,7 +163,7 @@ def template_2t(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     
     # --- Final placement (centered around footer_x) ---
     footer_x = W//2 + 200
-    footer_y = 1590
+    footer_y = 1570
     
     # Center line 1 around footer_x
     line1_x = footer_x - (w1 // 2)
