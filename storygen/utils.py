@@ -574,7 +574,8 @@ def draw_scaled_text(
     max_height,
     start_pos,
     fill,
-    allow_multiline=True
+    allow_multiline=True,
+    rotation=0   
 ):
     canvas_w, canvas_h = draw.im.size
 
@@ -592,7 +593,15 @@ def draw_scaled_text(
                 # Smart centering
                 x = start_pos[0] if start_pos[0] is not None else (canvas_w - w) // 2
                 y = start_pos[1] if start_pos[1] is not None else (canvas_h - h) // 2
-                draw.text((x, y), text, fill=fill, font=font)
+
+                # --- ROTATION SUPPORT ---
+                temp = Image.new("RGBA", (w + 20, h + 20), (0,0,0,0))
+                td = ImageDraw.Draw(temp)
+                td.text((10, 10), text, fill=fill, font=font)
+
+                rotated = temp.rotate(rotation, expand=True)
+                draw.im.paste(rotated, (x, y), rotated)
+
                 return h, w, font
             else:
                 continue
@@ -606,7 +615,6 @@ def draw_scaled_text(
             total_h = h
             max_line_w = w
 
-            # Extra safeguard: if single word still too wide, skip
             if len(words) == 1 and max_line_w > max_width:
                 continue
         else:
@@ -633,7 +641,6 @@ def draw_scaled_text(
 
             max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
 
-        # Final safeguard: reject if width still exceeds max
         if max_line_w > max_width:
             continue
 
@@ -641,17 +648,24 @@ def draw_scaled_text(
         x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
         y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
 
-        # Draw lines
-        yy = y
+        # --- ROTATION SUPPORT FOR MULTILINE ---
+        temp = Image.new("RGBA", (max_line_w + 40, total_h + 40), (0,0,0,0))
+        td = ImageDraw.Draw(temp)
+
+        yy = 10
         for l in lines:
             bbox = font.getbbox(l)
             lh = bbox[3] - bbox[1]
-            draw.text((x, yy), l, fill=fill, font=font)
+            td.text((10, yy), l, fill=fill, font=font)
             yy += lh + 10
+
+        rotated = temp.rotate(rotation, expand=True)
+        draw.im.paste(rotated, (x, y), rotated)
 
         return total_h, max_line_w, font
 
     return 0, 0, None
+
 
 
 # detect shoe direction
