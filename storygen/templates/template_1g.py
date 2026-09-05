@@ -7,7 +7,7 @@ from storygen.utils import (
     lighten_color,
     draw_text,
     load_font,
-    place_shoe,
+    place_shoe2,
     remove_background,
     extract_colors,
     add_brand_logo,
@@ -15,6 +15,49 @@ from storygen.utils import (
     draw_sizes_box3,
     to_english_digits,
     add_user_logo)
+
+def draw_scaled_text2(
+    draw,
+    text,
+    font_path,
+    max_font_size,
+    max_width,
+    start_pos,
+    fill,
+    rotation=0  
+):
+    canvas_w, canvas_h = draw.im.size
+
+    # Try from max size down to 10
+    for size in range(max_font_size, 10, -2):
+        font = load_font(font_path, size)
+
+        # Measure text
+        bbox = font.getbbox(text)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
+
+        # Fit check (only width matters)
+        if w <= max_width:
+
+            # Smart centering if None
+            x = start_pos[0] if start_pos[0] is not None else (canvas_w - w) // 2
+            y = start_pos[1] if start_pos[1] is not None else (canvas_h - h) // 2
+
+            # Render text to temporary image
+            temp = Image.new("RGBA", (w, h), (0,0,0,0))
+            td = ImageDraw.Draw(temp)
+            td.text((0, 0), text, fill=fill, font=font)
+
+            # Rotate safely
+            rotated = temp.rotate(rotation, expand=True)
+
+            # Draw rotated image
+            draw.bitmap((x, y), rotated)
+
+            return h, w, font
+
+    return 0, 0, None
 
 
 
@@ -48,28 +91,50 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     brand_text = brand.upper()
 
-    draw_scaled_text(
+    draw_scaled_text2(
         draw,
         text=brand_text,
-        font_path="GILSANUB.TTF",
+        font_path="fx-neofara-black-italic.otf",
         max_font_size=550,
-        max_width= W-200,
-        max_height=400,
-        start_pos=(None, 550),
-        fill=(255, 255, 255),
-        allow_multiline=True,
+        max_width= 1000,
+        start_pos=(None, 350),
+        fill=bg,
         rotation=90
     )
     
     # -------------------------
     # Model Name
     # -------------------------
-
+    draw_text(
+        canvas,
+        text=model_name,
+        font_path_eng="GILLUBCD.TTF",
+        font_size_eng=75,
+        font_path_per="A Mitra 04.ttf",
+        font_size_per=60,
+        pos=(100, 470),
+        rotation=0,
+        fill=(255, 255, 255),
+        padding_top=3,
+        padding_bottom=5
+    )
 
     # -------------------------
     # Shop Name
     # -------------------------
-
+    draw_text(
+        canvas,
+        text=model_name,
+        font_path_eng="GILLUBCD.TTF",
+        font_size_eng=75,
+        font_path_per="A Mitra 04.ttf",
+        font_size_per=60,
+        pos=(100, 470),
+        rotation=0,
+        fill=(255, 255, 255),
+        padding_top=3,
+        padding_bottom=5
+    )
     
 
     # -------------------------
@@ -78,11 +143,13 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_brand_logo(
         canvas,
         brand,
-        variant=2,
         mode=0,
-        pos=logo_pos,
-        color=bg,
-        max_size=(200, 200))
+        variant=2,
+        opacity=255,
+        pos=(800, 190),
+        color=saturated_color,
+        max_size=(200, 200)
+    )
 
     # -------------------------
     #  User logo 
@@ -90,19 +157,20 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=user_logo_pos,
+        pos=(100, 190),
         max_size=(180, 180),
         center_x=False,
-        opacity=105)
+        opacity=105
+    )
     # -------------------------
     # Shoe
     # -------------------------
-    place_shoe(
-        canvas,
-        photo_1_rem,
-        pos=(None, 1360),
-        max_size=(860, 600),
-        angle=shoe_angle,
+    place_shoe2(
+        canvas, photo_1_rem,
+        pos=(None, 1250),  
+        max_size=(1000, 600),
+        angle_left=23,
+        angle_right=-23,
         center_x=True)
     
 
