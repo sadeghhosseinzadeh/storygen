@@ -17,7 +17,7 @@ from storygen.utils import (
     add_user_logo,
     protect_color,
     detect_shoe_direction,
-    place_shoe,
+    place_shoe2,
     to_english_digits
 )
 
@@ -56,126 +56,6 @@ def motion_blur(img, length=80, angle=0):
     result = np.clip(result, 0, 255).astype(np.uint8)
 
     return Image.fromarray(result, "RGBA")
-
-
-
-def place_shoe2(canvas, img, pos=None, max_size=(800,600),
-               angle_left=20, angle_right=-20,
-               center_x=True, center_y=False, shadow=True):
-    """
-    Smart version:
-    - Detects shoe direction (left/right)
-    - Uses angle_left for left-facing shoes
-    - Uses angle_right for right-facing shoes
-    """
-    W, H = canvas.size
-
-    # --- Resize shoe ---
-    sw, sh = img.size
-    max_w, max_h = max_size
-    ratio = min(max_w/sw, max_h/sh)
-    if ratio > 1:
-        ratio = min(max_w/sw, max_h/sh)
-
-    new_w, new_h = int(sw * ratio), int(sh * ratio)
-    shoe = img.resize((new_w, new_h), Image.LANCZOS)
-
-    # ============================================================
-    #  AUTO DIRECTION DETECTION
-    # ============================================================
-    direction = detect_shoe_direction(shoe)
-
-    if direction == "left":
-        final_angle = angle_left
-    else:
-        final_angle = angle_right
-
-    # ============================================================
-    #  MODE 1: OLD BEHAVIOR (final_angle == 0)
-    # ============================================================
-    if final_angle == 0:
-        if pos is None:
-            pos_x = (W - new_w) // 2 if center_x else 0
-            pos_y = (H - new_h) // 2 if center_y else 0
-        else:
-            pos_x, pos_y = pos
-            if center_x:
-                pos_x = (W - new_w) // 2
-            if center_y:
-                pos_y = (H - new_h) // 2
-
-        if shadow:
-            sh_img = shoe.convert("RGBA")
-            shadow_data = [(0,0,0,int(px[3]*0.5)) for px in sh_img.getdata()]
-            sh_img.putdata(shadow_data)
-            sh_img = sh_img.filter(ImageFilter.GaussianBlur(10))
-            canvas.paste(sh_img, (pos_x + 5, pos_y + 20), sh_img)
-
-        canvas.paste(shoe, (pos_x, pos_y), shoe)
-        return canvas
-
-    # ============================================================
-    #  MODE 2: NEW BEHAVIOR (final_angle != 0)
-    # ============================================================
-
-    # --- Find bottom-middle pixel ---
-    arr = np.array(shoe)
-    alpha = arr[:,:,3]
-
-    ys, xs = np.where(alpha > 0)
-    bottom_y = ys.max()
-    xs_bottom = xs[ys == bottom_y]
-    bottom_mid_x = int((xs_bottom.min() + xs_bottom.max()) / 2)
-
-    # --- Determine target position ---
-    if pos is None:
-        pos_x = (W - new_w) // 2 if center_x else 0
-        target_y = (H // 2) if center_y else (H // 2)
-    else:
-        user_x, target_y = pos
-    
-        if center_x:
-            pos_x = (W - new_w) // 2
-        else:
-            pos_x = user_x
-
-    
-    # --- Initial placement BEFORE rotation ---
-    pos_y = target_y - bottom_y
-
-    # --- Rotate AFTER placement ---
-    rotated = shoe.rotate(final_angle, expand=True)
-    rw, rh = rotated.size
-
-    # Recompute bottom-middle after rotation
-    arr2 = np.array(rotated)
-    alpha2 = arr2[:,:,3]
-    ys2, xs2 = np.where(alpha2 > 0)
-    new_bottom_y = ys2.max()
-    xs2_bottom = xs2[ys2 == new_bottom_y]
-    new_bottom_mid_x = int((xs2_bottom.min() + xs2_bottom.max()) / 2)
-
-    # Re-anchor bottom-middle to target_y
-    pos_y = target_y - new_bottom_y
-
-    # Re-center horizontally only when requested
-    if center_x:
-        pos_x = (W - rw) // 2
-
-    shoe = rotated
-
-    # --- SHADOW ---
-    if shadow:
-        sh_img = shoe.convert("RGBA")
-        shadow_data = [(0,0,0,int(px[3]*0.5)) for px in sh_img.getdata()]
-        sh_img.putdata(shadow_data)
-        sh_img = sh_img.filter(ImageFilter.GaussianBlur(10))
-        canvas.paste(sh_img, (pos_x + 5, pos_y + 20), sh_img)
-
-    # --- Paste shoe ---
-    canvas.paste(shoe, (pos_x, pos_y), shoe)
-
-    return canvas
 
 
 
