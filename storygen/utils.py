@@ -574,47 +574,43 @@ def draw_scaled_text(
     max_height,
     start_pos,
     fill,
-    allow_multiline=True,
-    rotation=0
+    allow_multiline=True
 ):
     canvas_w, canvas_h = draw.im.size
 
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
 
+        # Measure full text
         bbox = font.getbbox(text)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
 
-        # --- SINGLE LINE ---
+        # --- SINGLE LINE MODE ---
         if not allow_multiline:
             if w <= max_width and h <= max_height:
+                # Smart centering
                 x = start_pos[0] if start_pos[0] is not None else (canvas_w - w) // 2
                 y = start_pos[1] if start_pos[1] is not None else (canvas_h - h) // 2
-
-                # padding: 5 top + 5 bottom
-                temp = Image.new("RGBA", (w, h + 10), (0,0,0,0))
-                td = ImageDraw.Draw(temp)
-                td.text((0, 5), text, fill=fill, font=font)
-
-                rotated = temp.rotate(rotation, expand=True)
-                draw.bitmap((x, y), rotated)
-
+                draw.text((x, y), text, fill=fill, font=font)
                 return h, w, font
             else:
                 continue
 
-        # --- MULTILINE ---
+        # --- MULTILINE MODE ---
         words = text.split()
 
         if w <= max_width and h <= max_height:
+            # Single line fits → compute total height
             lines = [text]
             total_h = h
             max_line_w = w
 
+            # Extra safeguard: if single word still too wide, skip
             if len(words) == 1 and max_line_w > max_width:
                 continue
         else:
+            # Word wrapping
             lines = []
             line = ""
             for word in words:
@@ -628,6 +624,7 @@ def draw_scaled_text(
             if line:
                 lines.append(line)
 
+            # Compute total height
             total_h = sum(font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines) \
                       + (len(lines)-1)*10
 
@@ -636,29 +633,26 @@ def draw_scaled_text(
 
             max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
 
+        # Final safeguard: reject if width still exceeds max
         if max_line_w > max_width:
             continue
 
+        # Smart centering
         x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
         y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
 
-        # padding: 5 top + 5 bottom
-        temp = Image.new("RGBA", (max_line_w, total_h + 10), (0,0,0,0))
-        td = ImageDraw.Draw(temp)
-
-        yy = 5
+        # Draw lines
+        yy = y
         for l in lines:
             bbox = font.getbbox(l)
             lh = bbox[3] - bbox[1]
-            td.text((0, yy), l, fill=fill, font=font)
+            draw.text((x, yy), l, fill=fill, font=font)
             yy += lh + 10
-
-        rotated = temp.rotate(rotation, expand=True)
-        draw.bitmap((x, y), rotated)
 
         return total_h, max_line_w, font
 
     return 0, 0, None
+
 
 
 
