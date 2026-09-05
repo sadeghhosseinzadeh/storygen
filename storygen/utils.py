@@ -575,40 +575,36 @@ def draw_scaled_text(
     start_pos,
     fill,
     allow_multiline=True,
-    rotation=0  
+    rotation=0
 ):
     canvas_w, canvas_h = draw.im.size
 
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
 
-        # Measure full text
         bbox = font.getbbox(text)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
 
-        # --- SINGLE LINE MODE ---
+        # --- SINGLE LINE ---
         if not allow_multiline:
             if w <= max_width and h <= max_height:
                 x = start_pos[0] if start_pos[0] is not None else (canvas_w - w) // 2
                 y = start_pos[1] if start_pos[1] is not None else (canvas_h - h) // 2
 
-                # Render text to temp image
-                temp = Image.new("RGBA", (w + 20, h + 20), (0,0,0,0))
+                # padding: 5 top + 5 bottom
+                temp = Image.new("RGBA", (w, h + 10), (0,0,0,0))
                 td = ImageDraw.Draw(temp)
-                td.text((10, 10), text, fill=fill, font=font)
+                td.text((0, 5), text, fill=fill, font=font)
 
-                # Rotate safely
                 rotated = temp.rotate(rotation, expand=True)
-
-                # Draw rotated image
                 draw.bitmap((x, y), rotated)
 
                 return h, w, font
             else:
                 continue
 
-        # --- MULTILINE MODE ---
+        # --- MULTILINE ---
         words = text.split()
 
         if w <= max_width and h <= max_height:
@@ -646,27 +642,23 @@ def draw_scaled_text(
         x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
         y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
 
-        # Render multiline text to temp image
-        temp = Image.new("RGBA", (max_line_w + 40, total_h + 40), (0,0,0,0))
+        # padding: 5 top + 5 bottom
+        temp = Image.new("RGBA", (max_line_w, total_h + 10), (0,0,0,0))
         td = ImageDraw.Draw(temp)
 
-        yy = 10
+        yy = 5
         for l in lines:
             bbox = font.getbbox(l)
             lh = bbox[3] - bbox[1]
-            td.text((10, yy), l, fill=fill, font=font)
+            td.text((0, yy), l, fill=fill, font=font)
             yy += lh + 10
 
-        # Rotate safely
         rotated = temp.rotate(rotation, expand=True)
-
-        # Draw rotated image
         draw.bitmap((x, y), rotated)
 
         return total_h, max_line_w, font
 
     return 0, 0, None
-
 
 
 
