@@ -15,7 +15,9 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     # Remove background and get colors
     photo_1_rem = remove_background(photo_1)
     photo_2_rem = remove_background(photo_2)
-    main_color, second_color = extract_colors(photo_1_rem)
+    main_color, second_color, saturated_color = extract_colors(
+    photo_1_rem,
+    include_saturated=True)
 
 
     # --- 1. Background with trapezoids ---
@@ -29,10 +31,10 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
 
     # Generate shades of the main color
     shades = [
-        adjust_saturation(darken_color(main_color, 0.55), 0.25),
-        lighten_color(main_color, 0.90),
-        darken_color(main_color, 0.10),
-        adjust_saturation(lighten_color(main_color, 0.3), 0.1),
+        adjust_saturation(darken_color(saturated_color, 0.55), 0.25),
+        lighten_color(saturated_color, 0.90),
+        darken_color(saturated_color, 0.10),
+        adjust_saturation(lighten_color(saturated_color, 0.3), 0.1),
     ]
 
     # Convert to 0–1 range for Cairo
