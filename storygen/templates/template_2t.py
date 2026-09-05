@@ -60,15 +60,20 @@ def template_2t(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     # --- 4. Model name with brand: BRAND | MODEL ---
     combined = f"{brand.upper()} | {model_name}"
     
-    font_model = load_font("GOTHICB.TTF", 90)
+    max_width = W - 150
+    font_size = 90
     
-    bbox = font_model.getbbox(combined)
-    combined_w = bbox[2] - bbox[0]
-    
+    while True:
+        font_model = load_font("GOTHICB.TTF", font_size)
+        bbox = font_model.getbbox(combined)
+        combined_w = bbox[2] - bbox[0]
+        if combined_w <= max_width:
+            break
+        font_size -= 2   # shrink until it fits
+    # Center horizontally
     model_x = (W - combined_w) // 2
     
     draw.text((model_x, 190), combined, fill=shades[3], font=font_model)
-
 
     # --- 5. Shop name ---
     font_shop = load_font("GOTHIC.TTF", 50)
@@ -82,7 +87,7 @@ def template_2t(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     draw_sizes_box3(
         canvas,
         sizes=sizes,
-        pos=(80, H - 340),
+        pos=(250, 1700),
         show_box=False,
         max_height=700,
         title_font_size=50,
@@ -100,7 +105,7 @@ def template_2t(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     
        
 
-    # --- 7. Footer text (two-line, aligned, mixed fonts) ---
+   # --- 7. Footer text (two-line, aligned, mixed fonts) ---
     rand_num = random.randint(100, 999)
     
     line1 = "برای اطلاعات بیشتر"
@@ -121,7 +126,7 @@ def template_2t(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
     
-        temp = Image.new("RGBA", (w + 20, h + 20), (0,0,0,0))
+        temp = Image.new("RGBA", (w + 20, h + 40), (0,0,0,0))  # extra bottom padding
         d = ImageDraw.Draw(temp)
         d.text((10, 10), text, font=font, fill=color)
     
@@ -142,17 +147,19 @@ def template_2t(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     img_num,  w_num,  h_num,  c_num  = render_text(line2_num, font_num, color_num)
     img_main2, w_main2, h_main2, c_main2 = render_text(line2_main, font_per, color_main)
     
-    # Combine line 2 horizontally
-    line2_w = w_num + 20 + w_main2
+    # Combine line 2 horizontally (RTL)
+    line2_w = w_main2 + 20 + w_num
     line2_h = max(h_num, h_main2)
     
     line2_img = Image.new("RGBA", (line2_w + 40, line2_h + 40), (0,0,0,0))
     
+    # Vertical alignment
     num_y  = (line2_h // 2) - c_num
     main2_y = (line2_h // 2) - c_main2
     
-    line2_img.paste(img_num,  (10, num_y),  img_num)
-    line2_img.paste(img_main2, (10 + w_num + 20, main2_y), img_main2)
+    # RTL order: Persian text first, number last
+    line2_img.paste(img_main2, (10, main2_y), img_main2)
+    line2_img.paste(img_num, (10 + w_main2 + 20, num_y), img_num)
     
     # Final placement
     footer_x = W//2 + 50
@@ -160,6 +167,7 @@ def template_2t(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     
     canvas.paste(img_line1, (footer_x, footer_y), img_line1)
     canvas.paste(line2_img, (footer_x, footer_y + h1 + 25), line2_img)
+
 
 
     # --- 8. User logo ---
