@@ -162,8 +162,8 @@ def template_2t(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     line2_img.paste(img_num, (10 + w_main2 + 20, num_y), img_num)
     
     # --- Final placement (centered around footer_x) ---
-    footer_x = W//2 + 250
-    footer_y = 1620
+    footer_x = W//2 + 200
+    footer_y = 1590
     
     # Center line 1 around footer_x
     line1_x = footer_x - (w1 // 2)
