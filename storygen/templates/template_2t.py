@@ -161,16 +161,18 @@ def template_2t(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     line2_img.paste(img_main2, (10, main2_y), img_main2)
     line2_img.paste(img_num, (10 + w_main2 + 20, num_y), img_num)
     
-    # --- Final placement (perfect centering for both lines) ---
+    # --- Final placement (centered around footer_x) ---
+    footer_x = W//2 + 50
     footer_y = H - 340
     
-    # Center line 1
-    line1_x = (W - w1) // 2
+    # Center line 1 around footer_x
+    line1_x = footer_x - (w1 // 2)
     canvas.paste(img_line1, (line1_x, footer_y), img_line1)
     
-    # Center line 2
-    line2_x = (W - line2_img.width) // 2
+    # Center line 2 around footer_x
+    line2_x = footer_x - (line2_img.width // 2)
     canvas.paste(line2_img, (line2_x, footer_y + h1 + 25), line2_img)
+
 
 
     # --- 8. User logo ---
