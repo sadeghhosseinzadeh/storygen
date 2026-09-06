@@ -253,7 +253,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         mode=0,
         variant=2,
         opacity=255,
-        pos=(None, 140),
+        pos=(500, 140),
         color=lighten,
         max_size=(200, 200)
     )
