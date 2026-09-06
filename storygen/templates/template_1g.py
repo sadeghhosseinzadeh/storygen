@@ -170,7 +170,6 @@ def draw_scaled_text2(
 
 
 def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
-
     W, H = 1080, 1920
 
     # -------------------------
@@ -207,7 +206,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         max_width= 1000,
         start_pos=(None, 350),
         fill=protect_co,
-        rotation=90
+        rotation=0
     )
     
     # -------------------------
@@ -220,9 +219,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_size_eng=75,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(100, 470),
+        pos=(300, 100),
         rotation=0,
-        fill=(255, 255, 255),
+        fill=(0, 0, 0),
         padding_top=3,
         padding_bottom=5
     )
@@ -232,14 +231,14 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     draw_text(
         canvas,
-        text=model_name,
+        text=shop_name_en,
         font_path_eng="GILLUBCD.TTF",
         font_size_eng=75,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(100, 470),
+        pos=(None, 1700),
         rotation=0,
-        fill=(255, 255, 255),
+        fill=(0, 0, 0),
         padding_top=3,
         padding_bottom=5
     )
@@ -254,8 +253,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         mode=0,
         variant=2,
         opacity=255,
-        pos=(800, 190),
-        color=saturated_color,
+        pos=(None, 140),
+        color=lighten,
         max_size=(200, 200)
     )
 
@@ -265,7 +264,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(100, 190),
+        pos=(None, 190),
         max_size=(180, 180),
         center_x=False,
         opacity=105
@@ -289,7 +288,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         sizes,
         pos=None,
-        box_colors=((220,220,220), (180,180,180)),  # two alternating colors
+        box_colors=(lighten, protect_co),  # two alternating colors
         box_radius=12,
     
         # Grid limits
@@ -298,7 +297,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     
         # Auto shrink settings
         shrink_threshold=12,
-        box_size=(160, 80),   # default box width, height
+        box_size=(260, 85),   # default box width, height
         font_path="Segoe.UI.Semibold_p30download.com.ttf",
         font_size=40,
         text_color=(0,0,0),
