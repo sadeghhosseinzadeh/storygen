@@ -16,6 +16,113 @@ from storygen.utils import (
     to_english_digits,
     add_user_logo)
 
+def draw_sizes_grid(
+    canvas,
+    sizes,
+    pos=None,
+    box_colors=((220,220,220), (180,180,180)),  # two alternating colors
+    box_radius=12,
+
+    # Grid limits
+    max_rows=4,
+    max_cols=3,
+
+    # Auto shrink settings
+    shrink_threshold=12,
+    box_size=(160, 80),   # default box width, height
+    font_path="Segoe.UI.Semibold_p30download.com.ttf",
+    font_size=40,
+    text_color=(0,0,0),
+
+    # Padding inside each box
+    padding_left=10,
+    padding_right=10,
+    padding_top=5,
+    padding_bottom=5
+):
+    if not sizes:
+        return
+
+    draw = ImageDraw.Draw(canvas)
+    W, H = canvas.size
+
+    # Normalize sizes input
+    if isinstance(sizes, str):
+        sizes = [s.strip() for s in sizes.split(",") if s.strip()]
+
+    # Auto shrink if too many sizes
+    if len(sizes) >= shrink_threshold:
+        box_w, box_h = box_size
+        box_w = int(box_w * 0.85)
+        box_h = int(box_h * 0.85)
+        box_size = (box_w, box_h)
+        font_size = max(20, font_size - 10)
+
+    font = load_font(font_path, font_size)
+
+    # Determine grid layout
+    n = len(sizes)
+    if n <= max_rows:
+        rows = n
+        cols = 1
+    else:
+        rows = min(max_rows, n)
+        cols = (n + rows - 1) // rows
+        cols = min(cols, max_cols)
+
+    # Position anchor
+    if pos is None:
+        center_x = W // 2
+        center_y = H // 2
+    else:
+        center_x, center_y = pos
+
+    box_w, box_h = box_size
+
+    # Total grid size
+    grid_w = cols * box_w
+    grid_h = rows * box_h
+
+    x0 = center_x - grid_w // 2
+    y0 = center_y - grid_h // 2
+
+    # Draw boxes
+    idx = 0
+    for c in range(cols):
+        for r in range(rows):
+            if idx >= n:
+                break
+
+            s = sizes[idx]
+            bx1 = x0 + c * box_w
+            by1 = y0 + r * box_h
+            bx2 = bx1 + box_w
+            by2 = by1 + box_h
+
+            # Alternate colors
+            color = box_colors[idx % 2]
+
+            # Draw box
+            draw.rounded_rectangle([bx1, by1, bx2, by2], radius=box_radius, fill=color)
+
+            # Measure text
+            b = font.getbbox(s)
+            tw = b[2] - b[0]
+            th = b[3] - b[1]
+
+            # Center text inside box with padding
+            tx = bx1 + (box_w - tw) // 2
+            ty = by1 + (box_h - th) // 2
+
+            # Apply padding
+            tx = max(bx1 + padding_left, tx)
+            ty = max(by1 + padding_top, ty)
+
+            draw.text((tx, ty), s, fill=text_color, font=font)
+
+            idx += 1
+
+
 def draw_scaled_text2(
     draw,
     text,
@@ -74,8 +181,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         include_saturated=True)
 
     # Lighten main color → protect from becoming white
-    lighten = lighten_color(main_color, 0.65)
-    bg = protect_color(lighten, sat_boost=1.5, darken_factor=0.25, threshold=230)
+    lighten = lighten_color(saturated_color, 0.90)
+    protect_co = protect_color(lighten, sat_boost=1.5, darken_factor=0.25, threshold=230)
     
     canvas = Image.new("RGB", (W, H), (255,255,255))
     draw = ImageDraw.Draw(canvas)
@@ -177,26 +284,30 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Sizes Box
     # -------------------------
-    draw_sizes_box3(
+    draw_sizes_grid(
         canvas,
-        sizes=sizes,
-        pos=sizes_pos,
-        show_box=True,
-        box_radius=18,
-        max_height=700,
-        min_height=None,
-        title_font_size=50,
-        title_color=(0, 0, 0),
-        size_font_size=40,
-        size_color=(0, 0, 0),
-        padding_left=40,
-        padding_right=40,
-        padding_top=10,
-        padding_bottom=20,
-        gap_title_to_sizes=25,  # space under "Size:" 
-        spacing=10,              # space between sizes
-        max_sizes_before_shrink=8,
-        min_size_font=25)
+        sizes,
+        pos=None,
+        box_colors=((220,220,220), (180,180,180)),  # two alternating colors
+        box_radius=12,
+    
+        # Grid limits
+        max_rows=4,
+        max_cols=3,
+    
+        # Auto shrink settings
+        shrink_threshold=12,
+        box_size=(160, 80),   # default box width, height
+        font_path="Segoe.UI.Semibold_p30download.com.ttf",
+        font_size=40,
+        text_color=(0,0,0),
+    
+        # Padding inside each box
+        padding_left=10,
+        padding_right=10,
+        padding_top=5,
+        padding_bottom=5
+    )
 
         
     # -------------------------
