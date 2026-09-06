@@ -14,7 +14,8 @@ from storygen.utils import (
     detect_shoe_direction,
     draw_sizes_box3,
     to_english_digits,
-    add_user_logo)
+    add_user_logo,
+    protect_color)
 
 def draw_sizes_grid(
     canvas,
@@ -205,7 +206,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         max_font_size=550,
         max_width= 1000,
         start_pos=(None, 350),
-        fill=bg,
+        fill=protect_co,
         rotation=90
     )
     
