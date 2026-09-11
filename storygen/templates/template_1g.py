@@ -132,8 +132,8 @@ def draw_sizes_grid(
 
 
 
-def draw_scaled_text2(
-    draw,
+def draw_scaled_text_v2(
+    canvas,   # <-- pass the actual Image object, not ImageDraw
     text,
     font_path,
     max_font_size,
@@ -144,17 +144,17 @@ def draw_scaled_text2(
     allow_multiline=True,
     rotation=0
 ):
-    canvas_w, canvas_h = draw.im.size
+    draw = ImageDraw.Draw(canvas)
+    canvas_w, canvas_h = canvas.size
 
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
 
-        # Measure full text
         bbox = font.getbbox(text)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
 
-        # --- SINGLE LINE MODE ---
+        # --- SINGLE LINE ---
         if not allow_multiline:
             if w <= max_width and h <= max_height:
                 lines = [text]
@@ -163,15 +163,14 @@ def draw_scaled_text2(
             else:
                 continue
         else:
-            # Word wrapping if needed
             words = text.split()
             if w <= max_width and h <= max_height:
                 lines = [text]
                 total_h = h
                 max_line_w = w
             else:
-                lines = []
-                line = ""
+                # word wrapping
+                lines, line = [], ""
                 for word in words:
                     test = line + " " + word if line else word
                     bbox = font.getbbox(test)
@@ -196,7 +195,7 @@ def draw_scaled_text2(
         x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
         y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
 
-        # Render text to temporary RGBA image
+        # Render to temp RGBA
         temp = Image.new("RGBA", (max_line_w+20, total_h+20), (0,0,0,0))
         td = ImageDraw.Draw(temp)
 
@@ -212,11 +211,9 @@ def draw_scaled_text2(
             temp = temp.rotate(rotation, expand=True)
 
         # Paste onto canvas
-        if draw.im.mode != "RGBA":
-            base = draw.im.convert("RGBA")
-        else:
-            base = draw.im
-        base.paste(temp, (x, y), temp)
+        if canvas.mode != "RGBA":
+            canvas = canvas.convert("RGBA")
+        canvas.paste(temp, (x, y), temp)
 
         return total_h, max_line_w, font
 
@@ -327,8 +324,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Brand Name
     # -------------------------
     brand_text = brand.upper()
-    draw_scaled_text2(
-        draw,
+    draw_scaled_text_v2(
+        canvas,   # <-- pass the Image, not draw
         text=brand_text,
         font_path="fx-neofara-black-italic.otf",
         max_font_size=730,
@@ -336,8 +333,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         max_height=500,
         start_pos=(None, 220),
         fill=protect_co,
-        rotation=90  
+        rotation=90
     )
+
 
     # -------------------------
     # Sizes Box
