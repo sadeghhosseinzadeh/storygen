@@ -286,12 +286,12 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         text=brand.upper(),
         font_path="Future Friends Italic.ttf",
-        top_y=390,
-        bottom_y=1680,
+        top_y=450,
+        bottom_y=1600,
         fill=protect_co,
         rotation=90,
-        padding=40,
-        safety_margin=20
+        padding=100,
+        safety_margin=30
     )
 
     # -------------------------
