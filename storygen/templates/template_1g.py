@@ -327,7 +327,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_scaled_text_v2(
         canvas,   # <-- pass the Image, not draw
         text=brand_text,
-        font_path="fx-neofara-black-italic.otf",
+        font_path="Segoe.UI.Semibold_p30download.com.ttf",
         max_font_size=730,
         max_width=1000,
         max_height=500,
