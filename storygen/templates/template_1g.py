@@ -218,7 +218,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_path="fx-neofara-black-italic.otf",
         max_font_size=550,
         max_width= 1000,
-        start_pos=(100, 325),
+        pos=(100, 325),
         fill=protect_co,
         rotation=0
     )
