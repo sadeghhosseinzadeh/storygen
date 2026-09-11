@@ -211,20 +211,6 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     is_left = shoe_direction == "left"
     
     # -------------------------
-    # Brand Name
-    # -------------------------
-    draw_text_auto(
-        canvas,
-        text=brand.upper(),
-        font_path="Segoe.UI.Bold_p30download.com.ttf",
-        max_font_size=550,
-        max_width= 1000,
-        pos=(100, 325),
-        fill=(0,0,0),
-        rotation=0
-    )
-    
-    # -------------------------
     # Model Name
     # -------------------------
     draw_text(
@@ -296,6 +282,19 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         center_x=True)
     
 
+    # -------------------------
+    # Brand Name
+    # -------------------------
+    draw_text_auto(
+        canvas,
+        text=brand.upper(),
+        font_path="Segoe.UI.Bold_p30download.com.ttf",
+        max_font_size=550,
+        max_width= 1100,
+        pos=(100, 100),
+        fill=(0,0,0),
+        rotation=0
+    )
     # -------------------------
     # Sizes Box
     # -------------------------
