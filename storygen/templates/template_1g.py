@@ -133,7 +133,7 @@ def draw_sizes_grid(
 
 
 def draw_scaled_text_v2(
-    canvas,   # <-- pass the actual Image object, not ImageDraw
+    canvas,
     text,
     font_path,
     max_font_size,
@@ -191,10 +191,6 @@ def draw_scaled_text_v2(
         if max_line_w > max_width:
             continue
 
-        # Smart centering
-        x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
-        y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
-
         # Render to temp RGBA
         temp = Image.new("RGBA", (max_line_w+20, total_h+20), (0,0,0,0))
         td = ImageDraw.Draw(temp)
@@ -210,6 +206,11 @@ def draw_scaled_text_v2(
         if rotation != 0:
             temp = temp.rotate(rotation, expand=True)
 
+        # Adjust position after rotation
+        tw, th = temp.size
+        x = start_pos[0] if start_pos[0] is not None else (canvas_w - tw) // 2
+        y = start_pos[1] if start_pos[1] is not None else (canvas_h - th) // 2
+
         # Paste onto canvas
         if canvas.mode != "RGBA":
             canvas = canvas.convert("RGBA")
@@ -218,6 +219,7 @@ def draw_scaled_text_v2(
         return total_h, max_line_w, font
 
     return 0, 0, None
+
 
 
 
@@ -325,7 +327,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     brand_text = brand.upper()
     draw_scaled_text_v2(
-        canvas,   # <-- pass the Image, not draw
+        canvas,  
         text=brand_text,
         font_path="Segoe.UI.Semibold_p30download.com.ttf",
         max_font_size=730,
