@@ -22,16 +22,16 @@ def draw_sizes_grid(
     canvas,
     sizes,
     pos=(None, None),
-    box_colors=((220,220,220), (180,180,180)),  # two alternating colors
+    box_colors=((220,220,220), (180,180,180)),  
     box_radius=12,
 
     # Grid limits
-    max_rows=4,
-    max_cols=3,
+    max_rows=3,
+    max_cols=4,
 
     # Auto shrink settings
     shrink_threshold=12,
-    box_size=(160, 80),   # default box width, height
+    box_size=(160, 80),   
     font_path="Segoe.UI.Semibold_p30download.com.ttf",
     font_size=40,
     text_color=(0,0,0),
@@ -216,49 +216,66 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Brand Name
     # -------------------------
-    def draw_brand_vertical(
+    def draw_brand_vertical_v3(
         canvas,
         text,
         font_path="Future Friends Italic.ttf",
-        font_size=350,
+        top_y=200,
+        bottom_y=1700,
         fill=(0,0,0),
-        rotation=90
+        rotation=90,
+        padding=40
     ):
-        # Load font
-        font = load_font(font_path, font_size)
-    
-        # Measure text
-        bbox = font.getbbox(text)
-        w = bbox[2] - bbox[0]
-        h = bbox[3] - bbox[1]
-    
-        # Render text into temp RGBA image
-        temp = Image.new("RGBA", (w + 40, h + 40), (0,0,0,0))
-        td = ImageDraw.Draw(temp)
-        td.text((20, 20), text, fill=fill, font=font)
-    
-        # Rotate (90° = bottom-to-top)
-        temp = temp.rotate(rotation, expand=True)
-    
-        # After rotation, get new size
-        tw, th = temp.size
-    
-        # Center on canvas
         canvas_w, canvas_h = canvas.size
-        x = (canvas_w - tw) // 2
-        y = (canvas_h - th) // 2
+    
+        # Height available for the rotated text block
+        target_height = bottom_y - top_y
+    
+        # Try font sizes from large to small
+        for size in range(800, 10, -5):   # 800 = max possible
+            font = load_font(font_path, size)
+    
+            # Measure raw text
+            bbox = font.getbbox(text)
+            w = bbox[2] - bbox[0]
+            h = bbox[3] - bbox[1]
+    
+            # Render into temp image with padding
+            temp = Image.new("RGBA", (w + padding*2, h + padding*2), (0,0,0,0))
+            td = ImageDraw.Draw(temp)
+            td.text((padding, padding), text, fill=fill, font=font)
+    
+            # Rotate
+            rotated = temp.rotate(rotation, expand=True)
+    
+            # Check if rotated height fits inside the allowed vertical space
+            rot_w, rot_h = rotated.size
+            if rot_h <= target_height:
+                # Found the maximum usable font size
+                break
+    
+        # Final placement
+        final_w, final_h = rotated.size
+    
+        # Center horizontally
+        x = (canvas_w - final_w) // 2
+    
+        # Center vertically inside the top/bottom region
+        y = top_y + (target_height - final_h) // 2
     
         # Paste onto canvas
-        canvas.paste(temp, (x, y), temp)
+        canvas.paste(rotated, (x, y), rotated)
 
 
-    draw_brand_vertical(
+    draw_brand_vertical_v3(
         canvas,
         text=brand.upper(),
         font_path="Future Friends Italic.ttf",
-        font_size=350,
+        top_y=200,
+        bottom_y=1700,
         fill=(0,0,0),
-        rotation=90
+        rotation=90,
+        padding=40
     )
 
     # -------------------------
@@ -283,24 +300,21 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         box_radius=12,
     
         # Grid limits
-        max_rows=4,
-        max_cols=3,
+        max_rows=3,
+        max_cols=4,
     
         # Auto shrink settings
         shrink_threshold=12,
-        box_size=(260, 85),   # default box width, height
         font_path="Segoe.UI.Semibold_p30download.com.ttf",
         font_size=40,
         text_color=(0,0,0),
     
         # Padding inside each box
-        padding_left=10,
-        padding_right=10,
-        padding_top=5,
-        padding_bottom=5
-    )
+        padding_left=15,
+        padding_right=15,
+        padding_top=10,
+        padding_bottom=10)
 
-        
     # -------------------------
     # Footer Text
     # -------------------------
@@ -361,11 +375,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Paste Persian text
     temp_img.paste(img_main, (10 + num_w + gap, main_y), img_main)
     
-    final_pos = (330, 1600)   
+    final_pos = (230, 1600)   
     
     canvas.paste(temp_img, final_pos, temp_img)
-
-
 
 
 
