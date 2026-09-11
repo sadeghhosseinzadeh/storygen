@@ -194,6 +194,85 @@ def add_brand_logo(canvas, brand, variant=1, mode=0, opacity=255, color=(0,0,0),
         canvas.paste(temp_logo, (0,0), temp_logo)
 
 
+def add_brand_logo2(canvas, brand, variant=1, mode=0,
+                      opacity=255, color=(0,0,0),
+                      pos_x=None, pos_y=None,
+                      max_size=(400,400)):
+
+    W, H = canvas.size
+    brand = brand.lower()
+
+    # --- Variant fallback logic ---
+    requested_filename = f"{brand}-{variant}.svg"
+    default_filename   = f"{brand}-1.svg"
+
+    package_root = Path(storygen.__file__).parent
+    requested_path = package_root / "brands" / requested_filename
+    default_path   = package_root / "brands" / default_filename
+
+    # If requested variant doesn't exist → use default variant 1
+    if requested_path.exists():
+        logo_path = requested_path
+    else:
+        logo_path = default_path
+    # -------------------------------
+
+    # --- Position resolution (new logic) ---
+    def resolve_position(img_w, img_h):
+        # center if None
+        x = (W - img_w) // 2 if pos_x is None else pos_x
+        y = (H - img_h) // 2 - 65 if pos_y is None else pos_y
+        return (x, y)
+    # ---------------------------------------
+
+    if mode == 0 and logo_path.exists():
+        # Load SVG or PNG
+        if logo_path.suffix.lower() == ".svg":
+            png_bytes = cairosvg.svg2png(url=str(logo_path),
+                                         output_width=max_size[0],
+                                         output_height=max_size[1])
+            logo_img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
+        else:
+            logo_img = Image.open(logo_path).convert("RGBA")
+
+        # Resize
+        lw, lh = logo_img.size
+        ratio = min(max_size[0]/lw, max_size[1]/lh)
+        logo_img = logo_img.resize((int(lw*ratio), int(lh*ratio)))
+
+        # Position
+        pos = resolve_position(logo_img.size[0], logo_img.size[1])
+
+        # Color overlay
+        r, g, b = color
+        colored_logo = Image.new("RGBA", logo_img.size, (r, g, b, opacity))
+        logo_img = Image.composite(colored_logo,
+                                   Image.new("RGBA", logo_img.size, (0,0,0,0)),
+                                   logo_img)
+
+        canvas.paste(logo_img, pos, logo_img)
+
+    else:
+        # Text fallback
+        font_logo = load_font("Segoe.UI_p30download.com.ttf", 220)
+        bbox = font_logo.getbbox(brand.upper())
+        logo_w = bbox[2] - bbox[0]
+        logo_h = bbox[3] - bbox[1]
+
+        # Resize font if too large
+        if logo_w > max_size[0]:
+            scale = max_size[0]/logo_w
+            font_logo = load_font("Segoe.UI_p30download.com.ttf", int(220*scale))
+
+        # Position
+        pos = resolve_position(logo_w, logo_h)
+
+        temp_logo = Image.new("RGBA", canvas.size, (255,255,255,0))
+        temp_draw = ImageDraw.Draw(temp_logo)
+        temp_draw.text(pos, brand.upper(),
+                       fill=(color[0], color[1], color[2], opacity),
+                       font=font_logo)
+        canvas.paste(temp_logo, (0,0), temp_logo)
 
 # 8. place shoe
 def place_shoe(canvas, img, pos=None, max_size=(800,600), angle=0,
