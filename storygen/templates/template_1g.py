@@ -220,7 +220,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         max_font_size=550,
         max_width= 1000,
         pos=(100, 325),
-        fill=protect_co,
+        fill=(0,0,0),
         rotation=0
     )
     
