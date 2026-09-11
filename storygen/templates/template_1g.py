@@ -132,91 +132,6 @@ def draw_sizes_grid(
 
 
 
-
-
-def draw_scaled_text_v2(
-    canvas,
-    text,
-    font_path,
-    max_font_size=300,
-    max_width=800,
-    max_height=400,
-    start_pos=(None, None),
-    fill=(0,0,0),
-    allow_multiline=True,
-    rotation=0
-):
-    canvas_w, canvas_h = canvas.size
-
-    # Try font sizes from large to small
-    for size in range(max_font_size, 10, -2):
-        font = load_font(font_path, size)
-
-        # Measure text
-        bbox = font.getbbox(text)
-        w = bbox[2] - bbox[0]
-        h = bbox[3] - bbox[1]
-
-        # Fit check
-        if w > max_width or h > max_height:
-            continue
-
-        # Word wrapping if multiline allowed
-        lines = [text]
-        if allow_multiline and w > max_width:
-            words = text.split()
-            lines, line = [], ""
-            for word in words:
-                test = line + " " + word if line else word
-                tw = font.getbbox(test)[2] - font.getbbox(test)[0]
-                if tw <= max_width:
-                    line = test
-                else:
-                    lines.append(line)
-                    line = word
-            if line:
-                lines.append(line)
-
-        # Render text block
-        line_heights = [font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines]
-        total_h = sum(line_heights) + (len(lines)-1)*10
-        max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
-
-        temp = Image.new("RGBA", (max_line_w+40, total_h+40), (0,0,0,0))
-        td = ImageDraw.Draw(temp)
-
-        yy = 20
-        for l in lines:
-            td.text((20, yy), l, fill=fill, font=font)
-            yy += font.getbbox(l)[3] - font.getbbox(l)[1] + 10
-
-        # Rotate if requested
-        if rotation != 0:
-            temp = temp.rotate(rotation, expand=True)
-
-        # Final size after rotation
-        tw, th = temp.size
-
-        # Positioning
-        x = start_pos[0] if start_pos[0] is not None else (canvas_w - tw) // 2
-        y = start_pos[1] if start_pos[1] is not None else (canvas_h - th) // 2
-
-        # Paste onto canvas
-        if canvas.mode != "RGBA":
-            canvas = canvas.convert("RGBA")
-        canvas.paste(temp, (x, y), temp)
-
-        return total_h, max_line_w, font
-
-    return 0, 0, None
-
-
-
-
-
-
-
-
 def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     W, H = 1080, 1920
 
@@ -255,8 +170,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
-        padding_bottom=5
-    )
+        padding_bottom=5)
 
     # -------------------------
     # Shop Name
@@ -272,10 +186,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
-        padding_bottom=5
-    )
+        padding_bottom=5)
     
-
     # -------------------------
     # Brand Logo
     # -------------------------
@@ -287,9 +199,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         opacity=255,
         pos=(None, 90),
         color=lighten,
-        max_size=(260, 200)
-    )
+        max_size=(260, 200))
 
+    
     # -------------------------
     #  User logo 
     # -------------------------
@@ -299,8 +211,56 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         pos=(None, 390),
         max_size=(110, 110),
         center_x=True,
-        opacity=88
+        opacity=88)
+    
+    # -------------------------
+    # Brand Name
+    # -------------------------
+    def draw_brand_vertical(
+        canvas,
+        text,
+        font_path="Future Friends Italic.ttf",
+        font_size=350,
+        fill=(0,0,0),
+        rotation=90
+    ):
+        # Load font
+        font = load_font(font_path, font_size)
+    
+        # Measure text
+        bbox = font.getbbox(text)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
+    
+        # Render text into temp RGBA image
+        temp = Image.new("RGBA", (w + 40, h + 40), (0,0,0,0))
+        td = ImageDraw.Draw(temp)
+        td.text((20, 20), text, fill=fill, font=font)
+    
+        # Rotate (90° = bottom-to-top)
+        temp = temp.rotate(rotation, expand=True)
+    
+        # After rotation, get new size
+        tw, th = temp.size
+    
+        # Center on canvas
+        canvas_w, canvas_h = canvas.size
+        x = (canvas_w - tw) // 2
+        y = (canvas_h - th) // 2
+    
+        # Paste onto canvas
+        canvas.paste(temp, (x, y), temp)
+
+
+    draw_brand_vertical(
+        canvas,
+        text=brand.upper(),
+        font_path="Future Friends Italic.ttf",
+        font_size=350,
+        fill=(0,0,0),
+        rotation=90
     )
+
     # -------------------------
     # Shoe
     # -------------------------
@@ -311,21 +271,6 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         angle_left=23,
         angle_right=-23,
         center_x=True)
-    
-
-    # -------------------------
-    # Brand Name
-    # -------------------------
-    brand_text = brand.upper()
-    footer_main = brand_text
-    
-    base_x = 100
-    base_y = 400
-    
-    font_main = load_font("Segoe.UI.Semibold_p30download.com.ttf", 350)  
-    
-    draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
-
     
     # -------------------------
     # Sizes Box
@@ -357,7 +302,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
         
     # -------------------------
-    # Footer Text (visual-center aligned, fixed position)
+    # Footer Text
     # -------------------------
     rand_num = random.randint(100, 999)
     footer_main = "استعلام قیمت عدد"
