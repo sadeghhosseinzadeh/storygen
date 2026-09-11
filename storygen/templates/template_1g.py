@@ -215,7 +215,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_text_auto(
         canvas,
         text=brand.upper(),
-        font_path="fx-neofara-black-italic.otf",
+        font_path="Segoe.UI.Bold_p30download.com.ttf",
         max_font_size=550,
         max_width= 1000,
         pos=(100, 325),
@@ -325,33 +325,68 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
         
     # -------------------------
-    # Footer Text (One Line)
+    # Footer Text (visual-center aligned, fixed position)
     # -------------------------
     rand_num = random.randint(100, 999)
     footer_main = "استعلام قیمت عدد"
     footer_number = f"({to_english_digits(str(rand_num))})"
     
-    base_x = 400
-    base_y = 1730
+    # Colors
+    main_color_footer = (0, 0, 0)
+    number_color_footer = (0, 0, 0)
     
-    font_main = load_font("Homa.ttf", 45)     # Persian font
-    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)  # English font
+    # Fonts
+    font_main = load_font("Homa.ttf", 48)
+    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 49)
     
-    # Draw main Persian text
-    draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
+    # --- Render each text separately to measure REAL pixel center ---
+    def render_and_center(text, font, color):
+        bbox = font.getbbox(text)
+        w = bbox[2] - bbox[0]
+        h = bbox[3] - bbox[1]
     
-    # Measure main text width
-    bbox_main = font_main.getbbox(footer_main)
-    main_w = bbox_main[2] - bbox_main[0]
+        temp = Image.new("RGBA", (w + 20, h + 20), (0,0,0,0))
+        d = ImageDraw.Draw(temp)
+        d.text((10, 10), text, font=font, fill=color)
     
-    # Small gap between texts
-    gap = 15
+        alpha = np.array(temp)[:,:,3]
     
-    # Number position → immediately after Persian text
-    num_x = base_x + main_w + gap
-    num_y = base_y  # same line
+        ys, xs = np.where(alpha > 0)
+        top = ys.min()
+        bottom = ys.max()
     
-    draw.text((num_x, num_y), footer_number, fill=(0,0,0), font=font_num)
+        visual_h = bottom - top
+        center_offset = (visual_h // 2) + top
+    
+        return temp, w, visual_h, center_offset
+    
+    # Render both texts
+    img_main, main_w, main_h, main_center = render_and_center(footer_main, font_main, main_color_footer)
+    img_num,  num_w,  num_h,  num_center  = render_and_center(footer_number, font_num, number_color_footer)
+    
+    # Unified height
+    max_h = max(main_h, num_h)
+    
+    # Align visual centers
+    main_y = (max_h // 2) - main_center
+    num_y  = (max_h // 2) - num_center
+    
+    # RTL order: number first
+    gap = 20
+    total_w = num_w + gap + main_w
+    
+    # Final footer image
+    temp_img = Image.new("RGBA", (total_w + 40, max_h + 40), (0,0,0,0))
+    
+    # Paste number
+    temp_img.paste(img_num, (10, num_y), img_num)
+    
+    # Paste Persian text
+    temp_img.paste(img_main, (10 + num_w + gap, main_y), img_main)
+    
+    final_pos = (400, 1730)   # ← your original position
+    
+    canvas.paste(temp_img, final_pos, temp_img)
 
 
 
