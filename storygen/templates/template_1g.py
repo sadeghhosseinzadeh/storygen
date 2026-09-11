@@ -15,9 +15,71 @@ from storygen.utils import (
     draw_sizes_box3,
     to_english_digits,
     add_user_logo,
-    protect_color,
-    draw_scaled_text)
+    protect_color)
 
+def draw_brand_vertical(
+        canvas,
+        text,
+        font_path="Future Friends Italic.ttf",
+        top_y=200,
+        bottom_y=1700,
+        fill=(0,0,0),
+        rotation=90,
+        padding=40,
+        safety_margin=20
+    ):
+        canvas_w, canvas_h = canvas.size
+        target_height = bottom_y - top_y - 2*safety_margin  # strict band, minus margin
+    
+        best_img = None
+    
+        for size in range(800, 10, -5):
+            font = load_font(font_path, size)
+    
+            bbox = font.getbbox(text)
+            w = bbox[2] - bbox[0]
+            h = bbox[3] - bbox[1]
+    
+            temp = Image.new("RGBA", (w + padding*2, h + padding*2), (0,0,0,0))
+            td = ImageDraw.Draw(temp)
+            td.text((padding, padding), text, fill=fill, font=font)
+    
+            rotated = temp.rotate(rotation, expand=True)
+    
+            arr = np.array(rotated)
+            alpha = arr[:,:,3]
+            ys, xs = np.where(alpha > 0)
+            if len(xs) == 0 or len(ys) == 0:
+                continue
+    
+            min_x, max_x = xs.min(), xs.max()
+            min_y, max_y = ys.min(), ys.max()
+    
+            content = rotated.crop((min_x, min_y, max_x+1, max_y+1))
+            content_w, content_h = content.size
+    
+            # strict fit check with safety margin
+            if content_h + 2*safety_margin <= (bottom_y - top_y):
+                best_img = content
+                break
+    
+        if best_img is None:
+            return
+    
+        final_w, final_h = best_img.size
+    
+        # center horizontally
+        x = (canvas_w - final_w) // 2
+    
+        # center vertically inside band with safety margin
+        band_h = bottom_y - top_y
+        y = top_y + (band_h - final_h) // 2
+    
+        # clamp to ensure no overflow
+        y = max(top_y + safety_margin, min(y, bottom_y - final_h - safety_margin))
+    
+        canvas.paste(best_img, (x, y), best_img)
+        
 def draw_sizes_grid(
     canvas,
     sizes,
@@ -182,10 +244,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         text=shop_name_en,
         font_path_eng="Segoe.UI.Semilight_p30download.com.ttf",
-        font_size_eng=50,
+        font_size_eng=40,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 295),
+        pos=(None, 300),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -200,7 +262,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         mode=0,
         variant=1,
         opacity=255,
-        pos=(None, 90),
+        pos=(None, 60),
         color=lighten,
         max_size=(260, 200))
 
@@ -214,87 +276,21 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         pos=(None, 390),
         max_size=(110, 110),
         center_x=True,
-        opacity=88)
+        opacity=110)
     
     # -------------------------
     # Brand Name
     # -------------------------
-    
-    
-    def draw_brand_vertical_v5(
-        canvas,
-        text,
-        font_path="Future Friends Italic.ttf",
-        top_y=200,
-        bottom_y=1700,
-        fill=(0,0,0),
-        rotation=90,
-        padding=40,
-        safety_margin=20
-    ):
-        canvas_w, canvas_h = canvas.size
-        target_height = bottom_y - top_y - 2*safety_margin  # strict band, minus margin
-    
-        best_img = None
-    
-        for size in range(800, 10, -5):
-            font = load_font(font_path, size)
-    
-            bbox = font.getbbox(text)
-            w = bbox[2] - bbox[0]
-            h = bbox[3] - bbox[1]
-    
-            temp = Image.new("RGBA", (w + padding*2, h + padding*2), (0,0,0,0))
-            td = ImageDraw.Draw(temp)
-            td.text((padding, padding), text, fill=fill, font=font)
-    
-            rotated = temp.rotate(rotation, expand=True)
-    
-            arr = np.array(rotated)
-            alpha = arr[:,:,3]
-            ys, xs = np.where(alpha > 0)
-            if len(xs) == 0 or len(ys) == 0:
-                continue
-    
-            min_x, max_x = xs.min(), xs.max()
-            min_y, max_y = ys.min(), ys.max()
-    
-            content = rotated.crop((min_x, min_y, max_x+1, max_y+1))
-            content_w, content_h = content.size
-    
-            # strict fit check with safety margin
-            if content_h + 2*safety_margin <= (bottom_y - top_y):
-                best_img = content
-                break
-    
-        if best_img is None:
-            return
-    
-        final_w, final_h = best_img.size
-    
-        # center horizontally
-        x = (canvas_w - final_w) // 2
-    
-        # center vertically inside band with safety margin
-        band_h = bottom_y - top_y
-        y = top_y + (band_h - final_h) // 2
-    
-        # clamp to ensure no overflow
-        y = max(top_y + safety_margin, min(y, bottom_y - final_h - safety_margin))
-    
-        canvas.paste(best_img, (x, y), best_img)
-
-
-    draw_brand_vertical_v5(
+    draw_brand_vertical(
         canvas,
         text=brand.upper(),
         font_path="Future Friends Italic.ttf",
-        top_y=440,
+        top_y=430,
         bottom_y=1600,
         fill=protect_co,
         rotation=90,
         padding=130,
-        safety_margin=30
+        safety_margin=20
     )
 
     # -------------------------
@@ -314,7 +310,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_sizes_grid(
         canvas,
         sizes,
-        pos=(None, 1750),
+        pos=(None, 1850),
         box_colors=(lighten, protect_co),  
         box_radius=12,
     
@@ -325,8 +321,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         # Auto shrink settings
         shrink_threshold=12,
         font_path="Segoe.UI.Semibold_p30download.com.ttf",
-        font_size=40,
+        font_size=44,
         text_color=(0,0,0),
+        box_size=(200, 50),
     
         # Padding inside each box
         padding_left=15,
