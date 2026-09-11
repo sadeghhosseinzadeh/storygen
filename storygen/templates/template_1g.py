@@ -15,7 +15,8 @@ from storygen.utils import (
     draw_sizes_box3,
     to_english_digits,
     add_user_logo,
-    protect_color)
+    protect_color,
+    draw_scaled_text)
 
 def draw_sizes_grid(
     canvas,
@@ -285,15 +286,15 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Brand Name
     # -------------------------
-    draw_text_auto(
-        canvas,
-        text=brand.upper(),
-        font_path="Segoe.UI.Bold_p30download.com.ttf",
-        max_font_size=550,
-        max_width= 1100,
-        pos=(100, 100),
-        fill=(0,0,0),
-        rotation=0
+    draw_scaled_text(
+        draw,
+        text=brand_text,
+        font_path="fx-neofara-black-italic.otf",
+        max_font_size=230,
+        max_width=400,
+        max_height=200,
+        start_pos=(100, 220),
+        fill=protect_co
     )
     # -------------------------
     # Sizes Box
