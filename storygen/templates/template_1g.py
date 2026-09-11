@@ -131,54 +131,55 @@ def draw_sizes_grid(
 
 
 
-def draw_scaled_text2(
-    draw,
+def draw_text_auto(
+    canvas,
     text,
     font_path,
-    max_font_size,
     max_width,
-    start_pos,
-    fill,
-    rotation=0  
+    max_font_size=300,
+    pos=(None, None),
+    fill=(0,0,0),
+    rotation=0
 ):
-    canvas = draw.im
-    canvas_w, canvas_h = canvas.size
+    W, H = canvas.size
 
-    # Try from max size down to 10
+    # Try largest font size downwards
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
 
-        # Measure text
         bbox = font.getbbox(text)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
 
-        # Fit check (only width matters)
         if w <= max_width:
+            # Resolve position
+            px, py = pos
 
-            # Smart centering if None
-            x = start_pos[0] if start_pos[0] is not None else (canvas_w - w) // 2
-            y = start_pos[1] if start_pos[1] is not None else (canvas_h - h) // 2
+            if px is None:
+                px = (W - w) // 2
+            if py is None:
+                py = (H - h) // 2
 
-            # Render text to temporary image
+            # Render text to RGBA temp image
             temp = Image.new("RGBA", (w, h), (0,0,0,0))
             td = ImageDraw.Draw(temp)
             td.text((0, 0), text, fill=fill, font=font)
 
-            # Rotate safely
+            # Rotate
             rotated = temp.rotate(rotation, expand=True)
 
-            # Ensure canvas is RGBA so mask works
+            # Ensure canvas is RGBA for alpha mask
             if canvas.mode != "RGBA":
-                canvas = canvas.convert("RGBA")
-                draw.im = canvas
+                canvas_rgba = canvas.convert("RGBA")
+                canvas.paste(canvas_rgba)
+                canvas = canvas_rgba
 
-            # Draw rotated image with alpha mask
-            canvas.paste(rotated, (x, y), rotated)
+            # Paste rotated text
+            canvas.paste(rotated, (px, py), rotated)
 
-            return h, w, font
+            return font, w, h
 
-    return 0, 0, None
+    return None, 0, 0
 
 
 
@@ -211,11 +212,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Brand Name
     # -------------------------
-    brand_text = brand.upper()
-
-    draw_scaled_text2(
-        draw,
-        text=brand_text,
+    draw_text_auto(
+        canvas,
+        text=brand.upper(),
         font_path="fx-neofara-black-italic.otf",
         max_font_size=550,
         max_width= 1000,
