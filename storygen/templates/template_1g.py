@@ -217,7 +217,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Brand Name
     # -------------------------
     
-    def draw_brand_vertical_v4(
+    
+    def draw_brand_vertical_v5(
         canvas,
         text,
         font_path="Future Friends Italic.ttf",
@@ -225,31 +226,27 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         bottom_y=1700,
         fill=(0,0,0),
         rotation=90,
-        padding=40
+        padding=40,
+        safety_margin=20
     ):
         canvas_w, canvas_h = canvas.size
-        target_height = bottom_y - top_y
+        target_height = bottom_y - top_y - 2*safety_margin  # strict band, minus margin
     
         best_img = None
     
-        # Try font sizes from large to small
         for size in range(800, 10, -5):
             font = load_font(font_path, size)
     
-            # Measure raw text
             bbox = font.getbbox(text)
             w = bbox[2] - bbox[0]
             h = bbox[3] - bbox[1]
     
-            # Render into temp image with padding
             temp = Image.new("RGBA", (w + padding*2, h + padding*2), (0,0,0,0))
             td = ImageDraw.Draw(temp)
             td.text((padding, padding), text, fill=fill, font=font)
     
-            # Rotate
             rotated = temp.rotate(rotation, expand=True)
     
-            # Compute visible bounds (crop to actual glyphs)
             arr = np.array(rotated)
             alpha = arr[:,:,3]
             ys, xs = np.where(alpha > 0)
@@ -262,27 +259,30 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
             content = rotated.crop((min_x, min_y, max_x+1, max_y+1))
             content_w, content_h = content.size
     
-            # Check if content height fits in band
-            if content_h <= target_height:
+            # strict fit check with safety margin
+            if content_h + 2*safety_margin <= (bottom_y - top_y):
                 best_img = content
                 break
     
         if best_img is None:
-            return  # nothing fit, silently skip
+            return
     
         final_w, final_h = best_img.size
     
-        # Center horizontally (using tight content width)
+        # center horizontally
         x = (canvas_w - final_w) // 2
     
-        # Center vertically inside top/bottom band
-        y = top_y + (target_height - final_h) // 2
+        # center vertically inside band with safety margin
+        band_h = bottom_y - top_y
+        y = top_y + (band_h - final_h) // 2
     
-        # Paste
+        # clamp to ensure no overflow
+        y = max(top_y + safety_margin, min(y, bottom_y - final_h - safety_margin))
+    
         canvas.paste(best_img, (x, y), best_img)
 
 
-    draw_brand_vertical_v4(
+    draw_brand_vertical_v5(
         canvas,
         text=brand.upper(),
         font_path="Future Friends Italic.ttf",
@@ -290,9 +290,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         bottom_y=1680,
         fill=protect_co,
         rotation=90,
-        padding=40
+        padding=40,
+        safety_margin=20
     )
-
 
     # -------------------------
     # Shoe
