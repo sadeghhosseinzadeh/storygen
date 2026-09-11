@@ -216,7 +216,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Brand Name
     # -------------------------
-    def draw_brand_vertical_v3(
+    
+    def draw_brand_vertical_v4(
         canvas,
         text,
         font_path="Future Friends Italic.ttf",
@@ -227,12 +228,12 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         padding=40
     ):
         canvas_w, canvas_h = canvas.size
-    
-        # Height available for the rotated text block
         target_height = bottom_y - top_y
     
+        best_img = None
+    
         # Try font sizes from large to small
-        for size in range(800, 10, -5):   # 800 = max possible
+        for size in range(800, 10, -5):
             font = load_font(font_path, size)
     
             # Measure raw text
@@ -248,35 +249,50 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
             # Rotate
             rotated = temp.rotate(rotation, expand=True)
     
-            # Check if rotated height fits inside the allowed vertical space
-            rot_w, rot_h = rotated.size
-            if rot_h <= target_height:
-                # Found the maximum usable font size
+            # Compute visible bounds (crop to actual glyphs)
+            arr = np.array(rotated)
+            alpha = arr[:,:,3]
+            ys, xs = np.where(alpha > 0)
+            if len(xs) == 0 or len(ys) == 0:
+                continue
+    
+            min_x, max_x = xs.min(), xs.max()
+            min_y, max_y = ys.min(), ys.max()
+    
+            content = rotated.crop((min_x, min_y, max_x+1, max_y+1))
+            content_w, content_h = content.size
+    
+            # Check if content height fits in band
+            if content_h <= target_height:
+                best_img = content
                 break
     
-        # Final placement
-        final_w, final_h = rotated.size
+        if best_img is None:
+            return  # nothing fit, silently skip
     
-        # Center horizontally
+        final_w, final_h = best_img.size
+    
+        # Center horizontally (using tight content width)
         x = (canvas_w - final_w) // 2
     
-        # Center vertically inside the top/bottom region
+        # Center vertically inside top/bottom band
         y = top_y + (target_height - final_h) // 2
     
-        # Paste onto canvas
-        canvas.paste(rotated, (x, y), rotated)
+        # Paste
+        canvas.paste(best_img, (x, y), best_img)
 
 
-    draw_brand_vertical_v3(
+    draw_brand_vertical_v4(
         canvas,
         text=brand.upper(),
         font_path="Future Friends Italic.ttf",
-        top_y=200,
-        bottom_y=1700,
-        fill=(0,0,0),
+        top_y=390,
+        bottom_y=1680,
+        fill=protect_co,
         rotation=90,
         padding=40
     )
+
 
     # -------------------------
     # Shoe
