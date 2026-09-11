@@ -152,29 +152,30 @@ def draw_text_auto(
         h = bbox[3] - bbox[1]
 
         if w <= max_width:
-            # Resolve position
             px, py = pos
+            print("DEBUG brand text:",
+                  "size:", size,
+                  "w:", w,
+                  "h:", h,
+                  "pos:", (px, py),
+                  "fill:", fill,
+                  "canvas mode:", canvas.mode)
 
             if px is None:
                 px = (W - w) // 2
             if py is None:
                 py = (H - h) // 2
 
-            # Render text to RGBA temp image
             temp = Image.new("RGBA", (w, h), (0,0,0,0))
             td = ImageDraw.Draw(temp)
             td.text((0, 0), text, fill=fill, font=font)
 
-            # Rotate
             rotated = temp.rotate(rotation, expand=True)
 
-            # Ensure canvas is RGBA for alpha mask
+            # Correct RGBA conversion
             if canvas.mode != "RGBA":
-                canvas_rgba = canvas.convert("RGBA")
-                canvas.paste(canvas_rgba)
-                canvas = canvas_rgba
+                canvas = canvas.convert("RGBA")
 
-            # Paste rotated text
             canvas.paste(rotated, (px, py), rotated)
 
             return font, w, h
