@@ -311,7 +311,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_sizes_grid(
         canvas,
         sizes,
-        pos=(None, 1700),
+        pos=(None, 1750),
         box_colors=(lighten, protect_co),  
         box_radius=12,
     
