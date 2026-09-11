@@ -490,6 +490,8 @@ def draw_text(canvas, text,
     Draw shop name text with rotation, auto-centering, language detection,
     line spacing, and SEPARATE padding for each side.
     """
+    if not text or not isinstance(text, str):
+        return
 
     # Resolve fonts relative to storygen/fonts
     font_path_eng = files("storygen.fonts").joinpath(font_path_eng)
