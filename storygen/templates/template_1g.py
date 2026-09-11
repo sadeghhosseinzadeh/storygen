@@ -317,19 +317,16 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Brand Name
     # -------------------------
     brand_text = brand.upper()
-    draw_scaled_text_v2(
-        canvas,  
-        text=brand_text,
-        font_path="Segoe.UI.Semibold_p30download.com.ttf",
-        max_font_size=730,
-        max_width=1000,
-        max_height=500,
-        start_pos=(None, 220),
-        fill=(0,0,0),
-        rotation=90
-    )
+    footer_main = brand_text
+    
+    base_x = 100
+    base_y = 400
+    
+    font_main = load_font("Segoe.UI.Semibold_p30download.com.ttf", 350)  
+    
+    draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
 
-
+    
     # -------------------------
     # Sizes Box
     # -------------------------
