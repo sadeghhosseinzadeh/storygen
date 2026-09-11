@@ -132,82 +132,72 @@ def draw_sizes_grid(
 
 
 
+
+
 def draw_scaled_text_v2(
     canvas,
     text,
     font_path,
-    max_font_size,
-    max_width,
-    max_height,
+    max_font_size=300,
+    max_width=800,
+    max_height=400,
     start_pos=(None, None),
     fill=(0,0,0),
     allow_multiline=True,
     rotation=0
 ):
-    draw = ImageDraw.Draw(canvas)
     canvas_w, canvas_h = canvas.size
 
+    # Try font sizes from large to small
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
 
+        # Measure text
         bbox = font.getbbox(text)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
 
-        # --- SINGLE LINE ---
-        if not allow_multiline:
-            if w <= max_width and h <= max_height:
-                lines = [text]
-                total_h = h
-                max_line_w = w
-            else:
-                continue
-        else:
-            words = text.split()
-            if w <= max_width and h <= max_height:
-                lines = [text]
-                total_h = h
-                max_line_w = w
-            else:
-                # word wrapping
-                lines, line = [], ""
-                for word in words:
-                    test = line + " " + word if line else word
-                    bbox = font.getbbox(test)
-                    if (bbox[2] - bbox[0]) <= max_width:
-                        line = test
-                    else:
-                        lines.append(line)
-                        line = word
-                if line:
-                    lines.append(line)
-
-                total_h = sum(font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines) \
-                          + (len(lines)-1)*10
-                if total_h > max_height:
-                    continue
-                max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
-
-        if max_line_w > max_width:
+        # Fit check
+        if w > max_width or h > max_height:
             continue
 
-        # Render to temp RGBA
-        temp = Image.new("RGBA", (max_line_w+20, total_h+20), (0,0,0,0))
+        # Word wrapping if multiline allowed
+        lines = [text]
+        if allow_multiline and w > max_width:
+            words = text.split()
+            lines, line = [], ""
+            for word in words:
+                test = line + " " + word if line else word
+                tw = font.getbbox(test)[2] - font.getbbox(test)[0]
+                if tw <= max_width:
+                    line = test
+                else:
+                    lines.append(line)
+                    line = word
+            if line:
+                lines.append(line)
+
+        # Render text block
+        line_heights = [font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines]
+        total_h = sum(line_heights) + (len(lines)-1)*10
+        max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
+
+        temp = Image.new("RGBA", (max_line_w+40, total_h+40), (0,0,0,0))
         td = ImageDraw.Draw(temp)
 
-        yy = 10
+        yy = 20
         for l in lines:
-            td.text((10, yy), l, fill=fill, font=font)
-            bbox = font.getbbox(l)
-            lh = bbox[3] - bbox[1]
-            yy += lh + 10
+            td.text((20, yy), l, fill=fill, font=font)
+            yy += font.getbbox(l)[3] - font.getbbox(l)[1] + 10
 
         # Rotate if requested
         if rotation != 0:
             temp = temp.rotate(rotation, expand=True)
 
-        # Adjust position after rotation
+        # Final size after rotation
         tw, th = temp.size
+
+        # Positioning
         x = start_pos[0] if start_pos[0] is not None else (canvas_w - tw) // 2
         y = start_pos[1] if start_pos[1] is not None else (canvas_h - th) // 2
 
@@ -219,6 +209,7 @@ def draw_scaled_text_v2(
         return total_h, max_line_w, font
 
     return 0, 0, None
+
 
 
 
@@ -334,7 +325,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         max_width=1000,
         max_height=500,
         start_pos=(None, 220),
-        fill=protect_co,
+        fill=(0,0,0),
         rotation=90
     )
 
