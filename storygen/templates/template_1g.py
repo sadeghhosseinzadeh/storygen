@@ -204,7 +204,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_path="fx-neofara-black-italic.otf",
         max_font_size=550,
         max_width= 1000,
-        start_pos=(None, 350),
+        start_pos=(100, 350),
         fill=protect_co,
         rotation=0
     )
@@ -215,11 +215,11 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_text(
         canvas,
         text=model_name,
-        font_path_eng="GILLUBCD.TTF",
+        font_path_eng="Segoe.UI.Bold_p30download.com.ttf",
         font_size_eng=75,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(300, 100),
+        pos=(None, 250),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -232,11 +232,11 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_text(
         canvas,
         text=shop_name_en,
-        font_path_eng="GILLUBCD.TTF",
-        font_size_eng=75,
+        font_path_eng="Segoe.UI.Bold_p30download.com.ttf",
+        font_size_eng=60,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 1700),
+        pos=(None, 300),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -247,15 +247,15 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Brand Logo
     # -------------------------
-    add_brand_logo(
+    add_brand_logo2(
         canvas,
         brand,
         mode=0,
-        variant=2,
+        variant=1,
         opacity=255,
-        pos=(500, 140),
+        pos=(None, 140),
         color=lighten,
-        max_size=(200, 200)
+        max_size=(260, 200)
     )
 
     # -------------------------
@@ -264,9 +264,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(None, 190),
-        max_size=(180, 180),
-        center_x=False,
+        pos=(None, 300),
+        max_size=(150, 150),
+        center_x=True,
         opacity=105
     )
     # -------------------------
@@ -288,7 +288,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         sizes,
         pos=None,
-        box_colors=(lighten, protect_co),  # two alternating colors
+        box_colors=(lighten, protect_co),  
         box_radius=12,
     
         # Grid limits
