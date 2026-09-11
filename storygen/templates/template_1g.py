@@ -22,7 +22,7 @@ def draw_sizes_grid(
     canvas,
     sizes,
     pos=(None, None),
-    box_colors=((220,220,220), (180,180,180)),  
+    box_colors=((220,220,220), (180,180,180)),
     box_radius=12,
 
     # Grid limits
@@ -31,7 +31,7 @@ def draw_sizes_grid(
 
     # Auto shrink settings
     shrink_threshold=12,
-    box_size=(160, 80),   
+    box_size=(160, 80),
     font_path="Segoe.UI.Semibold_p30download.com.ttf",
     font_size=40,
     text_color=(0,0,0),
@@ -40,7 +40,11 @@ def draw_sizes_grid(
     padding_left=10,
     padding_right=10,
     padding_top=5,
-    padding_bottom=5
+    padding_bottom=5,
+
+    # NEW: spacing between boxes
+    h_spacing=20,   # horizontal gap
+    v_spacing=20    # vertical gap
 ):
     if not sizes:
         return
@@ -72,12 +76,13 @@ def draw_sizes_grid(
         cols = (n + rows - 1) // rows
         cols = min(cols, max_cols)
 
-    # --- NEW POSITION LOGIC ---
     pos_x, pos_y = pos
 
     box_w, box_h = box_size
-    grid_w = cols * box_w
-    grid_h = rows * box_h
+
+    # NEW: include spacing in total grid size
+    grid_w = cols * box_w + (cols - 1) * h_spacing
+    grid_h = rows * box_h + (rows - 1) * v_spacing
 
     # Center if None
     if pos_x is None:
@@ -92,25 +97,24 @@ def draw_sizes_grid(
 
     x0 = pos_x
     y0 = pos_y
-    # ---------------------------
 
     # Draw boxes
     idx = 0
-    for c in range(cols):
-        for r in range(rows):
+    for r in range(rows):
+        for c in range(cols):
             if idx >= n:
                 break
 
             s = sizes[idx]
-            bx1 = x0 + c * box_w
-            by1 = y0 + r * box_h
+
+            # NEW: spacing applied here
+            bx1 = x0 + c * (box_w + h_spacing)
+            by1 = y0 + r * (box_h + v_spacing)
             bx2 = bx1 + box_w
             by2 = by1 + box_h
 
-            # Alternate colors
             color = box_colors[idx % 2]
 
-            # Draw box
             draw.rounded_rectangle([bx1, by1, bx2, by2], radius=box_radius, fill=color)
 
             # Measure text
@@ -122,7 +126,6 @@ def draw_sizes_grid(
             tx = bx1 + (box_w - tw) // 2
             ty = by1 + (box_h - th) // 2
 
-            # Apply padding
             tx = max(bx1 + padding_left, tx)
             ty = max(by1 + padding_top, ty)
 
@@ -286,11 +289,11 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         text=brand.upper(),
         font_path="Future Friends Italic.ttf",
-        top_y=450,
+        top_y=440,
         bottom_y=1600,
         fill=protect_co,
         rotation=90,
-        padding=100,
+        padding=130,
         safety_margin=30
     )
 
@@ -329,7 +332,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         padding_left=15,
         padding_right=15,
         padding_top=10,
-        padding_bottom=10)
+        padding_bottom=10,
+        h_spacing=30,
+        v_spacing=25)
 
     # -------------------------
     # Footer Text
