@@ -132,56 +132,96 @@ def draw_sizes_grid(
 
 
 
-def draw_text_auto(
-    canvas,
+def draw_scaled_text2(
+    draw,
     text,
     font_path,
+    max_font_size,
     max_width,
-    max_font_size=300,
-    pos=(None, None),
+    max_height,
+    start_pos=(None, None),
     fill=(0,0,0),
+    allow_multiline=True,
     rotation=0
 ):
-    W, H = canvas.size
+    canvas_w, canvas_h = draw.im.size
 
-    # Try largest font size downwards
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
 
+        # Measure full text
         bbox = font.getbbox(text)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
 
-        if w <= max_width:
-            px, py = pos
-            print("DEBUG brand text:",
-                  "size:", size,
-                  "w:", w,
-                  "h:", h,
-                  "pos:", (px, py),
-                  "fill:", fill,
-                  "canvas mode:", canvas.mode)
+        # --- SINGLE LINE MODE ---
+        if not allow_multiline:
+            if w <= max_width and h <= max_height:
+                lines = [text]
+                total_h = h
+                max_line_w = w
+            else:
+                continue
+        else:
+            # Word wrapping if needed
+            words = text.split()
+            if w <= max_width and h <= max_height:
+                lines = [text]
+                total_h = h
+                max_line_w = w
+            else:
+                lines = []
+                line = ""
+                for word in words:
+                    test = line + " " + word if line else word
+                    bbox = font.getbbox(test)
+                    if (bbox[2] - bbox[0]) <= max_width:
+                        line = test
+                    else:
+                        lines.append(line)
+                        line = word
+                if line:
+                    lines.append(line)
 
-            if px is None:
-                px = (W - w) // 2
-            if py is None:
-                py = (H - h) // 2
+                total_h = sum(font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines) \
+                          + (len(lines)-1)*10
+                if total_h > max_height:
+                    continue
+                max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
 
-            temp = Image.new("RGBA", (w, h), (0,0,0,0))
-            td = ImageDraw.Draw(temp)
-            td.text((0, 0), text, fill=fill, font=font)
+        if max_line_w > max_width:
+            continue
 
-            rotated = temp.rotate(rotation, expand=True)
+        # Smart centering
+        x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
+        y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
 
-            # Correct RGBA conversion
-            if canvas.mode != "RGBA":
-                canvas = canvas.convert("RGBA")
+        # Render text to temporary RGBA image
+        temp = Image.new("RGBA", (max_line_w+20, total_h+20), (0,0,0,0))
+        td = ImageDraw.Draw(temp)
 
-            canvas.paste(rotated, (px, py), rotated)
+        yy = 10
+        for l in lines:
+            td.text((10, yy), l, fill=fill, font=font)
+            bbox = font.getbbox(l)
+            lh = bbox[3] - bbox[1]
+            yy += lh + 10
 
-            return font, w, h
+        # Rotate if requested
+        if rotation != 0:
+            temp = temp.rotate(rotation, expand=True)
 
-    return None, 0, 0
+        # Paste onto canvas
+        if draw.im.mode != "RGBA":
+            base = draw.im.convert("RGBA")
+        else:
+            base = draw.im
+        base.paste(temp, (x, y), temp)
+
+        return total_h, max_line_w, font
+
+    return 0, 0, None
+
 
 
 
@@ -287,16 +327,18 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Brand Name
     # -------------------------
     brand_text = brand.upper()
-    draw_scaled_text(
+    draw_scaled_text2(
         draw,
         text=brand_text,
         font_path="fx-neofara-black-italic.otf",
         max_font_size=730,
         max_width=1000,
         max_height=500,
-        start_pos=(100, 220),
-        fill=protect_co
+        start_pos=(None, 220),
+        fill=protect_co,
+        rotation=90  
     )
+
     # -------------------------
     # Sizes Box
     # -------------------------
