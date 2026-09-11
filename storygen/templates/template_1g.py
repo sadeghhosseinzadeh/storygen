@@ -168,12 +168,18 @@ def draw_scaled_text2(
             # Rotate safely
             rotated = temp.rotate(rotation, expand=True)
 
-            # FIX: draw RGBA correctly
+            # Ensure canvas is RGBA so mask works
+            if canvas.mode != "RGBA":
+                canvas = canvas.convert("RGBA")
+                draw.im = canvas
+
+            # Draw rotated image with alpha mask
             canvas.paste(rotated, (x, y), rotated)
 
             return h, w, font
 
     return 0, 0, None
+
 
 
 
