@@ -286,6 +286,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Brand Name
     # -------------------------
+    brand_text = brand.upper()
     draw_scaled_text(
         draw,
         text=brand_text,
