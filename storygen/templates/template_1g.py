@@ -235,10 +235,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         text=shop_name_en,
         font_path_eng="Segoe.UI.Semilight_p30download.com.ttf",
-        font_size_eng=60,
+        font_size_eng=50,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 285),
+        pos=(None, 295),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -255,7 +255,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         mode=0,
         variant=1,
         opacity=255,
-        pos=(None, 115),
+        pos=(None, 90),
         color=lighten,
         max_size=(260, 200)
     )
@@ -266,8 +266,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(None, 340),
-        max_size=(120, 120),
+        pos=(None, 390),
+        max_size=(110, 110),
         center_x=True,
         opacity=88
     )
@@ -291,9 +291,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         draw,
         text=brand_text,
         font_path="fx-neofara-black-italic.otf",
-        max_font_size=230,
-        max_width=400,
-        max_height=200,
+        max_font_size=730,
+        max_width=1000,
+        max_height=500,
         start_pos=(100, 220),
         fill=protect_co
     )
@@ -386,7 +386,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Paste Persian text
     temp_img.paste(img_main, (10 + num_w + gap, main_y), img_main)
     
-    final_pos = (400, 1730)   # ← your original position
+    final_pos = (330, 1600)   
     
     canvas.paste(temp_img, final_pos, temp_img)
 
