@@ -20,7 +20,7 @@ from storygen.utils import (
 def draw_sizes_grid(
     canvas,
     sizes,
-    pos=None,
+    pos=(None, None),
     box_colors=((220,220,220), (180,180,180)),  # two alternating colors
     box_radius=12,
 
@@ -71,21 +71,27 @@ def draw_sizes_grid(
         cols = (n + rows - 1) // rows
         cols = min(cols, max_cols)
 
-    # Position anchor
-    if pos is None:
-        center_x = W // 2
-        center_y = H // 2
-    else:
-        center_x, center_y = pos
+    # --- NEW POSITION LOGIC ---
+    pos_x, pos_y = pos
 
     box_w, box_h = box_size
-
-    # Total grid size
     grid_w = cols * box_w
     grid_h = rows * box_h
 
-    x0 = center_x - grid_w // 2
-    y0 = center_y - grid_h // 2
+    # Center if None
+    if pos_x is None:
+        pos_x = (W - grid_w) // 2
+    else:
+        pos_x = pos_x - grid_w // 2
+
+    if pos_y is None:
+        pos_y = (H - grid_h) // 2
+    else:
+        pos_y = pos_y - grid_h // 2
+
+    x0 = pos_x
+    y0 = pos_y
+    # ---------------------------
 
     # Draw boxes
     idx = 0
@@ -124,6 +130,7 @@ def draw_sizes_grid(
             idx += 1
 
 
+
 def draw_scaled_text2(
     draw,
     text,
@@ -134,7 +141,8 @@ def draw_scaled_text2(
     fill,
     rotation=0  
 ):
-    canvas_w, canvas_h = draw.im.size
+    canvas = draw.im
+    canvas_w, canvas_h = canvas.size
 
     # Try from max size down to 10
     for size in range(max_font_size, 10, -2):
@@ -160,12 +168,13 @@ def draw_scaled_text2(
             # Rotate safely
             rotated = temp.rotate(rotation, expand=True)
 
-            # Draw rotated image
-            draw.bitmap((x, y), rotated)
+            # FIX: draw RGBA correctly
+            canvas.paste(rotated, (x, y), rotated)
 
             return h, w, font
 
     return 0, 0, None
+
 
 
 
@@ -204,7 +213,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_path="fx-neofara-black-italic.otf",
         max_font_size=550,
         max_width= 1000,
-        start_pos=(100, 350),
+        start_pos=(100, 325),
         fill=protect_co,
         rotation=0
     )
@@ -219,7 +228,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_size_eng=75,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 250),
+        pos=(None, 225),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -232,11 +241,11 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_text(
         canvas,
         text=shop_name_en,
-        font_path_eng="Segoe.UI.Bold_p30download.com.ttf",
+        font_path_eng="Segoe.UI.Semilight_p30download.com.ttf",
         font_size_eng=60,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 300),
+        pos=(None, 285),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -253,7 +262,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         mode=0,
         variant=1,
         opacity=255,
-        pos=(None, 140),
+        pos=(None, 115),
         color=lighten,
         max_size=(260, 200)
     )
@@ -264,10 +273,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(None, 300),
-        max_size=(150, 150),
+        pos=(None, 340),
+        max_size=(120, 120),
         center_x=True,
-        opacity=105
+        opacity=88
     )
     # -------------------------
     # Shoe
@@ -287,7 +296,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_sizes_grid(
         canvas,
         sizes,
-        pos=None,
+        pos=(None, 1700),
         box_colors=(lighten, protect_co),  
         box_radius=12,
     
@@ -311,7 +320,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
         
     # -------------------------
-    # Footer Text 
+    # Footer Text (One Line)
     # -------------------------
     rand_num = random.randint(100, 999)
     footer_main = "استعلام قیمت عدد"
@@ -320,21 +329,25 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     base_x = 400
     base_y = 1730
     
-    font_main = load_font("Homa.ttf", 45)          # Persian font
-    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
+    font_main = load_font("Homa.ttf", 45)     # Persian font
+    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)  # English font
     
+    # Draw main Persian text
     draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
     
+    # Measure main text width
     bbox_main = font_main.getbbox(footer_main)
     main_w = bbox_main[2] - bbox_main[0]
     
-    bbox_num = font_num.getbbox(footer_number)
-    num_w = bbox_num[2] - bbox_num[0]
+    # Small gap between texts
+    gap = 15
     
-    num_x = base_x + (main_w - num_w) // 2
-    num_y = base_y + bbox_main[3] - bbox_main[1] + 10
+    # Number position → immediately after Persian text
+    num_x = base_x + main_w + gap
+    num_y = base_y  # same line
     
     draw.text((num_x, num_y), footer_number, fill=(0,0,0), font=font_num)
+
 
 
 
