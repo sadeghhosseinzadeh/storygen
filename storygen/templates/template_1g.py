@@ -10,7 +10,7 @@ from storygen.utils import (
     place_shoe2,
     remove_background,
     extract_colors,
-    add_brand_logo,
+    add_brand_logo2,
     detect_shoe_direction,
     draw_sizes_box3,
     to_english_digits,
