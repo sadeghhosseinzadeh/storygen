@@ -331,15 +331,15 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_path="Segoe.UI.Semibold_p30download.com.ttf",
         font_size=40,
         text_color=(0,0,0),
-        box_size=(210, 60),
+        box_size=(220, 65),
     
         # Padding inside each box
-        padding_left=15,
-        padding_right=15,
-        padding_top=10,
-        padding_bottom=10,
-        h_spacing=10,
-        v_spacing=35)
+        padding_left=0,
+        padding_right=0,
+        padding_top=0,
+        padding_bottom=0,
+        h_spacing=35,
+        v_spacing=10)
 
     # -------------------------
     # Footer Text
@@ -401,7 +401,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Paste Persian text
     temp_img.paste(img_main, (10 + num_w + gap, main_y), img_main)
     
-    final_pos = (270, 1620)   
+    final_pos = (275, 1620)   
     
     canvas.paste(temp_img, final_pos, temp_img)
 
