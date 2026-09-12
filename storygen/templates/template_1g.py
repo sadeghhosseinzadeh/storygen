@@ -249,9 +249,11 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Model Name
     # -------------------------
+    model_text = model_name.upper()
+    
     draw_text(
         canvas,
-        text=model_name,
+        text=model_text,
         font_path_eng="calibrib.ttf",
         font_size_eng=68,
         font_path_per="A Mitra 04.ttf",
