@@ -190,8 +190,8 @@ def draw_sizes_grid(
 
     # Draw boxes
     idx = 0
-    for c in range(cols):
-        for r in range(rows):
+    for r in range(rows):
+        for c in range(cols):
             if idx >= n:
                 break
 
