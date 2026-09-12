@@ -2,6 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 import cairo
 import random
 import numpy as np
+from storygen.utils.sizes_utils import draw_sizes_grid
 
 from storygen.utils import (
     lighten_color,
