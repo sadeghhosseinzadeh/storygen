@@ -95,7 +95,7 @@ def draw_sizes_grid(
     # Grid limits
     max_rows=3,
     max_cols=4,
-    max_sizes=12,   # NEW: hard limit
+    max_sizes=12,   # hard limit
 
     # Auto shrink settings
     shrink_threshold=12,
@@ -120,33 +120,39 @@ def draw_sizes_grid(
     if not sizes:
         return
 
-    # Limit sizes
+    # Normalize sizes input FIRST
+    if isinstance(sizes, str):
+        sizes = [s.strip() for s in sizes.split(",") if s.strip()]
+    else:
+        sizes = list(sizes)
+
+    # Then apply max limit
     sizes = sizes[:max_sizes]
+
+    if not sizes:
+        return
 
     draw = ImageDraw.Draw(canvas)
     W, H = canvas.size
 
-    # Normalize sizes input
-    if isinstance(sizes, str):
-        sizes = [s.strip() for s in sizes.split(",") if s.strip()]
-
     # Auto shrink if too many sizes
-    if len(sizes) >= shrink_threshold:
+    n = len(sizes)
+    if n >= shrink_threshold:
         box_w, box_h = box_size
         box_w = int(box_w * 0.85)
         box_h = int(box_h * 0.85)
         box_size = (box_w, box_h)
         font_size = max(20, font_size - 10)
+    else:
+        box_w, box_h = box_size
 
     font = load_font(font_path, font_size)
 
     # Determine grid layout
-    n = len(sizes)
     rows = min(max_rows, n)
     cols = min(max_cols, (n + rows - 1) // rows)
 
     pos_x, pos_y = pos
-    box_w, box_h = box_size
 
     # Total grid size including spacing
     grid_w = cols * box_w + (cols - 1) * h_spacing
@@ -166,26 +172,17 @@ def draw_sizes_grid(
     x0 = pos_x
     y0 = pos_y
 
-    # --- SMART COLOR CYCLING ---
-    # Row-based alternating colors, but columns continue pattern
-    # Example:
-    # col0 rows: A B A
-    # col1 rows: B A B
-    # col2 rows: A B A
-    # etc.
+    # Row-based alternating colors, columns continue pattern
     def get_box_color(col, row):
-        # shift pattern based on column index
         idx = (row + col) % len(box_colors)
         return box_colors[idx]
 
-    # --- SMART TEXT COLOR ---
     def auto_text_color(rgb):
         avg = sum(rgb) / 3
         if avg < dark_threshold:
             return (255, 255, 255)  # white
         if avg > light_threshold:
             return (0, 0, 0)        # black
-        # mid-range → choose best contrast
         return (255, 255, 255) if avg < 160 else (0, 0, 0)
 
     # Draw boxes
@@ -217,12 +214,11 @@ def draw_sizes_grid(
             tx = max(bx1 + padding_left, tx)
             ty = max(by1 + padding_top, ty)
 
-            # Auto text color
             tcolor = auto_text_color(color)
-
             draw.text((tx, ty), s, fill=tcolor, font=font)
 
             idx += 1
+
 
 
 
