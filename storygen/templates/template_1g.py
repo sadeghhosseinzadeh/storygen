@@ -309,10 +309,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Sizes Box
     # -------------------------
 
-     first= adjust_saturation(darken_color(saturated_color, 0.55), 0.25)
-     second= lighten_color(saturated_color, 0.90)
-     third= darken_color(saturated_color, 0.10)
-     fourth= adjust_saturation(lighten_color(saturated_color, 0.3), 0.1)
+    first = adjust_saturation(darken_color(saturated_color, 0.55), 0.25)
+    second = lighten_color(saturated_color, 0.90)
+    third = darken_color(saturated_color, 0.10)
+    fourth = adjust_saturation(lighten_color(saturated_color, 0.3), 0.1)
 
     draw_sizes_grid(
         canvas,
