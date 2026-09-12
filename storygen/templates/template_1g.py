@@ -317,7 +317,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_sizes_grid(
         canvas,
         sizes,
-        pos=(None, 1850),
+        pos=(None, 1800),
         box_colors=(first, fourth),  
         box_radius=12,
     
@@ -337,8 +337,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         padding_right=15,
         padding_top=10,
         padding_bottom=10,
-        h_spacing=30,
-        v_spacing=25)
+        h_spacing=10,
+        v_spacing=35)
 
     # -------------------------
     # Footer Text
