@@ -126,9 +126,8 @@ def draw_sizes_grid(
     else:
         sizes = list(sizes)
 
-    # Then apply max limit
+    # Apply max limit
     sizes = sizes[:max_sizes]
-
     if not sizes:
         return
 
@@ -207,12 +206,12 @@ def draw_sizes_grid(
             tw = b[2] - b[0]
             th = b[3] - b[1]
 
-            # Center text inside box with padding
-            tx = bx1 + (box_w - tw) // 2
-            ty = by1 + (box_h - th) // 2
+            # Perfect centering with padding
+            available_w = box_w - padding_left - padding_right
+            available_h = box_h - padding_top - padding_bottom
 
-            tx = max(bx1 + padding_left, tx)
-            ty = max(by1 + padding_top, ty)
+            tx = bx1 + padding_left + max(0, (available_w - tw) // 2)
+            ty = by1 + padding_top + max(0, (available_h - th) // 2)
 
             tcolor = auto_text_color(color)
             draw.text((tx, ty), s, fill=tcolor, font=font)
@@ -254,10 +253,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         text=model_name,
         font_path_eng="calibrib.ttf",
-        font_size_eng=69,
+        font_size_eng=68,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 225),
+        pos=(None, 233),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -270,10 +269,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         text=shop_name_en,
         font_path_eng="calibrili.ttf",
-        font_size_eng=50,
+        font_size_eng=47,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 320),
+        pos=(None, 316),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -300,9 +299,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         logo_path=logo,
         pos=(None, 380),
-        max_size=(110, 110),
+        max_size=(100, 100),
         center_x=True,
-        opacity=150)
+        opacity=200)
     
     # -------------------------
     # Brand Name
@@ -311,7 +310,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         text=brand.upper(),
         font_path="Future Friends Italic.ttf",
-        top_y=430,
+        top_y=440,
         bottom_y=1600,
         fill=protect_co,
         rotation=90,
