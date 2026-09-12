@@ -360,7 +360,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         padding_left=0,
         padding_right=0,
         padding_top=0,
-        padding_bottom=5,
+        padding_bottom=25,
         h_spacing=35,
         v_spacing=10)
 
