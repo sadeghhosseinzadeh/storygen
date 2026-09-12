@@ -9,6 +9,7 @@ from storygen.utils import (
     load_font,
     place_shoe2,
     remove_background,
+    adjust_saturation,
     extract_colors,
     add_brand_logo2,
     detect_shoe_direction,
@@ -211,7 +212,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Lighten main color → protect from becoming white
     lighten = lighten_color(saturated_color, 0.90)
     protect_co = protect_color(lighten, sat_boost=1.5, darken_factor=0.25, threshold=230)
-    
+
     canvas = Image.new("RGB", (W, H), (255,255,255))
     draw = ImageDraw.Draw(canvas)
 
@@ -227,8 +228,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_text(
         canvas,
         text=model_name,
-        font_path_eng="Segoe.UI.Bold_p30download.com.ttf",
-        font_size_eng=75,
+        font_path_eng="calibrib.ttf",
+        font_size_eng=69,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
         pos=(None, 225),
@@ -243,11 +244,11 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_text(
         canvas,
         text=shop_name_en,
-        font_path_eng="Segoe.UI.Semilight_p30download.com.ttf",
-        font_size_eng=40,
+        font_path_eng="calibrili.ttf",
+        font_size_eng=50,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 300),
+        pos=(None, 320),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -273,10 +274,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(None, 390),
+        pos=(None, 380),
         max_size=(110, 110),
         center_x=True,
-        opacity=110)
+        opacity=150)
     
     # -------------------------
     # Brand Name
@@ -307,11 +308,17 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Sizes Box
     # -------------------------
+
+     first= adjust_saturation(darken_color(saturated_color, 0.55), 0.25),
+     second= lighten_color(saturated_color, 0.90),
+     third= darken_color(saturated_color, 0.10),
+     fourth= adjust_saturation(lighten_color(saturated_color, 0.3), 0.1),
+
     draw_sizes_grid(
         canvas,
         sizes,
         pos=(None, 1850),
-        box_colors=(lighten, protect_co),  
+        box_colors=(first, fourth),  
         box_radius=12,
     
         # Grid limits
@@ -321,9 +328,9 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         # Auto shrink settings
         shrink_threshold=12,
         font_path="Segoe.UI.Semibold_p30download.com.ttf",
-        font_size=44,
+        font_size=40,
         text_color=(0,0,0),
-        box_size=(200, 50),
+        box_size=(210, 60),
     
         # Padding inside each box
         padding_left=15,
@@ -342,7 +349,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     
     # Colors
     main_color_footer = (0, 0, 0)
-    number_color_footer = (0, 0, 0)
+    number_color_footer = (255, 140, 0)
     
     # Fonts
     font_main = load_font("Homa.ttf", 48)
@@ -393,7 +400,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Paste Persian text
     temp_img.paste(img_main, (10 + num_w + gap, main_y), img_main)
     
-    final_pos = (230, 1600)   
+    final_pos = (270, 1620)   
     
     canvas.paste(temp_img, final_pos, temp_img)
 
