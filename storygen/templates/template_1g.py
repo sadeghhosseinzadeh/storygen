@@ -5,6 +5,7 @@ import numpy as np
 
 from storygen.utils import (
     lighten_color,
+    darken_color,
     draw_text,
     load_font,
     place_shoe2,
