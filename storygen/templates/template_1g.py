@@ -86,19 +86,26 @@ def draw_sizes_grid(
     canvas,
     sizes,
     pos=(None, None),
+
+    # Colors for alternating rows
     box_colors=((220,220,220), (180,180,180)),
+
     box_radius=12,
 
     # Grid limits
     max_rows=3,
     max_cols=4,
+    max_sizes=12,   # NEW: hard limit
 
     # Auto shrink settings
     shrink_threshold=12,
     box_size=(160, 80),
     font_path="Segoe.UI.Semibold_p30download.com.ttf",
     font_size=40,
-    text_color=(0,0,0),
+
+    # Text colors auto-detected
+    dark_threshold=140,   # avg RGB < this → use white text
+    light_threshold=200,  # avg RGB > this → use black text
 
     # Padding inside each box
     padding_left=10,
@@ -106,12 +113,15 @@ def draw_sizes_grid(
     padding_top=5,
     padding_bottom=5,
 
-    # NEW: spacing between boxes
-    h_spacing=20,   # horizontal gap
-    v_spacing=20    # vertical gap
+    # Spacing between boxes
+    h_spacing=20,
+    v_spacing=20
 ):
     if not sizes:
         return
+
+    # Limit sizes
+    sizes = sizes[:max_sizes]
 
     draw = ImageDraw.Draw(canvas)
     W, H = canvas.size
@@ -132,19 +142,13 @@ def draw_sizes_grid(
 
     # Determine grid layout
     n = len(sizes)
-    if n <= max_rows:
-        rows = n
-        cols = 1
-    else:
-        rows = min(max_rows, n)
-        cols = (n + rows - 1) // rows
-        cols = min(cols, max_cols)
+    rows = min(max_rows, n)
+    cols = min(max_cols, (n + rows - 1) // rows)
 
     pos_x, pos_y = pos
-
     box_w, box_h = box_size
 
-    # NEW: include spacing in total grid size
+    # Total grid size including spacing
     grid_w = cols * box_w + (cols - 1) * h_spacing
     grid_h = rows * box_h + (rows - 1) * v_spacing
 
@@ -162,23 +166,43 @@ def draw_sizes_grid(
     x0 = pos_x
     y0 = pos_y
 
+    # --- SMART COLOR CYCLING ---
+    # Row-based alternating colors, but columns continue pattern
+    # Example:
+    # col0 rows: A B A
+    # col1 rows: B A B
+    # col2 rows: A B A
+    # etc.
+    def get_box_color(col, row):
+        # shift pattern based on column index
+        idx = (row + col) % len(box_colors)
+        return box_colors[idx]
+
+    # --- SMART TEXT COLOR ---
+    def auto_text_color(rgb):
+        avg = sum(rgb) / 3
+        if avg < dark_threshold:
+            return (255, 255, 255)  # white
+        if avg > light_threshold:
+            return (0, 0, 0)        # black
+        # mid-range → choose best contrast
+        return (255, 255, 255) if avg < 160 else (0, 0, 0)
+
     # Draw boxes
     idx = 0
-    for r in range(rows):
-        for c in range(cols):
+    for c in range(cols):
+        for r in range(rows):
             if idx >= n:
                 break
 
             s = sizes[idx]
 
-            # NEW: spacing applied here
             bx1 = x0 + c * (box_w + h_spacing)
             by1 = y0 + r * (box_h + v_spacing)
             bx2 = bx1 + box_w
             by2 = by1 + box_h
 
-            color = box_colors[idx % 2]
-
+            color = get_box_color(c, r)
             draw.rounded_rectangle([bx1, by1, bx2, by2], radius=box_radius, fill=color)
 
             # Measure text
@@ -193,9 +217,13 @@ def draw_sizes_grid(
             tx = max(bx1 + padding_left, tx)
             ty = max(by1 + padding_top, ty)
 
-            draw.text((tx, ty), s, fill=text_color, font=font)
+            # Auto text color
+            tcolor = auto_text_color(color)
+
+            draw.text((tx, ty), s, fill=tcolor, font=font)
 
             idx += 1
+
 
 
 
@@ -318,26 +346,29 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_sizes_grid(
         canvas,
         sizes,
-        pos=(None, 1800),
+        pos=(None, 1780),
         box_colors=(first, fourth),  
         box_radius=12,
     
         # Grid limits
         max_rows=3,
         max_cols=4,
-    
-        # Auto shrink settings
-        shrink_threshold=12,
+        max_sizes=12,
+
         font_path="Segoe.UI.Semibold_p30download.com.ttf",
-        font_size=40,
+        font_size=37,
         text_color=(0,0,0),
         box_size=(220, 65),
-    
+        
+        # Text colors auto-detected
+        dark_threshold=140,   
+        light_threshold=200,
+        
         # Padding inside each box
         padding_left=0,
         padding_right=0,
         padding_top=0,
-        padding_bottom=0,
+        padding_bottom=5,
         h_spacing=35,
         v_spacing=10)
 
