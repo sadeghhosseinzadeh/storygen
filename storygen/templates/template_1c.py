@@ -105,6 +105,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_path="calibrib.ttf",
         max_font_size=80,
         max_width= H-712,
+        max_height=200,
         start_pos= (None, 200),
         fill=(255,255,255),
         allow_multiline=False
