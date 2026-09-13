@@ -176,7 +176,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     footer_number = f"({to_english_digits(str(rand_num))})"
     
     # Colors
-    main_color_footer = (0, 0, 0)
+    main_color_footer = (255, 255, 255)
     number_color_footer = (255, 140, 0)
     
     # Fonts
