@@ -62,6 +62,15 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # middle req
     # -------------------------
+    # --- Cairo surface for trapezoid drawing ---
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
+    ctx = cairo.Context(surface)
+    
+    # Make Cairo surface transparent
+    ctx.set_source_rgba(0, 0, 0, 0)
+    ctx.set_operator(cairo.OPERATOR_SOURCE)
+    ctx.paint()
+
     draw_trapezoid(ctx,
                    x_left=354,
                    y_top=0,
