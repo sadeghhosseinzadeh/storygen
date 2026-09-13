@@ -3,7 +3,7 @@ import cairo
 import random
 import numpy as np
 
-from storygen.Utils.sizes_draw import draw_sizes_grid
+from storygen.Utils.sizes_utils import draw_sizes_grid
 from storygen.utils import (
     lighten_color,
     darken_color,
