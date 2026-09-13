@@ -179,7 +179,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         bottom_y=1600,
         fill=protect_co,
         rotation=90,
-        padding=250,
+        padding=260,
         safety_margin=20
     )
 
