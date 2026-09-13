@@ -151,10 +151,10 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         brand,
         mode=0,
         variant=1,
-        opacity=255,
+        opacity=245,
         pos=(None, 60),
         color=lighten,
-        max_size=(260, 100))
+        max_size=(260, 90))
 
     
     # -------------------------
@@ -163,7 +163,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(None, 370),
+        pos=(None, 380),
         max_size=(110, 110),
         center_x=True,
         opacity=200)
