@@ -163,8 +163,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(None, 375),
-        max_size=(110, 70),
+        pos=(None, 370),
+        max_size=(110, 55),
         center_x=True,
         opacity=200)
     
@@ -179,7 +179,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         bottom_y=1600,
         fill=protect_co,
         rotation=90,
-        padding=200,
+        padding=250,
         safety_margin=20
     )
 
