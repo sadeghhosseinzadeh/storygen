@@ -107,7 +107,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         max_width= H-712,
         start_pos= (None, 200),
         fill=(255,255,255),
-        allow_multiline=F
+        allow_multiline=False
     )
 
     # -------------------------
