@@ -121,7 +121,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_size_eng=68,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 233),
+        pos=(None, 240),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -163,8 +163,8 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(None, 380),
-        max_size=(100, 100),
+        pos=(None, 375),
+        max_size=(110, 70),
         center_x=True,
         opacity=200)
     
@@ -179,7 +179,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         bottom_y=1600,
         fill=protect_co,
         rotation=90,
-        padding=130,
+        padding=200,
         safety_margin=20
     )
 
@@ -225,7 +225,7 @@ def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
         padding_left=0,
         padding_right=0,
         padding_top=0,
-        padding_bottom=25,
+        padding_bottom=20,
         h_spacing=35,
         v_spacing=10)
 
