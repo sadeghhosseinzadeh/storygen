@@ -1,3 +1,7 @@
+from PIL import ImageDraw, ImageFont
+import colorsys
+ 
+from storygen.utils import load_font, darken_color, lighten_color, adjust_saturation
 
 # 1. size box grid 
 def draw_sizes_grid(
