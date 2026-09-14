@@ -157,15 +157,16 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     place_shoe_1c(
         canvas, photo_1_rem,
-        pos=(None, 1300),  
+        pos=(None, 1300),
         max_size=(1100, 600),
         angle_left=40,
         angle_right=-40,
         center_x=True,
-        shadow=True,                 # enable shadow
-        shadow_offset=(80, 20),      # horizontal offset (toe→heel direction)
-        shadow_blur=25               # softness of the shadow
+        shadow=True,
+        shadow_offset=(0, 40),   # vertical drop under shoe
+        shadow_blur=35
     )
+
 
     
     # -------------------------
