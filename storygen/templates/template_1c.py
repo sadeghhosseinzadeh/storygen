@@ -155,28 +155,23 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Shoe
     # -------------------------
-    package_root = Path(storygen.__file__).parent
-    shadow_path = package_root / "bg" / "template1c_shadow.png"
-    shadow_png = Image.open(shadow_path).convert("RGBA")
-
-    place_shoe_1c(
+    place_shoe_with_shadow(
         canvas,
         photo_1_rem,
-        shadow_png,
         pos=(None, 1300),
         max_size=(1100, 600),
         angle_left=40,
         angle_right=-40,
         center_x=True,
     
-        shadow_scale=1.7,
-        shadow_rotation=0,
-        shadow_opacity=0.6,      # 70% opacity
-        shadow_offset=(0, 0),   # global offset
-        toe_offset=(0, 0),      # fine adjustment around toe
-        flip_shadow_for_left=True
-        
+        shadow_front_width=140,   # thicker under toe
+        shadow_back_width=35,     # thinner under heel
+        shadow_length=0.50,       # shorter shadow
+        shadow_darkness=170,      # darker
+        shadow_softness=50,       # softer blur
+        shadow_offset=(0, 15),    # move shadow down a bit
     )
+
 
 
 
