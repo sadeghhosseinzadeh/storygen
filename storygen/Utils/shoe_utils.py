@@ -5,23 +5,26 @@ from storygen.utils import detect_shoe_direction
 def place_shoe_1c(
     canvas,
     img,
+    shadow_png,
     pos=None,
-    max_size=(800, 600),
+    max_size=(800,600),
     angle_left=20,
     angle_right=-20,
     center_x=True,
     center_y=False,
-    shadow=True,
-    shadow_offset=(0, 40),
-    shadow_blur=35,
 
-    # --- SHADOW TUNING ---
-    toe_width=90,          # thicker front
-    heel_width=20,         # thinner back
-    shadow_length=0.55,    # % of shoe length that gets shadow
-    shadow_alpha=150,      # darkness
-    shadow_height=30       # vertical thickness
+    # Shadow PNG controls
+    shadow_offset=(0, 40),   # move shadow up/down/left/right
+    shadow_rotation=0,       # rotate shadow PNG
+    shadow_scale=1.0,        # scale shadow PNG
+    flip_shadow=True         # auto flip when shoe faces left
 ):
+    """
+    Places rotated shoe centered using toe→heel midpoint,
+    detects lowest point of shoe,
+    pastes external shadow PNG under the shoe.
+    """
+
     W, H = canvas.size
 
     # --- Resize shoe ---
@@ -39,9 +42,9 @@ def place_shoe_1c(
     rotated = shoe.rotate(final_angle, expand=True)
     rw, rh = rotated.size
 
-    # --- Alpha mask ---
+    # --- Alpha mask analysis ---
     arr = np.array(rotated)
-    alpha = arr[:, :, 3]
+    alpha = arr[:,:,3]
     ys, xs = np.where(alpha > 0)
 
     # Toe & heel detection
@@ -52,14 +55,10 @@ def place_shoe_1c(
         toe_x = xs.max()
         heel_x = xs.min()
 
-    # Normalize ordering (IMPORTANT FIX)
-    x_start = min(toe_x, heel_x)
-    x_end   = max(toe_x, heel_x)
-
-    # Sole line
+    # Bottom of shoe (lowest pixel)
     bottom_y = ys.max()
 
-    # Midpoint for centering
+    # Midpoint between toe & heel (for centering)
     mid_x = int((toe_x + heel_x) / 2)
 
     # --- Target position ---
@@ -68,64 +67,49 @@ def place_shoe_1c(
         target_y = H//2 if center_y else H//2
     else:
         target_x, target_y = pos
-        if center_x: target_x = W//2
-        if center_y: target_y = H//2
+        if center_x:
+            target_x = W//2
+        if center_y:
+            target_y = H//2
 
+    # Anchor shoe so toe→heel midpoint aligns to target
     pos_x = target_x - mid_x
     pos_y = target_y - bottom_y
 
-    # --- Shadow ---
-    if shadow:
-        shadow_layer = Image.new("RGBA", (rw, rh), (0,0,0,0))
-        shadow_draw = ImageDraw.Draw(shadow_layer)
+    # -------------------------
+    # Shadow PNG
+    # -------------------------
+    if shadow_png is not None:
 
-        # Shadow end (shorter)
-        shadow_end_x = int(x_start + (x_end - x_start) * shadow_length)
+        # Load shadow PNG
+        shadow = shadow_png.convert("RGBA")
 
-        shadow_center_y = bottom_y + 10
+        # Flip if shoe faces left
+        if flip_shadow and direction == "left":
+            shadow = shadow.transpose(Image.FLIP_LEFT_RIGHT)
 
-        # Toe shadow (wide)
-        shadow_draw.ellipse(
-            [
-                toe_x - toe_width,
-                shadow_center_y - shadow_height//2,
-                toe_x + toe_width,
-                shadow_center_y + shadow_height//2,
-            ],
-            fill=(0,0,0,shadow_alpha)
-        )
+        # Scale shadow
+        if shadow_scale != 1.0:
+            sw, sh = shadow.size
+            shadow = shadow.resize(
+                (int(sw * shadow_scale), int(sh * shadow_scale)),
+                Image.LANCZOS
+            )
 
-        # Mid band
-        shadow_draw.rectangle(
-            [
-                x_start,
-                shadow_center_y - shadow_height//2,
-                shadow_end_x,
-                shadow_center_y + shadow_height//2,
-            ],
-            fill=(0,0,0,shadow_alpha - 40)
-        )
+        # Rotate shadow
+        if shadow_rotation != 0:
+            shadow = shadow.rotate(shadow_rotation, expand=True)
 
-        # Heel shadow (small)
-        shadow_draw.ellipse(
-            [
-                shadow_end_x - heel_width,
-                shadow_center_y - shadow_height//2,
-                shadow_end_x + heel_width,
-                shadow_center_y + shadow_height//2,
-            ],
-            fill=(0,0,0,shadow_alpha - 80)
-        )
+        # Shadow placement:
+        # Shadow should sit at the bottom of the shoe
+        shadow_x = pos_x + shadow_offset[0]
+        shadow_y = pos_y + bottom_y + shadow_offset[1]
 
-        shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(shadow_blur))
+        canvas.paste(shadow, (shadow_x, shadow_y), shadow)
 
-        canvas.paste(
-            shadow_layer,
-            (pos_x + shadow_offset[0], pos_y + shadow_offset[1]),
-            shadow_layer
-        )
-
-    # --- Paste shoe ---
+    # -------------------------
+    # Paste shoe
+    # -------------------------
     canvas.paste(rotated, (pos_x, pos_y), rotated)
 
     return canvas
