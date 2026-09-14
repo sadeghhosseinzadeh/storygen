@@ -163,40 +163,67 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         angle_right=-40,
         center_x=True,
         shadow=True,
-        shadow_offset=(0, 10),  
-        shadow_blur=25
+        shadow_offset=(0, 0),  
+        shadow_blur=30
     )
 
 
-    
+
     # -------------------------
     # Sizes Box
     # -------------------------
+    # Parse sizes (comma separated)
+    sizes_list = [s.strip() for s in sizes.split(",") if s.strip()]
 
+    # First up to 5
+    sizes_left = sizes_list[:5]
+
+    # Second up to 5 (only if more than 5)
+    sizes_right = sizes_list[5:10]
+
+    # Left column 
     draw_sizes_grid(
         canvas,
-        sizes,
+        sizes_left,
         pos=(200, 1600),
-        box_colors=(second, third),  
+        box_colors=(second, third),
         box_radius=12,
-    
-        # Grid limits
         max_rows=12,
         max_cols=1,
-    
-        # Auto shrink settings
         shrink_threshold=12,
         font_path="Segoe.UI.Semibold_p30download.com.ttf",
         font_size=40,
         box_size=(220, 60),
-    
-        # Padding inside each box
         padding_left=0,
         padding_right=0,
         padding_top=0,
         padding_bottom=25,
         h_spacing=10,
-        v_spacing=35)
+        v_spacing=35
+    )
+
+    # Right column 
+    if sizes_right:
+        draw_sizes_grid(
+            canvas,
+            sizes_right,
+            pos=(1080 - 200 - 220, 1600),  
+            box_colors=(second, third),
+            box_radius=12,
+            max_rows=12,
+            max_cols=1,
+            shrink_threshold=12,
+            font_path="Segoe.UI.Semibold_p30download.com.ttf",
+            font_size=40,
+            box_size=(220, 60),
+            padding_left=0,
+            padding_right=0,
+            padding_top=0,
+            padding_bottom=25,
+            h_spacing=10,
+            v_spacing=35
+        )
+
 
     # -------------------------
     # Footer Text
