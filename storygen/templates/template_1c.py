@@ -232,7 +232,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     footer_main = "استعلام قیمت"
     footer_number = f"({to_english_digits(str(rand_num))})"
     
-    base_x = 370
+    base_x = 400
     base_y = 1735
     
     font_main = load_font("Homa.ttf", 45)          # Persian font
