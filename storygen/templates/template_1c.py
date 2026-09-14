@@ -163,8 +163,8 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         angle_right=-40,
         center_x=True,
         shadow=True,
-        shadow_offset=(0, 40),   # vertical drop under shoe
-        shadow_blur=35
+        shadow_offset=(0, 10),  
+        shadow_blur=25
     )
 
 
