@@ -3,6 +3,8 @@ import cairo
 import random
 import numpy as np
 from storygen.Utils.sizes_utils import draw_sizes_grid
+from storygen.Utils.shoe_utils import place_shoe_1c
+
 from pathlib import Path
 import storygen
 
@@ -116,9 +118,9 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         text=model_text,
         font_path="calibrib.ttf",
         max_font_size=80,
-        max_width= H-800,
+        max_width= 370,
         max_height=200,
-        start_pos= (None, 250),
+        start_pos= (None, 255),
         fill=(255,255,255),
         allow_multiline=False
     )
@@ -126,28 +128,26 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Shop Name
     # -------------------------
-    draw_text(
-        canvas,
+    draw_scaled_text(
+        draw,
         text=shop_name_en,
-        font_path_eng="calibrili.ttf",
-        font_size_eng=50,
-        font_path_per="A Mitra 04.ttf",
-        font_size_per=60,
-        pos=(None, 330),
-        rotation=0,
-        fill=(255, 255, 255),
-        padding_top=3,
-        padding_bottom=5)
+        font_path="calibrili.ttf",
+        max_font_size=50,
+        max_width= 370,
+        max_height=200,
+        start_pos= (None, 335),
+        fill=(255,255,255),
+        allow_multiline=False
+    )
     
-
     # -------------------------
     #  User logo 
     # -------------------------
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(None, 385),
-        max_size=(110, 110),
+        pos=(None, 395),
+        max_size=(105, 105),
         center_x=True,
         opacity=230)
     
@@ -196,16 +196,16 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Footer Text
     # -------------------------
     rand_num = random.randint(100, 999)
-    footer_main = "استعلام قیمت عدد"
+    footer_main = "استعلام قیمت"
     footer_number = f"({to_english_digits(str(rand_num))})"
     
-    base_x = 270
-    base_y = 1730
+    base_x = 370
+    base_y = 1735
     
     font_main = load_font("Homa.ttf", 45)          # Persian font
     font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
     
-    draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
+    draw.text((base_x, base_y), footer_main, fill=(255, 255, 255), font=font_main)
     
     bbox_main = font_main.getbbox(footer_main)
     main_w = bbox_main[2] - bbox_main[0]
