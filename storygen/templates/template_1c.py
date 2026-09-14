@@ -163,8 +163,8 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         angle_right=-40,
         center_x=True,
         shadow=True,
-        shadow_offset=(0, 0),  
-        shadow_blur=30
+        shadow_offset=(0, -10),  
+        shadow_blur=15
     )
 
 
@@ -207,7 +207,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         draw_sizes_grid(
             canvas,
             sizes_right,
-            pos=(1080 - 200 - 220, 1600),  
+            pos=(780, 1600),  
             box_colors=(second, third),
             box_radius=12,
             max_rows=12,
