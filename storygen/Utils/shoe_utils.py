@@ -72,7 +72,7 @@ def place_shoe_1c(
     pos_y = target_y - bottom_y
 
     # -------------------------
-    # Shadow PNG (DARKEN blend)
+    # Shadow PNG (simple paste + darken blend)
     # -------------------------
     if shadow_png is not None:
         shadow = shadow_png.convert("RGBA")
@@ -93,7 +93,7 @@ def place_shoe_1c(
         if shadow_rotation != 0:
             shadow = shadow.rotate(shadow_rotation, expand=True)
 
-        # --- Premultiply alpha + opacity ---
+        # --- Premultiply alpha + opacity (fix checkerboard) ---
         s_arr = np.array(shadow).astype(np.float32)
         alpha = s_arr[:, :, 3:4] / 255.0
         s_arr[:, :, :3] *= alpha
@@ -102,13 +102,13 @@ def place_shoe_1c(
 
         s_w, s_h = shadow.size
 
-        # --- Horizontal toe alignment ---
+        # --- Horizontal toe alignment (same as your old logic) ---
         if direction == "right":
             shadow_x = pos_x + toe_x - s_w + toe_offset[0]
         else:
             shadow_x = pos_x + toe_x + toe_offset[0]
 
-        # --- PERFECT vertical alignment ---
+        # --- PERFECT vertical alignment (lowest point of shoe) ---
         shoe_bottom_canvas_y = pos_y + bottom_y
         shadow_y = shoe_bottom_canvas_y + toe_offset[1]
 
@@ -116,12 +116,11 @@ def place_shoe_1c(
         shadow_x += shadow_offset[0]
         shadow_y += shadow_offset[1]
 
-        # --- DARKEN blend mode ---
+        # --- DARKEN blend mode (Photoshop-style) ---
         region = canvas.crop((shadow_x, shadow_y, shadow_x + s_w, shadow_y + s_h)).convert("RGBA")
         region_arr = np.array(region)
         shadow_arr = np.array(shadow)
 
-        # Darken blend: min(canvas, shadow)
         blended_rgb = np.minimum(region_arr[:, :, :3], shadow_arr[:, :, :3])
         blended_alpha = shadow_arr[:, :, 3]
 
