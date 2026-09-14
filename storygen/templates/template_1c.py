@@ -37,8 +37,8 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
     # Lighten main color → protect from becoming white
     first = adjust_saturation(darken_color(saturated_color, 0.55), 0.25)
-    second = lighten_color(saturated_color, 0.60)
-    third = darken_color(saturated_color, 0.30)
+    second = lighten_color(saturated_color, 0.45)
+    third = darken_color(saturated_color, 0.20)
     fourth = adjust_saturation(lighten_color(saturated_color, 0.3), 0.1)
 
     canvas = Image.new("RGB", (W, H), second)
@@ -116,9 +116,9 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         text=model_text,
         font_path="calibrib.ttf",
         max_font_size=80,
-        max_width= H-712,
+        max_width= H-800,
         max_height=200,
-        start_pos= (None, 200),
+        start_pos= (None, 250),
         fill=(255,255,255),
         allow_multiline=False
     )
@@ -133,7 +133,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_size_eng=50,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 320),
+        pos=(None, 330),
         rotation=0,
         fill=(255, 255, 255),
         padding_top=3,
@@ -146,10 +146,10 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(None, 380),
+        pos=(None, 385),
         max_size=(110, 110),
         center_x=True,
-        opacity=150)
+        opacity=230)
     
 
     # -------------------------
@@ -157,8 +157,8 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     place_shoe2(
         canvas, photo_1_rem,
-        pos=(None, 1250),  
-        max_size=(1000, 600),
+        pos=(None, 1300),  
+        max_size=(1100, 600),
         angle_left=40,
         angle_right=-40,
         center_x=True)
@@ -170,7 +170,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_sizes_grid(
         canvas,
         sizes,
-        pos=(250, 1650),
+        pos=(200, 1600),
         box_colors=(second, third),  
         box_radius=12,
     
@@ -182,7 +182,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         shrink_threshold=12,
         font_path="Segoe.UI.Semibold_p30download.com.ttf",
         font_size=40,
-        box_size=(210, 60),
+        box_size=(220, 60),
     
         # Padding inside each box
         padding_left=0,
@@ -199,63 +199,23 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     footer_main = "استعلام قیمت عدد"
     footer_number = f"({to_english_digits(str(rand_num))})"
     
-    # Colors
-    main_color_footer = (255, 255, 255)
-    number_color_footer = (255, 140, 0)
+    base_x = 270
+    base_y = 1730
     
-    # Fonts
-    font_main = load_font("Homa.ttf", 48)
-    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 49)
+    font_main = load_font("Homa.ttf", 45)          # Persian font
+    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
     
-    # --- Render each text separately to measure REAL pixel center ---
-    def render_and_center(text, font, color):
-        bbox = font.getbbox(text)
-        w = bbox[2] - bbox[0]
-        h = bbox[3] - bbox[1]
+    draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
     
-        temp = Image.new("RGBA", (w + 20, h + 20), (0,0,0,0))
-        d = ImageDraw.Draw(temp)
-        d.text((10, 10), text, font=font, fill=color)
+    bbox_main = font_main.getbbox(footer_main)
+    main_w = bbox_main[2] - bbox_main[0]
     
-        alpha = np.array(temp)[:,:,3]
+    bbox_num = font_num.getbbox(footer_number)
+    num_w = bbox_num[2] - bbox_num[0]
     
-        ys, xs = np.where(alpha > 0)
-        top = ys.min()
-        bottom = ys.max()
+    num_x = base_x + (main_w - num_w) // 2
+    num_y = base_y + bbox_main[3] - bbox_main[1] + 10
     
-        visual_h = bottom - top
-        center_offset = (visual_h // 2) + top
-    
-        return temp, w, visual_h, center_offset
-    
-    # Render both texts
-    img_main, main_w, main_h, main_center = render_and_center(footer_main, font_main, main_color_footer)
-    img_num,  num_w,  num_h,  num_center  = render_and_center(footer_number, font_num, number_color_footer)
-    
-    # Unified height
-    max_h = max(main_h, num_h)
-    
-    # Align visual centers
-    main_y = (max_h // 2) - main_center
-    num_y  = (max_h // 2) - num_center
-    
-    # RTL order: number first
-    gap = 20
-    total_w = num_w + gap + main_w
-    
-    # Final footer image
-    temp_img = Image.new("RGBA", (total_w + 40, max_h + 40), (0,0,0,0))
-    
-    # Paste number
-    temp_img.paste(img_num, (10, num_y), img_num)
-    
-    # Paste Persian text
-    temp_img.paste(img_main, (10 + num_w + gap, main_y), img_main)
-    
-    final_pos = (270, 1620)   
-    
-    canvas.paste(temp_img, final_pos, temp_img)
-
-
+    draw.text((num_x, num_y), footer_number, fill=(255,255,255), font=font_num)
 
     return canvas
