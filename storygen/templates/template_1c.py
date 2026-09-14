@@ -37,8 +37,8 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
     # Lighten main color → protect from becoming white
     first = adjust_saturation(darken_color(saturated_color, 0.55), 0.25)
-    second = lighten_color(saturated_color, 0.90)
-    third = darken_color(saturated_color, 0.10)
+    second = lighten_color(saturated_color, 0.60)
+    third = darken_color(saturated_color, 0.30)
     fourth = adjust_saturation(lighten_color(saturated_color, 0.3), 0.1)
 
     canvas = Image.new("RGB", (W, H), second)
@@ -71,7 +71,9 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     ctx.set_operator(cairo.OPERATOR_SOURCE)
     ctx.paint()
     
-    # Draw trapezoid
+    def normalize_color(rgb):
+        return tuple(c/255.0 for c in rgb)
+    
     draw_trapezoid(
         ctx,
         x_left=354,
@@ -80,9 +82,10 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         y_top_right=0,
         y_bottom_left=H,
         y_bottom_right=H,
-        color=third,
+        color=normalize_color(third),  # normalized
         radius=0
     )
+
     
     # Merge trapezoid into Pillow canvas
     buf = surface.get_data()
