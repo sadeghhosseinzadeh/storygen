@@ -155,7 +155,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Shoe
     # -------------------------
-    place_shoe_with_shadow(
+    place_shoe_1c(
         canvas,
         photo_1_rem,
         pos=(None, 1300),
