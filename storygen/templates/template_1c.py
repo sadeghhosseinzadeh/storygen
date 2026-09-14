@@ -155,6 +155,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     # Shoe
     # -------------------------
+
     place_shoe_1c(
         canvas, photo_1_rem,
         pos=(None, 1300),
@@ -163,8 +164,13 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         angle_right=-40,
         center_x=True,
         shadow=True,
-        shadow_offset=(0, -10),  
-        shadow_blur=15
+        shadow_offset=(0, 0),
+        shadow_blur=25,
+        toe_width=100,
+        heel_width=15,
+        shadow_length=0.5,
+        shadow_alpha=170,
+        shadow_height=28,
     )
 
 
@@ -207,7 +213,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         draw_sizes_grid(
             canvas,
             sizes_right,
-            pos=(780, 1600),  
+            pos=(880, 1600),  
             box_colors=(second, third),
             box_radius=12,
             max_rows=12,
@@ -232,7 +238,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     footer_main = "استعلام قیمت"
     footer_number = f"({to_english_digits(str(rand_num))})"
     
-    base_x = 430
+    base_x = 420
     base_y = 1735
     
     font_main = load_font("Homa.ttf", 45)          # Persian font
