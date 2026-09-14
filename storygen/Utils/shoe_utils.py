@@ -80,7 +80,7 @@ def place_shoe_1c(canvas, img, pos=None, max_size=(800,600),
              shadow_center_y - shadow_height//2,
              shadow_right,
              shadow_center_y + shadow_height//2],
-            fill=(0,0,0,130)
+            fill=(0,0,0,150)
         )
 
         shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(shadow_blur))
