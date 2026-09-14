@@ -164,12 +164,12 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         angle_right=-40,
         center_x=True,
     
-        shadow_front_width=100,   # thicker under toe
-        shadow_back_width=50,     # thinner under heel
-        shadow_length=1,       # shorter shadow
+        shadow_front_width=70,   # thicker under toe
+        shadow_back_width=30,     # thinner under heel
+        shadow_length=0.8,       # shorter shadow
         shadow_darkness=190,      # darker
-        shadow_softness=30,       # softer blur
-        shadow_offset=(0, 5),    # move shadow down a bit
+        shadow_softness=10,       # softer blur
+        shadow_offset=(0, 0),    # move shadow down a bit
     )
 
 
