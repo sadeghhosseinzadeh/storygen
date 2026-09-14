@@ -3,14 +3,13 @@ import numpy as np
 from storygen.utils import detect_shoe_direction
 
 def place_shoe_1c(canvas, img, pos=None, max_size=(800,600),
-               angle_left=20, angle_right=-20,
-               center_x=True, center_y=False,
-               shadow=True, shadow_offset=(80, 40), shadow_blur=35):
+                  angle_left=20, angle_right=-20,
+                  center_x=True, center_y=False,
+                  shadow=True, shadow_offset=(0, 40), shadow_blur=35):
     """
-    Perfect centering + toe→heel shadow:
+    Shoe placement for template 1c:
     - Centers AFTER rotation using toe→heel midpoint
-    - Shadow sits directly under the shoe
-    - Shadow is wider at toe, narrower at heel, fading naturally
+    - Shadow is a flat horizontal ground shadow under the sole
     """
 
     W, H = canvas.size
@@ -35,18 +34,17 @@ def place_shoe_1c(canvas, img, pos=None, max_size=(800,600),
     alpha = arr[:,:,3]
     ys, xs = np.where(alpha > 0)
 
-    # Toe & heel detection
+    # Toe & heel detection (for length)
     if direction == "left":
         toe_x = xs.min(); heel_x = xs.max()
     else:
         toe_x = xs.max(); heel_x = xs.min()
 
-    toe_y = int(ys[xs == toe_x].mean())
-    heel_y = int(ys[xs == heel_x].mean())
+    # Bottom of shoe (sole line)
+    bottom_y = ys.max()
 
-    # Midpoint between toe & heel
+    # Midpoint between toe & heel (for centering)
     mid_x = int((toe_x + heel_x) / 2)
-    mid_y = int((toe_y + heel_y) / 2)
 
     # --- Target position ---
     if pos is None:
@@ -59,41 +57,35 @@ def place_shoe_1c(canvas, img, pos=None, max_size=(800,600),
 
     # Anchor shoe so toe→heel midpoint aligns to target
     pos_x = target_x - mid_x
-    pos_y = target_y - mid_y
+    pos_y = target_y - bottom_y  # bottom of shoe sits at target_y
 
     # --- Shadow ---
     if shadow:
         shadow_layer = Image.new("RGBA", (rw, rh), (0,0,0,0))
         shadow_draw = ImageDraw.Draw(shadow_layer)
 
-        # Shadow width: toe wider, heel narrower
-        toe_width  = 60
-        heel_width = 25
+        # Shadow length: slightly wider than toe→heel
+        shadow_left  = min(toe_x, heel_x) - 40
+        shadow_right = max(toe_x, heel_x) + 40
 
-        # Draw toe shadow (wide)
+        # Shadow vertical position: just below sole
+        shadow_center_y = bottom_y + 10
+
+        # Shadow thickness
+        shadow_height = 35
+
+        # Draw flat horizontal ellipse (ground shadow)
         shadow_draw.ellipse(
-            [toe_x - toe_width, toe_y - 10,
-             toe_x + toe_width, toe_y + 10],
-            fill=(0,0,0,120)
-        )
-
-        # Draw heel shadow (narrow)
-        shadow_draw.ellipse(
-            [heel_x - heel_width, heel_y - 8,
-             heel_x + heel_width, heel_y + 8],
-            fill=(0,0,0,100)
-        )
-
-        # Connect toe→heel with a fading band
-        shadow_draw.rectangle(
-            [min(toe_x, heel_x), mid_y - 8,
-             max(toe_x, heel_x), mid_y + 8],
-            fill=(0,0,0,90)
+            [shadow_left,
+             shadow_center_y - shadow_height//2,
+             shadow_right,
+             shadow_center_y + shadow_height//2],
+            fill=(0,0,0,130)
         )
 
         shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(shadow_blur))
 
-        # Paste shadow directly under shoe
+        # Paste shadow under shoe, with optional offset
         canvas.paste(
             shadow_layer,
             (pos_x + shadow_offset[0], pos_y + shadow_offset[1]),
