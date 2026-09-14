@@ -66,20 +66,29 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
     ctx = cairo.Context(surface)
     
-    # Make Cairo surface transparent
+    # Transparent background for Cairo layer
     ctx.set_source_rgba(0, 0, 0, 0)
     ctx.set_operator(cairo.OPERATOR_SOURCE)
     ctx.paint()
+    
+    # Draw trapezoid
+    draw_trapezoid(
+        ctx,
+        x_left=354,
+        y_top=0,
+        x_right=W-354,
+        y_top_right=0,
+        y_bottom_left=H,
+        y_bottom_right=H,
+        color=third,
+        radius=0
+    )
+    
+    # Merge trapezoid into Pillow canvas
+    buf = surface.get_data()
+    cairo_img = Image.frombuffer("RGBA", (W, H), buf, "raw", "BGRA", 0, 1)
+    canvas.paste(cairo_img, (0, 0), cairo_img)
 
-    draw_trapezoid(ctx,
-                   x_left=354,
-                   y_top=0,
-                   x_right=W-354,
-                   y_top_right=0,
-                   y_bottom_left=H,
-                   y_bottom_right=H,
-                   color=third,
-                   radius=0)
 
     # -------------------------
     # Brand Logo
