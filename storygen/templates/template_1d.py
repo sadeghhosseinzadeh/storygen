@@ -15,16 +15,15 @@ from storygen.utils import (
     darken_color,
     draw_text,
     load_font,
-    place_shoe2,
     remove_background,
     adjust_saturation,
     extract_colors,
     add_brand_logo2,
     detect_shoe_direction,
-    draw_sizes_box3,
     to_english_digits,
     add_user_logo,
-    protect_color)
+    draw_trapezoid)
+
 
 def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     W, H = 1080, 1920
