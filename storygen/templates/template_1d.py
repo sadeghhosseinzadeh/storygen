@@ -102,16 +102,6 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         padding_bottom=5)
     
 
-    # -------------------------
-    # Shoe
-    # -------------------------
-    place_shoe2(
-        canvas, photo_1_rem,
-        pos=(None, 1250),  
-        max_size=(1000, 600),
-        angle_left=23,
-        angle_right=-23,
-        center_x=True)
     
     # -------------------------
     # Sizes Box
@@ -145,6 +135,31 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
             h_spacing=35,
             v_spacing=10)
 
+    # -------------------------
+    # Shoe
+    # -------------------------
+    package_root = Path(storygen.__file__).parent
+    shadow_path = package_root / "bg" / "template1c_shadow.png"
+    shadow_png = Image.open(shadow_path)
+    
+    place_shoe_1c(
+        canvas,
+        photo_1_rem,
+        shadow_png,
+        pos=(None, 1300),
+        max_size=(1100, 600),
+        angle_left=40,
+        angle_right=-40,
+        center_x=True,
+    
+        shadow_scale=0.5,
+        shadow_rotation=0,
+        shadow_opacity=0.5,      # 70% opacity
+        shadow_offset=(0,-200),   # global offset
+        toe_offset=(-10, -5),      # fine adjustment around toe
+        flip_shadow_for_left=True,
+        shadow_blend_mode="darken"
+    )
     # -------------------------
     # Footer Text
     # -------------------------
@@ -227,31 +242,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         padding_top=3,
         padding_bottom=5)
 
-    # -------------------------
-    # Shoe
-    # -------------------------
-    package_root = Path(storygen.__file__).parent
-    shadow_path = package_root / "bg" / "template1c_shadow.png"
-    shadow_png = Image.open(shadow_path)
-    
-    place_shoe_1c(
-        canvas,
-        photo_1_rem,
-        shadow_png,
-        pos=(None, 1300),
-        max_size=(1100, 600),
-        angle_left=40,
-        angle_right=-40,
-        center_x=True,
-    
-        shadow_scale=0.5,
-        shadow_rotation=0,
-        shadow_opacity=0.5,      # 70% opacity
-        shadow_offset=(0,-200),   # global offset
-        toe_offset=(-10, -5),      # fine adjustment around toe
-        flip_shadow_for_left=True,
-        shadow_blend_mode="darken"
-    )
+
 
     # -------------------------
     # Detect direction
