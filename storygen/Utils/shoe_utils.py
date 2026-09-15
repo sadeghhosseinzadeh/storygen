@@ -21,9 +21,8 @@ def place_shoe_1c(
     toe_offset=(0, 0),
     flip_shadow_for_left=True,
 
-    # Blend mode
     shadow_blend_mode="multiply",   # "darken" or "multiply"
-    shadow_feather=25,              # blur radius for mask edges
+    shadow_feather=25,              # blur radius for soft edges
 ):
     W, H = canvas.size
 
@@ -41,7 +40,6 @@ def place_shoe_1c(
     arr = np.array(rotated)
     ys, xs = np.where(arr[:, :, 3] > 0)
 
-    # Toe / heel / bottom
     toe_x = xs.min() if direction == "left" else xs.max()
     heel_x = xs.max() if direction == "left" else xs.min()
     bottom_y = ys.max()
@@ -60,7 +58,7 @@ def place_shoe_1c(
     pos_y = target_y - bottom_y
 
     # -------------------------
-    # Shadow PNG → feathered mask
+    # Shadow PNG → feathered + clipped mask
     # -------------------------
     if shadow_png is not None:
         shadow = shadow_png.convert("RGBA")
@@ -84,14 +82,18 @@ def place_shoe_1c(
         # Invert → dark areas become strong mask
         mask = Image.eval(gray, lambda p: 255 - p)
 
-        # Feather edges (THIS FIXES THE SHARP BORDER)
+        # Feather edges
         mask = mask.filter(ImageFilter.GaussianBlur(shadow_feather))
 
-        # Apply opacity
+        # Convert to array
         mask_arr = np.array(mask).astype(np.float32) / 255.0
+
+        # --- Threshold clipping (fixes white edge) ---
+        mask_arr[mask_arr < 0.1] = 0
+
+        # Apply opacity
         mask_arr *= shadow_opacity
 
-        # Shadow position
         sw2, sh2 = shadow.size
         if direction == "right":
             shadow_x = pos_x + toe_x - sw2 + toe_offset[0]
@@ -102,16 +104,12 @@ def place_shoe_1c(
         shadow_x += shadow_offset[0]
         shadow_y += shadow_offset[1]
 
-        # Extract region from canvas
         region = canvas.crop((shadow_x, shadow_y, shadow_x + sw2, shadow_y + sh2)).convert("RGBA")
         region_arr = np.array(region).astype(np.float32)
 
-        # Expand mask to 3 channels
         m = mask_arr[:, :, None]
 
-        # --- Blend modes ---
         if shadow_blend_mode == "darken":
-            # Darken only where mask is strong
             darkened = region_arr[:, :, :3] * (1.0 - m)
             blended_rgb = np.minimum(region_arr[:, :, :3], darkened)
         else:  # multiply
