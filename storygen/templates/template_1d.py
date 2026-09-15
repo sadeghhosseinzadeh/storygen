@@ -7,6 +7,9 @@ from pathlib import Path
 import storygen
 
 from storygen.Utils.sizes_utils import draw_sizes_grid
+from storygen.Utils.shoe_utils import place_shoe_1c
+
+
 from storygen.utils import (
     lighten_color,
     darken_color,
