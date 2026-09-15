@@ -16,10 +16,13 @@ def place_shoe_1c(
     # Shadow controls
     shadow_scale=1.0,
     shadow_rotation=0,
-    shadow_opacity=1.0,        # 0.0–1.0
-    shadow_offset=(0, 0),      # global offset (x, y)
-    toe_offset=(0, 0),         # fine offset from toe (x, y)
+    shadow_opacity=1.0,
+    shadow_offset=(0, 0),
+    toe_offset=(0, 0),
     flip_shadow_for_left=True,
+
+    # NEW: blend mode
+    shadow_blend_mode="darken",   # "darken", "multiply", "normal"
 ):
     W, H = canvas.size
 
@@ -72,7 +75,7 @@ def place_shoe_1c(
     pos_y = target_y - bottom_y
 
     # -------------------------
-    # Shadow PNG (simple paste + darken blend)
+    # Shadow PNG
     # -------------------------
     if shadow_png is not None:
         shadow = shadow_png.convert("RGBA")
@@ -93,30 +96,22 @@ def place_shoe_1c(
         if shadow_rotation != 0:
             shadow = shadow.rotate(shadow_rotation, expand=True)
 
-        # Premultiply alpha
+        # Premultiply alpha + opacity
         s_arr = np.array(shadow).astype(np.float32)
         alpha = s_arr[:, :, 3:4] / 255.0
         s_arr[:, :, :3] *= alpha
-        
-        # Convert RGB to grayscale to avoid color tinting
-        gray = s_arr[:, :, :3].mean(axis=2, keepdims=True)
-        s_arr[:, :, :3] = gray
-        
-        # Apply opacity
         s_arr[:, :, 3] *= shadow_opacity
-        
         shadow = Image.fromarray(s_arr.astype(np.uint8), mode="RGBA")
-
 
         s_w, s_h = shadow.size
 
-        # --- Horizontal toe alignment (same as your old logic) ---
+        # Horizontal toe alignment
         if direction == "right":
             shadow_x = pos_x + toe_x - s_w + toe_offset[0]
         else:
             shadow_x = pos_x + toe_x + toe_offset[0]
 
-        # --- PERFECT vertical alignment (lowest point of shoe) ---
+        # Vertical alignment (lowest point)
         shoe_bottom_canvas_y = pos_y + bottom_y
         shadow_y = shoe_bottom_canvas_y + toe_offset[1]
 
@@ -124,13 +119,23 @@ def place_shoe_1c(
         shadow_x += shadow_offset[0]
         shadow_y += shadow_offset[1]
 
-        # --- DARKEN blend mode (Photoshop-style) ---
+        # --- BLEND MODES ---
         region = canvas.crop((shadow_x, shadow_y, shadow_x + s_w, shadow_y + s_h)).convert("RGBA")
         region_arr = np.array(region)
         shadow_arr = np.array(shadow)
 
-        blended_rgb = np.minimum(region_arr[:, :, :3], shadow_arr[:, :, :3])
-        blended_alpha = shadow_arr[:, :, 3]
+        if shadow_blend_mode == "darken":
+            blended_rgb = np.minimum(region_arr[:, :, :3], shadow_arr[:, :, :3])
+            blended_alpha = shadow_arr[:, :, 3]
+
+        elif shadow_blend_mode == "multiply":
+            # Multiply blend (Photoshop-style)
+            blended_rgb = (region_arr[:, :, :3] * shadow_arr[:, :, :3] / 255.0).astype(np.uint8)
+            blended_alpha = shadow_arr[:, :, 3]
+
+        else:  # "normal"
+            blended_rgb = shadow_arr[:, :, :3]
+            blended_alpha = shadow_arr[:, :, 3]
 
         out = np.dstack([blended_rgb, blended_alpha])
         out_img = Image.fromarray(out, mode="RGBA")
