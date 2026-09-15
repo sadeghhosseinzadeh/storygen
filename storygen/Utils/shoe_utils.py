@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image
 import numpy as np
 from storygen.utils import detect_shoe_direction
 
@@ -16,10 +16,11 @@ def place_shoe_1c(
     # Shadow controls
     shadow_scale=1.0,
     shadow_rotation=0,
-    shadow_opacity=1.0,        # 0.0–1.0, strength of darken
+    shadow_opacity=1.0,        # 0.0–1.0
     shadow_offset=(0, 0),      # global offset (x, y)
     toe_offset=(0, 0),         # fine offset from toe (x, y)
     flip_shadow_for_left=True,
+    shadow_blend_mode="multiply",  # "darken" or "multiply"
 ):
     W, H = canvas.size
 
@@ -43,7 +44,6 @@ def place_shoe_1c(
     alpha = arr[:, :, 3]
     ys, xs = np.where(alpha > 0)
 
-    # Toe & heel detection
     if direction == "left":
         toe_x = xs.min()
         heel_x = xs.max()
@@ -51,10 +51,7 @@ def place_shoe_1c(
         toe_x = xs.max()
         heel_x = xs.min()
 
-    # Lowest pixel inside rotated shoe
     bottom_y = ys.max()
-
-    # Midpoint for centering
     mid_x = int((toe_x + heel_x) / 2)
 
     # --- Target position ---
@@ -72,16 +69,14 @@ def place_shoe_1c(
     pos_y = target_y - bottom_y
 
     # -------------------------
-    # Shadow PNG as darken mask
+    # Shadow PNG
     # -------------------------
     if shadow_png is not None:
         shadow = shadow_png.convert("RGBA")
 
-        # Flip for left-facing shoe
         if flip_shadow_for_left and direction == "left":
             shadow = shadow.transpose(Image.FLIP_LEFT_RIGHT)
 
-        # Scale
         if shadow_scale != 1.0:
             s_w, s_h = shadow.size
             shadow = shadow.resize(
@@ -89,15 +84,18 @@ def place_shoe_1c(
                 Image.LANCZOS
             )
 
-        # Rotate
         if shadow_rotation != 0:
             shadow = shadow.rotate(shadow_rotation, expand=True)
 
-        # We only care about alpha (shape), not RGB
         s_arr = np.array(shadow).astype(np.float32)
-        mask = (s_arr[:, :, 3] / 255.0) * shadow_opacity  # 0–1 darken strength per pixel
-
         s_w, s_h = shadow.size
+
+        # Grayscale shadow (no color tint)
+        gray = s_arr[:, :, :3].mean(axis=2)  # 0–255
+        gray_norm = gray / 255.0            # 0–1
+
+        # Alpha from darkness: white bg -> 0, dark -> 1
+        alpha_mask = (1.0 - gray_norm) * shadow_opacity  # 0–1
 
         # Horizontal toe alignment
         if direction == "right":
@@ -109,32 +107,33 @@ def place_shoe_1c(
         shoe_bottom_canvas_y = pos_y + bottom_y
         shadow_y = shoe_bottom_canvas_y + toe_offset[1]
 
-        # Apply global offset
         shadow_x += shadow_offset[0]
         shadow_y += shadow_offset[1]
 
-        # Extract region from canvas
         region = canvas.crop((shadow_x, shadow_y, shadow_x + s_w, shadow_y + s_h)).convert("RGBA")
         region_arr = np.array(region).astype(np.float32)
 
-        # --- TRUE NEUTRAL DARKEN ---
-        # Darken background by mask, but keep its color:
-        # result = bg * (1 - mask)
-        for c in range(3):  # R, G, B
-            region_arr[:, :, c] = region_arr[:, :, c] * (1.0 - mask)
+        # Expand alpha_mask to (h, w, 1)
+        a = alpha_mask[:, :, None]
 
-        # Keep original region alpha
-        out_alpha = region_arr[:, :, 3]
+        if shadow_blend_mode == "darken":
+            # Darken: result = min(bg, bg * (1 - a))
+            darkened = region_arr[:, :, :3] * (1.0 - a)
+            blended_rgb = np.minimum(region_arr[:, :, :3], darkened)
+        else:  # "multiply" (Photoshop-style on white bg)
+            # Multiply: white (gray_norm=1) -> no change, dark -> darken
+            factor = 1.0 - a  # 1 for white, <1 for dark
+            blended_rgb = region_arr[:, :, :3] * factor
 
-        out = np.dstack([region_arr[:, :, :3].clip(0, 255).astype(np.uint8),
-                         out_alpha.astype(np.uint8)])
+        blended_rgb = blended_rgb.clip(0, 255).astype(np.uint8)
+        blended_alpha = region_arr[:, :, 3].astype(np.uint8)
+
+        out = np.dstack([blended_rgb, blended_alpha])
         out_img = Image.fromarray(out, mode="RGBA")
 
         canvas.paste(out_img, (shadow_x, shadow_y), out_img)
 
-    # -------------------------
-    # Paste shoe ON TOP
-    # -------------------------
+    # --- Paste shoe on top ---
     canvas.paste(rotated, (pos_x, pos_y), rotated)
 
     return canvas
