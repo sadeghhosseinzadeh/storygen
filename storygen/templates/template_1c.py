@@ -171,8 +171,8 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     
         shadow_scale=0.5,
         shadow_rotation=0,
-        shadow_opacity=0.5,      # 70% opacity
-        shadow_offset=(0,-200),   # global offset
+        shadow_opacity=0.3,      # 70% opacity
+        shadow_offset=(0,-230),   # global offset
         toe_offset=(-10, -5),      # fine adjustment around toe
         flip_shadow_for_left=True,
         shadow_blend_mode="multiply",
