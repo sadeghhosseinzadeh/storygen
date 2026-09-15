@@ -176,7 +176,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         toe_offset=(-10, -5),      # fine adjustment around toe
         flip_shadow_for_left=True,
         shadow_blend_mode="multiply",
-        shadow_feather=90,  
+        shadow_feather=2,  
     )
 
 
