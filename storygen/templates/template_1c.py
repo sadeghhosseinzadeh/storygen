@@ -3,7 +3,7 @@ import cairo
 import random
 import numpy as np
 from storygen.Utils.sizes_utils import draw_sizes_grid
-from storygen.Utils.shoe_utils import place_shoe_1c, place_shoe_1c_v2
+from storygen.Utils.shoe_utils import place_shoe_1c, place_shoe_1c_v2, create_soft_shadow
 
 from pathlib import Path
 import storygen
