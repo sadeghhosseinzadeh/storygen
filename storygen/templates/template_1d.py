@@ -31,37 +31,17 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         photo_1_rem,
         include_saturated=True)
 
-    # Lighten main color → protect from becoming white
-    lighten = lighten_color(saturated_color, 0.90)
-    protect_co = protect_color(lighten, sat_boost=1.5, darken_factor=0.25, threshold=230)
-
+        # Lighten main color → protect from becoming white
+    first = adjust_saturation(darken_color(saturated_color, 0.55), 0.25)
+    second = lighten_color(saturated_color, 0.45)
+    third = darken_color(saturated_color, 0.20)
+    fourth = adjust_saturation(lighten_color(saturated_color, 0.3), 0.1)
+    
     canvas = Image.new("RGB", (W, H), (255,255,255))
     draw = ImageDraw.Draw(canvas)
 
-    # -------------------------
-    # Detect direction
-    # -------------------------
-    shoe_direction = detect_shoe_direction(photo_1_rem)
-    is_left = shoe_direction == "left"
     
-    # -------------------------
-    # Model Name
-    # -------------------------
-    model_text = model_name.upper()
     
-    draw_text(
-        canvas,
-        text=model_text,
-        font_path_eng="calibrib.ttf",
-        font_size_eng=68,
-        font_path_per="A Mitra 04.ttf",
-        font_size_per=60,
-        pos=(None, 240),
-        rotation=0,
-        fill=(0, 0, 0),
-        padding_top=3,
-        padding_bottom=5)
-
     # -------------------------
     # Shop Name
     # -------------------------
@@ -72,7 +52,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_size_eng=47,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 316),
+        pos=(100, 1600),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -87,9 +67,9 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         mode=0,
         variant=1,
         opacity=245,
-        pos=(None, 62),
-        color=lighten,
-        max_size=(260, 155))
+        pos=(None, None),
+        color=third,
+        max_size=(1000, 500))
 
     
     # -------------------------
@@ -98,25 +78,29 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(None, 380),
+        pos=(800, 1600),
         max_size=(110, 110),
-        center_x=True,
+        center_x=False,
         opacity=200)
     
     # -------------------------
     # Brand Name
     # -------------------------
-    draw_brand_vertical(
+    brand_text = brand.upper()
+    
+    draw_text(
         canvas,
-        text=brand.upper(),
-        font_path="Future Friends Italic.ttf",
-        top_y=440,
-        bottom_y=1600,
-        fill=protect_co,
-        rotation=90,
-        padding=260,
-        safety_margin=20
-    )
+        text=brand_text,
+        font_path_eng="calibrib.ttf",
+        font_size_eng=68,
+        font_path_per="A Mitra 04.ttf",
+        font_size_per=60,
+        pos=(None, 240),
+        rotation=0,
+        fill=(0, 0, 0),
+        padding_top=3,
+        padding_bottom=5)
+    
 
     # -------------------------
     # Shoe
@@ -133,36 +117,33 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Sizes Box
     # -------------------------
 
-    first = adjust_saturation(darken_color(saturated_color, 0.35), 1.25)
-    fourth = adjust_saturation(lighten_color(saturated_color, 0.55), 1.1)
-
     draw_sizes_grid(
-        canvas,
-        sizes,
-        pos=(None, 1780),
-        box_colors=(first, fourth),  
-        box_radius=12,
+            canvas,
+            sizes,
+            pos=(None, 1780),
+            box_colors=(second, third),  
+            box_radius=12,
+        
+            # Grid limits
+            max_rows=3,
+            max_cols=4,
+            max_sizes=12,
     
-        # Grid limits
-        max_rows=3,
-        max_cols=4,
-        max_sizes=12,
-
-        font_path="Segoe.UI.Semibold_p30download.com.ttf",
-        font_size=37,
-        box_size=(220, 65),
-        
-        # Text colors auto-detected
-        dark_threshold=140,   
-        light_threshold=200,
-        
-        # Padding inside each box
-        padding_left=0,
-        padding_right=0,
-        padding_top=0,
-        padding_bottom=20,
-        h_spacing=35,
-        v_spacing=10)
+            font_path="Segoe.UI.Semibold_p30download.com.ttf",
+            font_size=37,
+            box_size=(220, 65),
+            
+            # Text colors auto-detected
+            dark_threshold=140,   
+            light_threshold=200,
+            
+            # Padding inside each box
+            padding_left=0,
+            padding_right=0,
+            padding_top=0,
+            padding_bottom=20,
+            h_spacing=35,
+            v_spacing=10)
 
     # -------------------------
     # Footer Text
@@ -228,6 +209,87 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     
     canvas.paste(temp_img, final_pos, temp_img)
 
+    # -------------------------
+    # Model Name
+    # -------------------------
+    model_text = model_name.upper()
+    
+    draw_text(
+        canvas,
+        text=model_text,
+        font_path_eng="calibrib.ttf",
+        font_size_eng=68,
+        font_path_per="A Mitra 04.ttf",
+        font_size_per=60,
+        pos=(None, 240),
+        rotation=0,
+        fill=(0, 0, 0),
+        padding_top=3,
+        padding_bottom=5)
 
+    # -------------------------
+    # Shoe
+    # -------------------------
+    package_root = Path(storygen.__file__).parent
+    shadow_path = package_root / "bg" / "template1c_shadow.png"
+    shadow_png = Image.open(shadow_path)
+    
+    place_shoe_1c(
+        canvas,
+        photo_1_rem,
+        shadow_png,
+        pos=(None, 1300),
+        max_size=(1100, 600),
+        angle_left=40,
+        angle_right=-40,
+        center_x=True,
+    
+        shadow_scale=0.5,
+        shadow_rotation=0,
+        shadow_opacity=0.5,      # 70% opacity
+        shadow_offset=(0,-200),   # global offset
+        toe_offset=(-10, -5),      # fine adjustment around toe
+        flip_shadow_for_left=True,
+        shadow_blend_mode="darken"
+    )
+
+    # -------------------------
+    # Detect direction
+    # -------------------------
+    shoe_direction = detect_shoe_direction(photo_1_rem)
+    is_left = shoe_direction == "left"
+    
+    # -------------------------
+    # side req
+    # -------------------------
+    # --- Cairo surface for trapezoid drawing ---
+    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, W, H)
+    ctx = cairo.Context(surface)
+    
+    # Transparent background for Cairo layer
+    ctx.set_source_rgba(0, 0, 0, 0)
+    ctx.set_operator(cairo.OPERATOR_SOURCE)
+    ctx.paint()
+    
+    def normalize_color(rgb):
+        return tuple(c/255.0 for c in rgb)
+    
+    draw_trapezoid(
+        ctx,
+        x_left=354,
+        y_top=0,
+        x_right=W-354,
+        y_top_right=0,
+        y_bottom_left=H,
+        y_bottom_right=H,
+        color=normalize_color(third),  # normalized
+        radius=0
+    )
+
+    
+    # Merge trapezoid into Pillow canvas
+    buf = surface.get_data()
+    cairo_img = Image.frombuffer("RGBA", (W, H), buf, "raw", "BGRA", 0, 1)
+    canvas.paste(cairo_img, (0, 0), cairo_img)
 
     return canvas
