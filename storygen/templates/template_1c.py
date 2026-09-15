@@ -3,7 +3,7 @@ import cairo
 import random
 import numpy as np
 from storygen.Utils.sizes_utils import draw_sizes_grid
-from storygen.Utils.shoe_utils import place_shoe_1c, place_shoe_1c_v2, create_soft_shadow
+from storygen.Utils.shoe_utils import place_shoe_1c
 
 from pathlib import Path
 import storygen
@@ -159,7 +159,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     shadow_path = package_root / "bg" / "template1c_shadow3.png"
     shadow_png = Image.open(shadow_path)
     
-    place_shoe_1c_v2(
+    place_shoe_1c(
         canvas,
         photo_1_rem,
         shadow_png,
@@ -176,7 +176,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         toe_offset=(-10, -5),      # fine adjustment around toe
         flip_shadow_for_left=True,
         shadow_blend_mode="multiply",
-        shadow_feather=25,  
+        shadow_feather=0,  
     )
 
 
