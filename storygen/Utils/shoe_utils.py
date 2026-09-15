@@ -136,42 +136,60 @@ from PIL import Image, ImageFilter, ImageDraw
 import numpy as np
 from storygen.utils import detect_shoe_direction
 
-def create_soft_shadow(size, direction="right", blur_radius=60):
-    """Generate a smooth elliptical shadow fading outward."""
+def create_soft_shadow(size, direction="right"):
     W, H = size
+
+    # Start with transparent canvas
     shadow = Image.new("L", (W, H), 0)
     draw = ImageDraw.Draw(shadow)
 
-    # Ellipse parameters (same shape as the shadow you showed)
-    ellipse_w = int(W * 0.85)
-    ellipse_h = int(H * 0.55)
+    # --- SHAPE PARAMETERS (these match your real shadow) ---
+    core_w = int(W * 0.55)      # dense oval width
+    core_h = int(H * 0.45)      # dense oval height
 
+    # Dark core sits on the RIGHT side
     if direction == "right":
-        offset_x = int(W * 0.15)   # dark core pushed right
+        core_x = int(W * 0.45)
     else:
-        offset_x = int(W * 0.0)    # flipped later
+        core_x = int(W * 0.0)
 
-    offset_y = int(H * 0.25)
+    core_y = int(H * 0.28)
 
+    # Draw the dense oval core
     draw.ellipse(
-        [offset_x, offset_y, offset_x + ellipse_w, offset_y + ellipse_h],
+        [core_x, core_y, core_x + core_w, core_y + core_h],
         fill=255
     )
 
-    # Smooth fade
-    shadow = shadow.filter(ImageFilter.GaussianBlur(blur_radius))
+    # --- EXTENDED FADE (long tail to the left) ---
+    tail_w = int(W * 0.9)
+    tail_h = int(H * 0.65)
+    tail_x = int(W * 0.05)
+    tail_y = int(H * 0.18)
+
+    draw.ellipse(
+        [tail_x, tail_y, tail_x + tail_w, tail_y + tail_h],
+        fill=180
+    )
+
+    # --- Heavy Gaussian blur for smooth fade ---
+    shadow = shadow.filter(ImageFilter.GaussianBlur(radius=int(W * 0.12)))
 
     # Convert to RGBA black shadow
-    arr = np.array(shadow).astype(np.float32)
+    arr = np.array(shadow).astype(np.uint8)
     rgba = np.zeros((H, W, 4), dtype=np.uint8)
-    rgba[..., 3] = arr.clip(0, 255).astype(np.uint8)
+    rgba[..., 3] = arr  # alpha only
     return Image.fromarray(rgba, mode="RGBA")
 
+
+from PIL import Image, ImageFilter, ImageDraw
+import numpy as np
+from storygen.utils import detect_shoe_direction
 
 def place_shoe_1c_v2(
     canvas,
     img,
-    shadow_png=None,   # ignored now
+    shadow_png=None,
     pos=None,
     max_size=(800, 600),
     angle_left=20,
@@ -179,7 +197,6 @@ def place_shoe_1c_v2(
     center_x=True,
     center_y=False,
 
-    # Shadow controls
     shadow_scale=1.0,
     shadow_rotation=0,
     shadow_opacity=1.0,
@@ -224,22 +241,19 @@ def place_shoe_1c_v2(
     pos_y = target_y - bottom_y
 
     # -------------------------
-    # Procedural shadow (no PNG)
+    # Procedural shadow
     # -------------------------
-    shadow_w = int(sw * ratio * 1.2)
+    shadow_w = int(sw * ratio * 1.35)
     shadow_h = int(sh * ratio * 0.55)
 
     shadow = create_soft_shadow(
         size=(shadow_w, shadow_h),
-        direction=direction,
-        blur_radius=shadow_feather
+        direction=direction
     )
 
-    # Flip for left-facing shoe
     if flip_shadow_for_left and direction == "left":
         shadow = shadow.transpose(Image.FLIP_LEFT_RIGHT)
 
-    # Scale
     if shadow_scale != 1.0:
         sw2, sh2 = shadow.size
         shadow = shadow.resize(
@@ -247,11 +261,9 @@ def place_shoe_1c_v2(
             Image.LANCZOS
         )
 
-    # Rotate
     if shadow_rotation != 0:
         shadow = shadow.rotate(shadow_rotation, expand=True)
 
-    # Convert to grayscale mask
     gray = shadow.convert("L")
     mask = Image.eval(gray, lambda p: 255 - p)
     mask = mask.filter(ImageFilter.GaussianBlur(shadow_feather))
@@ -262,7 +274,7 @@ def place_shoe_1c_v2(
 
     sw2, sh2 = shadow.size
 
-    # --- PERFECT TOE ALIGNMENT ---
+    # Toe alignment
     if direction == "right":
         shadow_x = pos_x + toe_x - sw2 + toe_offset[0]
     else:
@@ -272,7 +284,6 @@ def place_shoe_1c_v2(
     shadow_x += shadow_offset[0]
     shadow_y += shadow_offset[1]
 
-    # Blend shadow
     region = canvas.crop((shadow_x, shadow_y, shadow_x + sw2, shadow_y + sh2)).convert("RGBA")
     region_arr = np.array(region).astype(np.float32)
 
@@ -281,7 +292,7 @@ def place_shoe_1c_v2(
     if shadow_blend_mode == "darken":
         darkened = region_arr[:, :, :3] * (1.0 - m)
         blended_rgb = np.minimum(region_arr[:, :, :3], darkened)
-    else:  # multiply
+    else:
         factor = 1.0 - m
         blended_rgb = region_arr[:, :, :3] * factor
 
@@ -293,7 +304,6 @@ def place_shoe_1c_v2(
 
     canvas.paste(out_img, (shadow_x, shadow_y), out_img)
 
-    # --- Shoe on top ---
     canvas.paste(rotated, (pos_x, pos_y), rotated)
 
     return canvas
