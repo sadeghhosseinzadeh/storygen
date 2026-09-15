@@ -93,12 +93,20 @@ def place_shoe_1c(
         if shadow_rotation != 0:
             shadow = shadow.rotate(shadow_rotation, expand=True)
 
-        # --- Premultiply alpha + opacity (fix checkerboard) ---
+        # Premultiply alpha
         s_arr = np.array(shadow).astype(np.float32)
         alpha = s_arr[:, :, 3:4] / 255.0
         s_arr[:, :, :3] *= alpha
+        
+        # Convert RGB to grayscale to avoid color tinting
+        gray = s_arr[:, :, :3].mean(axis=2, keepdims=True)
+        s_arr[:, :, :3] = gray
+        
+        # Apply opacity
         s_arr[:, :, 3] *= shadow_opacity
+        
         shadow = Image.fromarray(s_arr.astype(np.uint8), mode="RGBA")
+
 
         s_w, s_h = shadow.size
 
