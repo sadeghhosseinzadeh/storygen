@@ -159,7 +159,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     shadow_path = package_root / "bg" / "template1c_shadow3.png"
     shadow_png = Image.open(shadow_path)
     
-    place_shoe_1c(
+    place_shoe_1c_v2(
         canvas,
         photo_1_rem,
         shadow_png,
