@@ -46,7 +46,6 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw = ImageDraw.Draw(canvas)
 
     
-    
     # -------------------------
     # Shop Name
     # -------------------------
@@ -57,7 +56,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_size_eng=47,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(100, 1600),
+        pos=(100, 1550),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -74,7 +73,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         opacity=245,
         pos=(None, None),
         color=third,
-        max_size=(1000, 500))
+        max_size=(1000, 600))
 
     
     # -------------------------
@@ -83,7 +82,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(800, 1600),
+        pos=(800, 1550),
         max_size=(110, 110),
         center_x=False,
         opacity=200)
@@ -151,10 +150,10 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         photo_1_rem,
         shadow_png,
-        pos=(None, 1300),
+        pos=(None, 1250),
         max_size=(1100, 600),
-        angle_left=40,
-        angle_right=-40,
+        angle_left=20,
+        angle_right=-20,
         center_x=True,
     
         shadow_scale=0.5,
@@ -272,9 +271,9 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     
     draw_trapezoid(
         ctx,
-        x_left=354,
+        x_left=0,
         y_top=0,
-        x_right=W-354,
+        x_right=25,
         y_top_right=0,
         y_bottom_left=H,
         y_bottom_right=H,
