@@ -156,7 +156,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Shoe
     # -------------------------
     package_root = Path(storygen.__file__).parent
-    shadow_path = package_root / "bg" / "template1c_shadow2.png"
+    shadow_path = package_root / "bg" / "template1c_shadow3.png"
     shadow_png = Image.open(shadow_path)
     
     place_shoe_1c(
@@ -175,7 +175,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         shadow_offset=(0,-200),   # global offset
         toe_offset=(-10, -5),      # fine adjustment around toe
         flip_shadow_for_left=True,
-        shadow_blend_mode="darken",
+        shadow_blend_mode="multiply",
         shadow_feather=0,  
     )
 
