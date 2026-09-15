@@ -89,7 +89,7 @@ def place_shoe_1c(
         mask_arr = np.array(mask).astype(np.float32) / 255.0
 
         # --- Threshold clipping (fixes white edge) ---
-        mask_arr[mask_arr < 0.015] = 0
+        mask_arr[mask_arr < 0.05] = 0
 
         # Apply opacity
         mask_arr *= shadow_opacity
