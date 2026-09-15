@@ -16,13 +16,10 @@ def place_shoe_1c(
     # Shadow controls
     shadow_scale=1.0,
     shadow_rotation=0,
-    shadow_opacity=1.0,
-    shadow_offset=(0, 0),
-    toe_offset=(0, 0),
+    shadow_opacity=1.0,        # 0.0–1.0, strength of darken
+    shadow_offset=(0, 0),      # global offset (x, y)
+    toe_offset=(0, 0),         # fine offset from toe (x, y)
     flip_shadow_for_left=True,
-
-    # NEW: blend mode
-    shadow_blend_mode="darken",   # "darken", "multiply", "normal"
 ):
     W, H = canvas.size
 
@@ -75,7 +72,7 @@ def place_shoe_1c(
     pos_y = target_y - bottom_y
 
     # -------------------------
-    # Shadow PNG
+    # Shadow PNG as darken mask
     # -------------------------
     if shadow_png is not None:
         shadow = shadow_png.convert("RGBA")
@@ -96,12 +93,9 @@ def place_shoe_1c(
         if shadow_rotation != 0:
             shadow = shadow.rotate(shadow_rotation, expand=True)
 
-        # Premultiply alpha + opacity
+        # We only care about alpha (shape), not RGB
         s_arr = np.array(shadow).astype(np.float32)
-        alpha = s_arr[:, :, 3:4] / 255.0
-        s_arr[:, :, :3] *= alpha
-        s_arr[:, :, 3] *= shadow_opacity
-        shadow = Image.fromarray(s_arr.astype(np.uint8), mode="RGBA")
+        mask = (s_arr[:, :, 3] / 255.0) * shadow_opacity  # 0–1 darken strength per pixel
 
         s_w, s_h = shadow.size
 
@@ -119,25 +113,21 @@ def place_shoe_1c(
         shadow_x += shadow_offset[0]
         shadow_y += shadow_offset[1]
 
-        # --- BLEND MODES ---
+        # Extract region from canvas
         region = canvas.crop((shadow_x, shadow_y, shadow_x + s_w, shadow_y + s_h)).convert("RGBA")
-        region_arr = np.array(region)
-        shadow_arr = np.array(shadow)
+        region_arr = np.array(region).astype(np.float32)
 
-        if shadow_blend_mode == "darken":
-            blended_rgb = np.minimum(region_arr[:, :, :3], shadow_arr[:, :, :3])
-            blended_alpha = shadow_arr[:, :, 3]
+        # --- TRUE NEUTRAL DARKEN ---
+        # Darken background by mask, but keep its color:
+        # result = bg * (1 - mask)
+        for c in range(3):  # R, G, B
+            region_arr[:, :, c] = region_arr[:, :, c] * (1.0 - mask)
 
-        elif shadow_blend_mode == "multiply":
-            # Multiply blend (Photoshop-style)
-            blended_rgb = (region_arr[:, :, :3] * shadow_arr[:, :, :3] / 255.0).astype(np.uint8)
-            blended_alpha = shadow_arr[:, :, 3]
+        # Keep original region alpha
+        out_alpha = region_arr[:, :, 3]
 
-        else:  # "normal"
-            blended_rgb = shadow_arr[:, :, :3]
-            blended_alpha = shadow_arr[:, :, 3]
-
-        out = np.dstack([blended_rgb, blended_alpha])
+        out = np.dstack([region_arr[:, :, :3].clip(0, 255).astype(np.uint8),
+                         out_alpha.astype(np.uint8)])
         out_img = Image.fromarray(out, mode="RGBA")
 
         canvas.paste(out_img, (shadow_x, shadow_y), out_img)
