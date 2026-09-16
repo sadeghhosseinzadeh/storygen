@@ -35,7 +35,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         photo_1_rem,
         include_saturated=True)
 
-    first = adjust_saturation(darken_color(saturated_color, 0.55), 0.25)
+    first = adjust_saturation(darken_color(main_color, 0.55), 0.25)
     second = lighten_color(saturated_color, 0.45)
     third = darken_color(saturated_color, 0.20)
     fourth = adjust_saturation(lighten_color(saturated_color, 0.3), 0.1)
@@ -78,7 +78,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(800, 1550),
+        pos=(800, 1400),
         max_size=(110, 110),
         center_x=False,
         opacity=200)
@@ -92,12 +92,12 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         text=brand_text,
         font_path_eng="calibrib.ttf",
-        font_size_eng=68,
+        font_size_eng=90,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 240),
+        pos=(None, 340),
         rotation=0,
-        fill=(0, 0, 0),
+        fill=second,
         padding_top=3,
         padding_bottom=5)
 
@@ -107,7 +107,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_sizes_grid(
         canvas,
         sizes,
-        pos=(None, 1780),
+        pos=(None, 1700),
         box_colors=(second, third),  
         box_radius=12,
         max_rows=3,
@@ -137,7 +137,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         photo_1_rem,
         shadow_png,
         pos=(None, 1250),
-        max_size=(1100, 600),
+        max_size=(1000, 500),
         angle_left=20,
         angle_right=-20,
         center_x=True,
@@ -157,60 +157,36 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     is_left = shoe_direction == "left"
 
     # -------------------------
-    # Footer Text (MIRROR WHEN LEFT)
+    # Footer Text 
     # -------------------------
     rand_num = random.randint(100, 999)
     footer_main = "استعلام قیمت عدد"
     footer_number = f"({to_english_digits(str(rand_num))})"
 
-    main_color_footer = (0, 0, 0)
-    number_color_footer = (255, 140, 0)
-
-    font_main = load_font("Homa.ttf", 48)
-    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 49)
-
-    def render_and_center(text, font, color):
-        bbox = font.getbbox(text)
-        w = bbox[2] - bbox[0]
-        h = bbox[3] - bbox[1]
-
-        temp = Image.new("RGBA", (w + 20, h + 20), (0,0,0,0))
-        d = ImageDraw.Draw(temp)
-        d.text((10, 10), text, font=font, fill=color)
-
-        alpha = np.array(temp)[:,:,3]
-        ys, xs = np.where(alpha > 0)
-        top = ys.min()
-        bottom = ys.max()
-
-        visual_h = bottom - top
-        center_offset = (visual_h // 2) + top
-
-        return temp, w, visual_h, center_offset
-
-    img_main, main_w, main_h, main_center = render_and_center(footer_main, font_main, main_color_footer)
-    img_num,  num_w,  num_h,  num_center  = render_and_center(footer_number, font_num, number_color_footer)
-
-    max_h = max(main_h, num_h)
-    main_y = (max_h // 2) - main_center
-    num_y  = (max_h // 2) - num_center
-
-    gap = 20
-    total_w = num_w + gap + main_w
-
-    temp_img = Image.new("RGBA", (total_w + 40, max_h + 40), (0,0,0,0))
-    temp_img.paste(img_num, (10, num_y), img_num)
-    temp_img.paste(img_main, (10 + num_w + gap, main_y), img_main)
-
-    # MIRROR FOOTER IF LEFT
     if is_left:
-        temp_img = temp_img.transpose(Image.FLIP_LEFT_RIGHT)
-        final_pos = (W - 275 - temp_img.width, 1620)
+        base_x = 150
+        base_y = 270
     else:
-        final_pos = (275, 1620)
+        base_x = 270
+        base_y = 1730
+        
+    font_main = load_font("Homa.ttf", 45)          # Persian font
+    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
+    
+    draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
+    
+    bbox_main = font_main.getbbox(footer_main)
+    main_w = bbox_main[2] - bbox_main[0]
+    
+    bbox_num = font_num.getbbox(footer_number)
+    num_w = bbox_num[2] - bbox_num[0]
+    
+    num_x = base_x + (main_w - num_w) // 2
+    num_y = base_y + bbox_main[3] - bbox_main[1] + 10
+    
+    draw.text((num_x, num_y), footer_number, fill=(0,0,0), font=font_num)
 
-    canvas.paste(temp_img, final_pos, temp_img)
-
+    
     # -------------------------
     # Model Name (MIRROR WHEN LEFT)
     # -------------------------
