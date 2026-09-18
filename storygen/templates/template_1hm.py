@@ -26,7 +26,7 @@ from storygen.utils import (
     draw_scaled_text)
 
 
-def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
+def template_1hm(photo_1, model_name, sizes, shop_name_en, brand, logo):
     W, H = 1080, 1920
 
     # -------------------------
@@ -50,7 +50,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     #  white req
     # -------------------------
     package_root = Path(storygen.__file__).parent
-    overlay_path = package_root / "bg" / "template1c_bg.png"
+    overlay_path = package_root / "bg" / "template1hm_bg.png"
     
     overlay = Image.open(overlay_path).convert("RGBA").resize((W, H))
     canvas.paste(overlay, (0, 0), overlay)
@@ -156,7 +156,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Shoe
     # -------------------------
     package_root = Path(storygen.__file__).parent
-    shadow_path = package_root / "bg" / "template1c_shadow3.png"
+    shadow_path = package_root / "bg" / "template1hm_shadow.png"
     shadow_png = Image.open(shadow_path)
     
     place_shoe_1c(
