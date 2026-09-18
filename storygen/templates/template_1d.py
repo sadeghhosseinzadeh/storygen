@@ -21,7 +21,8 @@ from storygen.utils import (
     detect_shoe_direction,
     to_english_digits,
     add_user_logo,
-    draw_trapezoid)
+    draw_trapezoid,
+    draw_scaled_text)
 
 
 def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
@@ -53,7 +54,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_size_eng=47,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(100, 1550),
+        pos=(100, 1450),
         rotation=0,
         fill=(0, 0, 0),
         padding_top=3,
@@ -70,7 +71,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         opacity=245,
         pos=(None, None),
         color=third,
-        max_size=(1000, 600))
+        max_size=(950, 600))
 
     # -------------------------
     # User logo
@@ -78,7 +79,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(800, 1400),
+        pos=(800, 1450),
         max_size=(110, 110),
         center_x=False,
         opacity=200)
@@ -92,10 +93,10 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         text=brand_text,
         font_path_eng="calibrib.ttf",
-        font_size_eng=90,
+        font_size_eng=122,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 340),
+        pos=(None, 400),
         rotation=0,
         fill=second,
         padding_top=3,
@@ -129,7 +130,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Shoe
     # -------------------------
     package_root = Path(storygen.__file__).parent
-    shadow_path = package_root / "bg" / "template1d_shadow.png"
+    shadow_path = package_root / "bg" / "template1d_shadow2.png"
     shadow_png = Image.open(shadow_path)
     
     place_shoe_1c(
@@ -144,10 +145,10 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         shadow_scale=0.5,
         shadow_rotation=0,
         shadow_opacity=0.5,
-        shadow_offset=(0,-200),
-        toe_offset=(-10, -5),
+        shadow_offset=(0, 0),
+        toe_offset=(0, 0),
         flip_shadow_for_left=True,
-        shadow_blend_mode="darken"
+        shadow_blend_mode="multiply"
     )
 
     # -------------------------
@@ -164,11 +165,11 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     footer_number = f"({to_english_digits(str(rand_num))})"
 
     if is_left:
-        base_x = 150
-        base_y = 270
+        base_x = 120
+        base_y = 300
     else:
-        base_x = 270
-        base_y = 1730
+        base_x = 700
+        base_y = 300
         
     font_main = load_font("Homa.ttf", 45)          # Persian font
     font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
@@ -193,39 +194,29 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     model_text = model_name.upper()
 
     if is_left:
-        # draw normally on a temp layer then flip
-        temp_model = Image.new("RGBA", (W, 300), (0,0,0,0))
-        d2 = ImageDraw.Draw(temp_model)
 
-        draw_text(
-            temp_model,
+        draw_scaled_text(
+            draw,
             text=model_text,
-            font_path_eng="calibrib.ttf",
-            font_size_eng=68,
-            font_path_per="A Mitra 04.ttf",
-            font_size_per=60,
-            pos=(None, 0),
-            rotation=0,
-            fill=(0, 0, 0),
-            padding_top=3,
-            padding_bottom=5)
-
-        temp_model = temp_model.transpose(Image.FLIP_LEFT_RIGHT)
-        canvas.paste(temp_model, (0, 240), temp_model)
+            font_path="GILSANUB.TTF",
+            max_font_size=83,
+            max_width= 400,
+            max_height=500,
+            start_pos= (100, 1200),
+            fill=(0,0,0),
+            allow_multiline=True)
 
     else:
-        draw_text(
-            canvas,
+        draw_scaled_text(
+            draw,
             text=model_text,
-            font_path_eng="calibrib.ttf",
-            font_size_eng=68,
-            font_path_per="A Mitra 04.ttf",
-            font_size_per=60,
-            pos=(None, 240),
-            rotation=0,
-            fill=(0, 0, 0),
-            padding_top=3,
-            padding_bottom=5)
+            font_path="GILSANUB.TTF",
+            max_font_size=83,
+            max_width= 400,
+            max_height=500,
+            start_pos= (700, 1200),
+            fill=(0,0,0),
+            allow_multiline=True)
 
     # -------------------------
     # Side trapezoid (MIRROR WHEN LEFT)
