@@ -122,7 +122,8 @@ def template_1hm(photo_1, model_name, sizes, shop_name_en, brand, logo):
         max_height=200,
         start_pos= (None, 255),
         fill=(255,255,255),
-        allow_multiline=False
+        allow_multiline=False,
+        align="center"
     )
 
     # -------------------------
@@ -137,7 +138,8 @@ def template_1hm(photo_1, model_name, sizes, shop_name_en, brand, logo):
         max_height=200,
         start_pos= (None, 335),
         fill=(255,255,255),
-        allow_multiline=False
+        allow_multiline=False,
+        align="center"
     )
     
     # -------------------------
