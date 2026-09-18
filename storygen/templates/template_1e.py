@@ -291,7 +291,7 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
             fill=(0,0,0),
             allow_multiline=True,
             align="center",
-            line_spacing=18)
+            line_spacing=24)
 
     else:
         draw_scaled_text(
@@ -305,7 +305,7 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
             fill=(0,0,0),
             allow_multiline=True,
             align="center",
-            line_spacing=18)
+            line_spacing=24)
 
 
     # -------------------------
