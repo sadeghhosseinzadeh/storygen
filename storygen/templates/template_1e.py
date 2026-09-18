@@ -229,10 +229,11 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
         shadow_scale=1,
         shadow_rotation=0,
         shadow_opacity=1,
-        shadow_offset=(0, -200),
-        toe_offset=(0, -10),
+        shadow_offset=(0, -210),
+        toe_offset=(0, -30),
         flip_shadow_for_left=True,
-        shadow_blend_mode="multiply"
+        shadow_blend_mode="multiply",
+        shadow_feather=10,
     )
 
     # -------------------------
