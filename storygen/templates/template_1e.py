@@ -153,7 +153,7 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
         mode=0,
         variant=1,
         opacity=245,
-        pos=(None, None),
+        pos=(1000, None),
         color=third,
         max_size=(1000, 600))
 
@@ -228,7 +228,7 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
         center_x=True,
         shadow_scale=1,
         shadow_rotation=0,
-        shadow_opacity=0.5,
+        shadow_opacity=1,
         shadow_offset=(0, 0),
         toe_offset=(0, 0),
         flip_shadow_for_left=True,
@@ -250,10 +250,10 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
     if is_left:
         base_x = 120
-        base_y = 250
+        base_y = 230
     else:
-        base_x = 600
-        base_y = 250
+        base_x = 700
+        base_y = 230
         
     font_main = load_font("Homa.ttf", 45)          # Persian font
     font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
@@ -296,29 +296,30 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
             draw,
             text=model_text,
             font_path="GILSANUB.TTF",
-            max_font_size=83,
+            max_font_size=90,
             max_width= 350,
             max_height=500,
-            start_pos= (700, 900),
+            start_pos= (680, 850),
             fill=(0,0,0),
             allow_multiline=True,
             align="center")
 
 
     # -------------------------
-    # Side trapezoid (MIRROR WHEN LEFT)
+    # cercles
     # -------------------------
+    
     if is_left:
         big_pos_x= 700
-        big_pos_y= 260
+        big_pos_y= 250
         sm_pos_x=300
-        sm_pos_y=600
+        sm_pos_y=590
         shadow_vec=(0.7, 0.7)
     else:
         big_pos_x=250
-        big_pos_y=260
+        big_pos_y=250
         sm_pos_x=850
-        sm_pos_y=600
+        sm_pos_y=590
         shadow_vec=(-0.7, 0.7)
     
     draw_circle(
