@@ -233,7 +233,7 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
         toe_offset=(0, -10),
         flip_shadow_for_left=True,
         shadow_blend_mode="multiply",
-        shadow_feather=15,
+        shadow_feather=5,
     )
 
     # -------------------------
