@@ -214,7 +214,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
         max_sizes=12,
 
         font_path="Segoe.UI.Semibold_p30download.com.ttf",
-        font_size=37,
+        font_size=33,
         box_size=(270, 65),
         
         # Text colors auto-detected
