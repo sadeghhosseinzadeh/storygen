@@ -56,11 +56,10 @@ def draw_circle(
     d = ImageDraw.Draw(circle)
     d.ellipse((0,0,diameter,diameter), fill=color)
 
-    # --- Inner shadow mask ---
+        # --- Inner shadow mask ---
     shadow = Image.new("RGBA", (diameter, diameter), (0,0,0,0))
     sd = ImageDraw.Draw(shadow)
 
-    # shadow ellipse slightly smaller → inner shadow
     inset = int(r * shadow_friction)
     sd.ellipse(
         (inset, inset, diameter-inset, diameter-inset),
@@ -81,9 +80,17 @@ def draw_circle(
         resample=Image.BILINEAR
     )
 
+    # --- FIX: mask shadow with circle shape to remove square edges ---
+    mask = Image.new("L", (diameter, diameter), 0)
+    md = ImageDraw.Draw(mask)
+    md.ellipse((0,0,diameter,diameter), fill=255)
+
+    shadow.putalpha(ImageChops.multiply(shadow.split()[3], mask))
+
     # reduce intensity
     alpha = shadow.split()[3].point(lambda p: int(p * shadow_intensity))
     shadow.putalpha(alpha)
+
 
     # --- Composite ---
     circle = Image.alpha_composite(circle, shadow)
@@ -138,7 +145,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         variant=1,
         opacity=245,
         pos=(None, None),
-        color=second,
+        color=third,
         max_size=(1000, 600))
 
     # -------------------------
@@ -166,7 +173,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         font_size_per=60,
         pos=(None, 410),
         rotation=0,
-        fill=second,
+        fill=third,
         padding_top=3,
         padding_bottom=5)
 
@@ -303,7 +310,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     
     draw_circle(
         canvas,
-        diameter=180,
+        diameter=200,
         pos=(big_pos_x, big_pos_y),
         color=third,
         shadow_color=(0,0,0),
@@ -314,7 +321,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
     draw_circle(
         canvas,
-        diameter=250,
+        diameter=150,
         pos=(sm_pos_x, sm_pos_y),
         color=second,
         shadow_color=(0,0,0),
