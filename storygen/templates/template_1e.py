@@ -229,7 +229,7 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
         shadow_scale=0.8,
         shadow_rotation=0,
         shadow_opacity=1,
-        shadow_offset=(150, -150),
+        shadow_offset=(140, -140),
         toe_offset=(0, -10),
         flip_shadow_for_left=True,
         shadow_blend_mode="multiply",
