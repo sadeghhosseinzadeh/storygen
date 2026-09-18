@@ -24,6 +24,74 @@ from storygen.utils import (
     draw_trapezoid,
     draw_scaled_text)
 
+from PIL import Image, ImageDraw, ImageFilter
+
+def draw_circle(
+    canvas,
+    diameter,
+    pos,
+    color=(0,0,0),
+    shadow_color=(0,0,0),
+    shadow_intensity=0.35,     # 0 → no shadow, 1 → full
+    shadow_friction=0.25,      # how far shadow spreads inward
+    light_dir=(1, -1),         # default: top-right light
+):
+    """
+    Draws a circle with inner shadow.
+
+    pos: (x, y) center of circle
+    diameter: circle diameter
+    color: fill color
+    shadow_color: color of inner shadow
+    shadow_intensity: 0–1
+    shadow_friction: 0–1 (shadow spread)
+    light_dir: (dx, dy) direction of light
+    """
+
+    r = diameter // 2
+    x, y = pos
+
+    # --- Base circle ---
+    circle = Image.new("RGBA", (diameter, diameter), (0,0,0,0))
+    d = ImageDraw.Draw(circle)
+    d.ellipse((0,0,diameter,diameter), fill=color)
+
+    # --- Inner shadow mask ---
+    shadow = Image.new("RGBA", (diameter, diameter), (0,0,0,0))
+    sd = ImageDraw.Draw(shadow)
+
+    # shadow ellipse slightly smaller → inner shadow
+    inset = int(r * shadow_friction)
+    sd.ellipse(
+        (inset, inset, diameter-inset, diameter-inset),
+        fill=shadow_color
+    )
+
+    # blur shadow
+    shadow = shadow.filter(ImageFilter.GaussianBlur(r * 0.35))
+
+    # shift shadow opposite of light direction
+    shift_x = int(-light_dir[0] * r * 0.25)
+    shift_y = int(-light_dir[1] * r * 0.25)
+
+    shadow = shadow.transform(
+        shadow.size,
+        Image.AFFINE,
+        (1,0,shift_x, 0,1,shift_y),
+        resample=Image.BILINEAR
+    )
+
+    # reduce intensity
+    alpha = shadow.split()[3].point(lambda p: int(p * shadow_intensity))
+    shadow.putalpha(alpha)
+
+    # --- Composite ---
+    circle = Image.alpha_composite(circle, shadow)
+
+    # paste onto canvas
+    canvas.paste(circle, (x - r, y - r), circle)
+
+    return canvas
 
 def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     W, H = 1080, 1920
@@ -50,8 +118,8 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     draw_text(
         canvas,
         text=shop_name_en,
-        font_path_eng="calibrili.ttf",
-        font_size_eng=47,
+        font_path_eng="GILLUBCD.TTF",
+        font_size_eng=55,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
         pos=(100, 1450),
@@ -70,8 +138,8 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         variant=1,
         opacity=245,
         pos=(None, None),
-        color=third,
-        max_size=(950, 600))
+        color=second,
+        max_size=(1000, 600))
 
     # -------------------------
     # User logo
@@ -79,10 +147,10 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     add_user_logo(
         canvas,
         logo_path=logo,
-        pos=(800, 1450),
+        pos=(800, 1425),
         max_size=(110, 110),
         center_x=False,
-        opacity=200)
+        opacity=240)
 
     # -------------------------
     # Brand Name
@@ -93,10 +161,10 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         text=brand_text,
         font_path_eng="calibrib.ttf",
-        font_size_eng=122,
+        font_size_eng=150,
         font_path_per="A Mitra 04.ttf",
         font_size_per=60,
-        pos=(None, 400),
+        pos=(None, 410),
         rotation=0,
         fill=second,
         padding_top=3,
@@ -138,11 +206,11 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
         photo_1_rem,
         shadow_png,
         pos=(None, 1250),
-        max_size=(1000, 500),
+        max_size=(1100, 500),
         angle_left=20,
         angle_right=-20,
         center_x=True,
-        shadow_scale=0.5,
+        shadow_scale=1,
         shadow_rotation=0,
         shadow_opacity=0.5,
         shadow_offset=(0, 0),
@@ -166,10 +234,10 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
 
     if is_left:
         base_x = 120
-        base_y = 300
+        base_y = 250
     else:
-        base_x = 700
-        base_y = 300
+        base_x = 600
+        base_y = 250
         
     font_main = load_font("Homa.ttf", 45)          # Persian font
     font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
@@ -200,9 +268,9 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
             text=model_text,
             font_path="GILSANUB.TTF",
             max_font_size=83,
-            max_width= 400,
+            max_width= 350,
             max_height=500,
-            start_pos= (100, 1200),
+            start_pos= (100, 900),
             fill=(0,0,0),
             allow_multiline=True)
 
@@ -212,12 +280,49 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
             text=model_text,
             font_path="GILSANUB.TTF",
             max_font_size=83,
-            max_width= 400,
+            max_width= 350,
             max_height=500,
-            start_pos= (700, 1200),
+            start_pos= (700, 900),
             fill=(0,0,0),
             allow_multiline=True)
 
+
+    # -------------------------
+    # Side trapezoid (MIRROR WHEN LEFT)
+    # -------------------------
+    if is_left:
+        big_pos_x= 700
+        big_pos_y= 300
+        sm_pos_x=300
+        sm_pos_y=500
+    else:
+        big_pos_x=250
+        big_pos_y=300
+        sm_pos_x=700
+        sm_pos_y=500
+    
+    draw_circle(
+        canvas,
+        diameter=180,
+        pos=(big_pos_x, big_pos_y),
+        color=third,
+        shadow_color=(0,0,0),
+        shadow_intensity=0.45,
+        shadow_friction=0.30,
+        light_dir=(1, -1)
+        )
+
+    draw_circle(
+        canvas,
+        diameter=250,
+        pos=(sm_pos_x, sm_pos_y),
+        color=second,
+        shadow_color=(0,0,0),
+        shadow_intensity=0.45,
+        shadow_friction=0.30,
+        light_dir=(1, -1)
+        )
+    
     # -------------------------
     # Side trapezoid (MIRROR WHEN LEFT)
     # -------------------------
