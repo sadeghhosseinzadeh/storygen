@@ -153,7 +153,7 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
         mode=0,
         variant=1,
         opacity=245,
-        pos=(1000, None),
+        pos=(None, 1000),
         color=third,
         max_size=(1000, 600))
 
@@ -229,8 +229,8 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
         shadow_scale=1,
         shadow_rotation=0,
         shadow_opacity=1,
-        shadow_offset=(0, 0),
-        toe_offset=(0, 0),
+        shadow_offset=(0, -200),
+        toe_offset=(0, -10),
         flip_shadow_for_left=True,
         shadow_blend_mode="multiply"
     )
@@ -252,8 +252,8 @@ def template_1e(photo_1, model_name, sizes, shop_name_en, brand, logo):
         base_x = 120
         base_y = 230
     else:
-        base_x = 700
-        base_y = 230
+        base_x = 690
+        base_y = 225
         
     font_main = load_font("Homa.ttf", 45)          # Persian font
     font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
