@@ -24,79 +24,88 @@ from storygen.utils import (
     draw_trapezoid,
     draw_scaled_text)
 
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageDraw, ImageFilter, ImageChops
 
 def draw_circle(
     canvas,
     diameter,
     pos,
-    color=(0,0,0),
-    shadow_color=(0,0,0),
-    shadow_intensity=0.35,     # 0 → no shadow, 1 → full
-    shadow_friction=0.25,      # how far shadow spreads inward
-    light_dir=(1, -1),         # default: top-right light
+    color=(0, 0, 0),
+    shadow_color=(0, 0, 0),
+    shadow_intensity=0.45,     # 0.0 → no shadow, 1.0 → full shadow
+    shadow_friction=0.30,      # Controls blur radius & inward spread (0.1 - 0.5)
+    light_dir=(1, -1),         # (dx, dy): default top-right light source
 ):
     """
-    Draws a circle with inner shadow.
-
-    pos: (x, y) center of circle
-    diameter: circle diameter
-    color: fill color
-    shadow_color: color of inner shadow
-    shadow_intensity: 0–1
-    shadow_friction: 0–1 (shadow spread)
-    light_dir: (dx, dy) direction of light
+    Draws a circle with a smooth, realistic inner shadow (inset shadow)
+    without square bounding box artifacts or center-blob defects.
     """
-
     r = diameter // 2
     x, y = pos
 
-    # --- Base circle ---
-    circle = Image.new("RGBA", (diameter, diameter), (0,0,0,0))
-    d = ImageDraw.Draw(circle)
-    d.ellipse((0,0,diameter,diameter), fill=color)
+    # 1. Normalize the light direction vector
+    lx, ly = light_dir
+    length = (lx**2 + ly**2)**0.5
+    if length > 0:
+        lx, ly = lx / length, ly / length
+    else:
+        lx, ly = 0, 0
 
-        # --- Inner shadow mask ---
-    shadow = Image.new("RGBA", (diameter, diameter), (0,0,0,0))
-    sd = ImageDraw.Draw(shadow)
+    # 2. Calculate inward shadow shift (opposite to incoming light)
+    offset_dist = r * shadow_friction * 0.45
+    shift_x = int(-lx * offset_dist)
+    shift_y = int(-ly * offset_dist)
 
-    inset = int(r * shadow_friction)
-    sd.ellipse(
-        (inset, inset, diameter-inset, diameter-inset),
-        fill=shadow_color
+    blur_radius = max(1.0, r * shadow_friction)
+
+    # 3. Add generous padding so Gaussian blur never touches canvas borders
+    # (This completely eliminates the square clipping edges!)
+    pad = int(blur_radius * 2.5 + max(abs(shift_x), abs(shift_y)) + 16)
+    W = diameter + 2 * pad
+    H = diameter + 2 * pad
+
+    circle_box = (pad, pad, pad + diameter, pad + diameter)
+
+    # 4. Create an INVERTED mask:
+    # A solid white (255) mask with the circle cut out (0), shifted towards the light.
+    # When blurred, the white outside will bleed INWARD across the rim naturally.
+    inv_mask = Image.new("L", (W, H), 255)
+    inv_draw = ImageDraw.Draw(inv_mask)
+    hole_box = (
+        pad + shift_x,
+        pad + shift_y,
+        pad + shift_x + diameter,
+        pad + shift_y + diameter
     )
+    inv_draw.ellipse(hole_box, fill=0)
 
-    # blur shadow
-    shadow = shadow.filter(ImageFilter.GaussianBlur(r * 0.35))
+    # 5. Blur the inverted mask smoothly with padding
+    blurred_mask = inv_mask.filter(ImageFilter.GaussianBlur(blur_radius))
 
-    # shift shadow opposite of light direction
-    shift_x = int(-light_dir[0] * r * 0.25)
-    shift_y = int(-light_dir[1] * r * 0.25)
+    # 6. Restrict the shadow: only keep pixels INSIDE the base circle
+    circle_mask = Image.new("L", (W, H), 0)
+    cmd = ImageDraw.Draw(circle_mask)
+    cmd.ellipse(circle_box, fill=255)
 
-    shadow = shadow.transform(
-        shadow.size,
-        Image.AFFINE,
-        (1,0,shift_x, 0,1,shift_y),
-        resample=Image.BILINEAR
-    )
+    shadow_alpha = ImageChops.multiply(blurred_mask, circle_mask)
 
-    # --- FIX: mask shadow with circle shape to remove square edges ---
-    mask = Image.new("L", (diameter, diameter), 0)
-    md = ImageDraw.Draw(mask)
-    md.ellipse((0,0,diameter,diameter), fill=255)
+    # 7. Apply shadow opacity / intensity
+    if shadow_intensity < 1.0:
+        shadow_alpha = shadow_alpha.point(lambda p: int(p * max(0.0, min(1.0, shadow_intensity))))
 
-    shadow.putalpha(ImageChops.multiply(shadow.split()[3], mask))
+    # 8. Composite base circle and shadow layer
+    circle_layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    cd = ImageDraw.Draw(circle_layer)
+    cd.ellipse(circle_box, fill=color)
 
-    # reduce intensity
-    alpha = shadow.split()[3].point(lambda p: int(p * shadow_intensity))
-    shadow.putalpha(alpha)
+    shadow_layer = Image.new("RGBA", (W, H), shadow_color + (0,))
+    shadow_layer.putalpha(shadow_alpha)
 
+    final_circle = Image.alpha_composite(circle_layer, shadow_layer)
 
-    # --- Composite ---
-    circle = Image.alpha_composite(circle, shadow)
-
-    # paste onto canvas
-    canvas.paste(circle, (x - r, y - r), circle)
+    # 9. Crop out the padding and paste onto destination canvas
+    cropped = final_circle.crop(circle_box)
+    canvas.paste(cropped, (x - r, y - r), cropped)
 
     return canvas
 
