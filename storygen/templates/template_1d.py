@@ -129,7 +129,7 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Shoe
     # -------------------------
     package_root = Path(storygen.__file__).parent
-    shadow_path = package_root / "bg" / "template1c_shadow3.png"
+    shadow_path = package_root / "bg" / "template1d_shadow.png"
     shadow_png = Image.open(shadow_path)
     
     place_shoe_1c(
