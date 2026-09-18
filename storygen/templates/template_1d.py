@@ -288,7 +288,8 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
             max_height=500,
             start_pos= (100, 900),
             fill=(0,0,0),
-            allow_multiline=True)
+            allow_multiline=True,
+            align="center")
 
     else:
         draw_scaled_text(
@@ -300,7 +301,8 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
             max_height=500,
             start_pos= (700, 900),
             fill=(0,0,0),
-            allow_multiline=True)
+            allow_multiline=True,
+            align="center")
 
 
     # -------------------------
@@ -308,35 +310,37 @@ def template_1d(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # -------------------------
     if is_left:
         big_pos_x= 700
-        big_pos_y= 300
+        big_pos_y= 260
         sm_pos_x=300
-        sm_pos_y=500
+        sm_pos_y=600
+        shadow_vec=(0.7, 0.7)
     else:
         big_pos_x=250
-        big_pos_y=300
-        sm_pos_x=700
-        sm_pos_y=500
+        big_pos_y=260
+        sm_pos_x=850
+        sm_pos_y=600
+        shadow_vec=(-0.7, 0.7)
     
     draw_circle(
         canvas,
-        diameter=200,
+        diameter=180,
         pos=(big_pos_x, big_pos_y),
         color=third,
         shadow_color=(0,0,0),
         shadow_intensity=0.45,
         shadow_friction=0.30,
-        light_dir=(1, -1)
+        light_dir=shadow_vec
         )
 
     draw_circle(
         canvas,
-        diameter=150,
+        diameter=135,
         pos=(sm_pos_x, sm_pos_y),
         color=second,
         shadow_color=(0,0,0),
         shadow_intensity=0.45,
         shadow_friction=0.30,
-        light_dir=(1, -1)
+        light_dir=shadow_vec
         )
     
     # -------------------------
