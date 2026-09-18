@@ -85,7 +85,7 @@ def draw_brand_vertical(
         
 
 
-def template_1g(photo_1, model_name, sizes, shop_name_en, brand, logo):
+def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     W, H = 1080, 1920
 
     # -------------------------
