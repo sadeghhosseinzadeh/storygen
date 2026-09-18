@@ -793,14 +793,36 @@ def draw_scaled_text(
     max_height,
     start_pos,
     fill,
-    allow_multiline=True
+    allow_multiline=True,
+    align="left",          # "left" (default), "center", or "right"
+    align_to_box=False,    # False: aligns relative to text block; True: aligns within max_width box
+    line_spacing=10        # vertical pixels between lines
 ):
+    """
+    Draws text scaled down to fit within max_width and max_height.
+    
+    Parameters:
+    - align: "left" (default), "center", or "right".
+    - align_to_box:
+        * False (default): Centers or right-aligns lines relative to the widest line 
+          in the paragraph (keeps text compact).
+        * True: Centers or right-aligns lines relative to the full `max_width` box.
+    - line_spacing: Vertical gap between wrapped lines (default: 10px).
+    """
+    if text is None:
+        return 0, 0, None
+    
+    #  guard against empty strings or non-string types
+    text = str(text)
+    if not text.strip():
+        return 0, 0, None
+        
     canvas_w, canvas_h = draw.im.size
 
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
 
-        # Measure full text
+        # Measure single-line text bounding box
         bbox = font.getbbox(text)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
@@ -808,8 +830,16 @@ def draw_scaled_text(
         # --- SINGLE LINE MODE ---
         if not allow_multiline:
             if w <= max_width and h <= max_height:
-                # Smart centering
-                x = start_pos[0] if start_pos[0] is not None else (canvas_w - w) // 2
+                if start_pos[0] is None:
+                    x = (canvas_w - w) // 2
+                else:
+                    if align == "center" and align_to_box:
+                        x = start_pos[0] + (max_width - w) // 2
+                    elif align == "right" and align_to_box:
+                        x = start_pos[0] + (max_width - w)
+                    else:
+                        x = start_pos[0]
+
                 y = start_pos[1] if start_pos[1] is not None else (canvas_h - h) // 2
                 draw.text((x, y), text, fill=fill, font=font)
                 return h, w, font
@@ -817,84 +847,67 @@ def draw_scaled_text(
                 continue
 
         # --- MULTILINE MODE ---
-        words = text.split()
+        paragraphs = text.splitlines() if "\n" in text else [text]
+        lines = []
 
-        if w <= max_width and h <= max_height:
-            # Single line fits → compute total height
-            lines = [text]
-            total_h = h
-            max_line_w = w
-
-            # Extra safeguard: if single word still too wide, skip
-            if len(words) == 1 and max_line_w > max_width:
+        # Wrap words inside max_width
+        for para in paragraphs:
+            words = para.split()
+            if not words:
+                lines.append("")
                 continue
-        else:
-            # Word wrapping
-            lines = []
-            line = ""
+
+            current_line = ""
             for word in words:
-                test = line + " " + word if line else word
-                bbox = font.getbbox(test)
-                if (bbox[2] - bbox[0]) <= max_width:
-                    line = test
+                test_line = current_line + " " + word if current_line else word
+                test_bbox = font.getbbox(test_line)
+                if (test_bbox[2] - test_bbox[0]) <= max_width:
+                    current_line = test_line
                 else:
-                    lines.append(line)
-                    line = word
-            if line:
-                lines.append(line)
+                    if current_line:
+                        lines.append(current_line)
+                    current_line = word
+            if current_line:
+                lines.append(current_line)
 
-            # Compute total height
-            total_h = sum(font.getbbox(l)[3] - font.getbbox(l)[1] for l in lines) \
-                      + (len(lines)-1)*10
-
-            if total_h > max_height:
-                continue
-
-            max_line_w = max(font.getbbox(l)[2] - font.getbbox(l)[0] for l in lines)
-
-        # Final safeguard: reject if width still exceeds max
-        if max_line_w > max_width:
+        if not lines:
             continue
 
-        # Smart centering
-        x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
-        y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
+        # Measure each line's exact bounding box
+        line_metrics = [font.getbbox(l) for l in lines]
+        line_widths = [m[2] - m[0] for m in line_metrics]
+        line_heights = [m[3] - m[1] for m in line_metrics]
 
-        # Draw lines
-        yy = y
-        for l in lines:
-            bbox = font.getbbox(l)
-            lh = bbox[3] - bbox[1]
-            draw.text((x, yy), l, fill=fill, font=font)
-            yy += lh + 10
+        max_line_w = max(line_widths) if line_widths else 0
+        total_h = sum(line_heights) + (len(lines) - 1) * line_spacing
+
+        # If it overflows bounds, step down font size and retry
+        if max_line_w > max_width or total_h > max_height:
+            continue
+
+        # Base block coordinates
+        base_x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
+        base_y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
+
+        # Draw each line with requested alignment
+        current_y = base_y
+        for line_str, lw, lh in zip(lines, line_widths, line_heights):
+            # Target width reference
+            ref_w = max_width if (align_to_box and start_pos[0] is not None) else max_line_w
+
+            if align == "center":
+                line_x = base_x + (ref_w - lw) // 2
+            elif align == "right":
+                line_x = base_x + (ref_w - lw)
+            else:  # "left" (default)
+                line_x = base_x
+
+            draw.text((line_x, current_y), line_str, fill=fill, font=font)
+            current_y += lh + line_spacing
 
         return total_h, max_line_w, font
 
     return 0, 0, None
-
-
-
-
-# detect shoe direction
-def detect_shoe_direction(img):
-    """
-    Returns 'left' if the shoe is pointing left,
-    Returns 'right' if the shoe is pointing right.
-    """
-    arr = np.array(img)
-    alpha = arr[:,:,3]
-
-    h, w = alpha.shape
-    mid = w // 2
-
-    left_pixels  = np.sum(alpha[:, :mid] > 0)
-    right_pixels = np.sum(alpha[:, mid:] > 0)
-
-    # Narrow side = front of shoe
-    if left_pixels < right_pixels:
-        return "left"
-    else:
-        return "right"
 
 
 
