@@ -784,6 +784,7 @@ def draw_sizes_box(
 
 
 # 13.draw scaled text
+
 def draw_scaled_text(
     draw,
     text,
@@ -795,34 +796,67 @@ def draw_scaled_text(
     fill,
     allow_multiline=True,
     align="left",          # "left" (default), "center", or "right"
-    align_to_box=False,    # False: aligns relative to text block; True: aligns within max_width box
-    line_spacing=10        # vertical pixels between lines
+    align_to_box=False,    # False: align relative to text block; True: align within max_width box
+    line_spacing=10,       # pixels between lines
+    opacity=1.0            # 1.0 (default: 100%), accepts 0.0-1.0 or 0-100%
 ):
     """
-    Draws text scaled down to fit within max_width and max_height.
-    
-    Parameters:
-    - align: "left" (default), "center", or "right".
-    - align_to_box:
-        * False (default): Centers or right-aligns lines relative to the widest line 
-          in the paragraph (keeps text compact).
-        * True: Centers or right-aligns lines relative to the full `max_width` box.
-    - line_spacing: Vertical gap between wrapped lines (default: 10px).
+    Renders text scaled down until it fits within max_width and max_height.
+    Supports multiline word wrapping, horizontal alignment, and opacity:
+    - align: "left" (default), "center", or "right"
+    - opacity: 1.0 or 100 (default: 100% opaque), 0.7 or 70 (70% opacity), etc.
     """
+    # 1. Safety check: guard against None or empty input
     if text is None:
         return 0, 0, None
-    
-    #  guard against empty strings or non-string types
     text = str(text)
     if not text.strip():
         return 0, 0, None
-        
+
+    # 2. Identify underlying canvas image for alpha compositing
+    if hasattr(draw, "save"):  # Image object passed directly
+        canvas = draw
+        draw = ImageDraw.Draw(canvas)
+    else:
+        canvas = getattr(draw, "_image", None)
+
     canvas_w, canvas_h = draw.im.size
 
+    # 3. Normalize opacity to 0-255 alpha (supports 1.0, 0.75, 75, 100, etc.)
+    if opacity is None or opacity >= 100 or opacity == 1.0:
+        alpha = 255
+    elif opacity > 1.0:
+        alpha = int(max(0.0, min(100.0, float(opacity))) * 2.55)
+    else:
+        alpha = int(max(0.0, min(1.0, float(opacity))) * 255)
+
+    # 4. Helper: convert fill (hex, tuple, color name) to RGBA
+    def to_rgba(c, a):
+        if isinstance(c, tuple):
+            return (c[0], c[1], c[2], a)
+        elif isinstance(c, str):
+            if c.startswith("#"):
+                clean = c.lstrip("#")
+                if len(clean) == 3:
+                    clean = "".join([x * 2 for x in clean])
+                return (int(clean[0:2], 16), int(clean[2:4], 16), int(clean[4:6], 16), a)
+            else:
+                try:
+                    rgb = ImageColor.getrgb(c)
+                    return (rgb[0], rgb[1], rgb[2], a)
+                except Exception:
+                    return (0, 0, 0, a)
+        elif isinstance(c, int):
+            return (c, c, c, a)
+        return (0, 0, 0, a)
+
+    rgba_fill = to_rgba(fill, alpha)
+
+    # 5. Fit font size
     for size in range(max_font_size, 10, -2):
         font = load_font(font_path, size)
 
-        # Measure single-line text bounding box
+        # Measure full text
         bbox = font.getbbox(text)
         w = bbox[2] - bbox[0]
         h = bbox[3] - bbox[1]
@@ -841,7 +875,22 @@ def draw_scaled_text(
                         x = start_pos[0]
 
                 y = start_pos[1] if start_pos[1] is not None else (canvas_h - h) // 2
-                draw.text((x, y), text, fill=fill, font=font)
+
+                # Alpha compositing when opacity < 100%
+                if alpha < 255 and canvas is not None:
+                    overlay = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+                    overlay_draw = ImageDraw.Draw(overlay)
+                    overlay_draw.text((x, y), text, fill=rgba_fill, font=font)
+                    if canvas.mode == "RGBA":
+                        composited = Image.alpha_composite(canvas, overlay)
+                        canvas.paste(composited, (0, 0))
+                    else:
+                        canvas_rgba = canvas.convert("RGBA")
+                        composited = Image.alpha_composite(canvas_rgba, overlay)
+                        canvas.paste(composited.convert(canvas.mode), (0, 0))
+                else:
+                    draw.text((x, y), text, fill=fill, font=font)
+
                 return h, w, font
             else:
                 continue
@@ -850,30 +899,29 @@ def draw_scaled_text(
         paragraphs = text.splitlines() if "\n" in text else [text]
         lines = []
 
-        # Wrap words inside max_width
         for para in paragraphs:
             words = para.split()
             if not words:
                 lines.append("")
                 continue
 
-            current_line = ""
+            line = ""
             for word in words:
-                test_line = current_line + " " + word if current_line else word
-                test_bbox = font.getbbox(test_line)
-                if (test_bbox[2] - test_bbox[0]) <= max_width:
-                    current_line = test_line
+                test = line + " " + word if line else word
+                bbox = font.getbbox(test)
+                if (bbox[2] - bbox[0]) <= max_width:
+                    line = test
                 else:
-                    if current_line:
-                        lines.append(current_line)
-                    current_line = word
-            if current_line:
-                lines.append(current_line)
+                    if line:
+                        lines.append(line)
+                    line = word
+            if line:
+                lines.append(line)
 
         if not lines:
             continue
 
-        # Measure each line's exact bounding box
+        # Measure dimensions of lines
         line_metrics = [font.getbbox(l) for l in lines]
         line_widths = [m[2] - m[0] for m in line_metrics]
         line_heights = [m[3] - m[1] for m in line_metrics]
@@ -881,29 +929,51 @@ def draw_scaled_text(
         max_line_w = max(line_widths) if line_widths else 0
         total_h = sum(line_heights) + (len(lines) - 1) * line_spacing
 
-        # If it overflows bounds, step down font size and retry
+        # Check bounds
         if max_line_w > max_width or total_h > max_height:
             continue
 
-        # Base block coordinates
-        base_x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
-        base_y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
+        # Smart coordinate calculation
+        x = start_pos[0] if start_pos[0] is not None else (canvas_w - max_line_w) // 2
+        y = start_pos[1] if start_pos[1] is not None else (canvas_h - total_h) // 2
 
-        # Draw each line with requested alignment
-        current_y = base_y
-        for line_str, lw, lh in zip(lines, line_widths, line_heights):
-            # Target width reference
-            ref_w = max_width if (align_to_box and start_pos[0] is not None) else max_line_w
+        # Draw lines with alignment and opacity
+        if alpha < 255 and canvas is not None:
+            # Translucent text layer
+            overlay = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
+            overlay_draw = ImageDraw.Draw(overlay)
+            yy = y
+            for l, lw, lh in zip(lines, line_widths, line_heights):
+                ref_w = max_width if (align_to_box and start_pos[0] is not None) else max_line_w
+                if align == "center":
+                    line_x = x + (ref_w - lw) // 2
+                elif align == "right":
+                    line_x = x + (ref_w - lw)
+                else:
+                    line_x = x
+                overlay_draw.text((line_x, yy), l, fill=rgba_fill, font=font)
+                yy += lh + line_spacing
 
-            if align == "center":
-                line_x = base_x + (ref_w - lw) // 2
-            elif align == "right":
-                line_x = base_x + (ref_w - lw)
-            else:  # "left" (default)
-                line_x = base_x
-
-            draw.text((line_x, current_y), line_str, fill=fill, font=font)
-            current_y += lh + line_spacing
+            if canvas.mode == "RGBA":
+                composited = Image.alpha_composite(canvas, overlay)
+                canvas.paste(composited, (0, 0))
+            else:
+                canvas_rgba = canvas.convert("RGBA")
+                composited = Image.alpha_composite(canvas_rgba, overlay)
+                canvas.paste(composited.convert(canvas.mode), (0, 0))
+        else:
+            # 100% opaque standard drawing
+            yy = y
+            for l, lw, lh in zip(lines, line_widths, line_heights):
+                ref_w = max_width if (align_to_box and start_pos[0] is not None) else max_line_w
+                if align == "center":
+                    line_x = x + (ref_w - lw) // 2
+                elif align == "right":
+                    line_x = x + (ref_w - lw)
+                else:
+                    line_x = x
+                draw.text((line_x, yy), l, fill=fill, font=font)
+                yy += lh + line_spacing
 
         return total_h, max_line_w, font
 
