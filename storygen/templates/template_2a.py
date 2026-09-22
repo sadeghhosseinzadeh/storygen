@@ -3,7 +3,7 @@ import random
 from PIL import Image, ImageDraw
 import numpy as np
 from storygen.utils import (
-    remove_background, extract_colors, lighten_color, darken_color,
+    remove_background, reshape_persian,  extract_colors, lighten_color, darken_color,
     adjust_saturation, load_font, add_brand_logo, place_shoe,
     draw_trapezoid, add_user_logo, draw_text, draw_sizes_box3, to_english_digits
 )
@@ -110,8 +110,8 @@ def template_2a(photo_1, photo_2, model_name, shop_name_en, sizes, brand, logo=N
     # --- 7. Footer text (two-line, aligned, mixed fonts) ---
     rand_num = random.randint(100, 999)
     
-    line1 = "برای اطلاعات بیشتر"
-    line2_main = "رو دایرکت کن!"
+    line1 = reshape_persian("برای اطلاعات بیشتر")
+    line2_main = reshape_persian("رو دایرکت کن!")
     line2_num  = to_english_digits(str(rand_num))   # English digits
     
     # Colors
