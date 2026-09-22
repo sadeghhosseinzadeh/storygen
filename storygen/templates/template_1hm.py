@@ -9,6 +9,7 @@ from pathlib import Path
 import storygen
 
 from storygen.utils import (
+    reshape_persian,
     lighten_color,
     darken_color,
     draw_text,
@@ -242,7 +243,7 @@ def template_1hm(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Footer Text
     # -------------------------
     rand_num = random.randint(100, 999)
-    footer_main = "استعلام قیمت"
+    footer_main = reshape_persian("استعلام قیمت عدد")
     footer_number = f"({to_english_digits(str(rand_num))})"
     
     base_x = 420
