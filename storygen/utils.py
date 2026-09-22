@@ -16,16 +16,22 @@ from bidi.algorithm import get_display
 
 
 
+# Custom configuration for full Persian & Arabic character support
+_reshaper = arabic_reshaper.ArabicReshaper({
+    'delete_harakat': False,
+    'support_ligatures': True,
+    'shift_harakat_position': False
+})
+
 def reshape_persian(text: str) -> str:
     """
-    Connects Arabic/Persian characters and reverses direction for RTL rendering.
-    Leaves pure English/Numbers intact.
+    Connects Persian/Arabic letters and reverses order for RTL display.
     """
     if not text or not isinstance(text, str):
         return text
-    # Check if text contains any Persian/Arabic characters
+    # Check if text contains Persian/Arabic unicode characters
     if any('\u0600' <= ch <= '\u06FF' or '\uFB50' <= ch <= '\uFDFF' or '\uFE70' <= ch <= '\uFEFF' for ch in text):
-        reshaped = arabic_reshaper.reshape(text)
+        reshaped = _reshaper.reshape(text)
         return get_display(reshaped)
     return text
 
@@ -632,6 +638,7 @@ def add_user_logo(canvas, logo_path=None,
 
 
 # 11. Draw text
+
 def draw_text(canvas, text,
               font_path_eng, font_size_eng,
               font_path_per, font_size_per,
@@ -648,13 +655,21 @@ def draw_text(canvas, text,
     if not text or not isinstance(text, str):
         return
 
+    # Check if text is Persian BEFORE reshaping
+    is_persian = any(
+        '\u0600' <= ch <= '\u06FF' or 
+        '\uFB50' <= ch <= '\uFDFF' or 
+        '\uFE70' <= ch <= '\uFEFF'
+        for ch in text
+    )
+
     # Resolve fonts relative to storygen/fonts
     font_path_eng = files("storygen.fonts").joinpath(font_path_eng)
     font_path_per = files("storygen.fonts").joinpath(font_path_per)
 
-    # Detect Persian vs English
+    # Pick correct font
     try:
-        if any('\u0600' <= ch <= '\u06FF' for ch in text):
+        if is_persian:
             font = ImageFont.truetype(str(font_path_per), font_size_per)
         else:
             font = ImageFont.truetype(str(font_path_eng), font_size_eng)
@@ -662,7 +677,7 @@ def draw_text(canvas, text,
         print("Warning: font not found, using default")
         font = ImageFont.load_default()
 
-    # Reshape Persian lines before measuring & drawing
+    # Reshape each line with reshape_persian
     lines = [reshape_persian(line) for line in text.split("\n")]
 
     # Measure width and height
