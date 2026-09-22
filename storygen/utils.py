@@ -662,8 +662,8 @@ def draw_text(canvas, text,
         print("Warning: font not found, using default")
         font = ImageFont.load_default()
 
-    # Split into lines
-    lines = text.split("\n")
+    # Reshape Persian lines before measuring & drawing
+    lines = [reshape_persian(line) for line in text.split("\n")]
 
     # Measure width and height
     line_widths = [font.getbbox(line)[2] - font.getbbox(line)[0] for line in lines]
