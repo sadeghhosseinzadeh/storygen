@@ -206,14 +206,16 @@ def template_1a(photo_1, model_name, shop_name_en, sizes, brand, logo=None):
 
     # --- 8. Footer text ---
     rand_num = random.randint(100, 999)
+    
+    # 1. Reshape with forced RTL!
     footer_main = reshape_persian("استعلام قیمت عدد")
     footer_number = f"({to_english_digits(str(rand_num))})"
     
     base_x = 400
     base_y = 1730
     
-    font_main = load_font("Homa.ttf", 45)          # Persian font
-    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
+    font_main = load_font("Homa.ttf", 45)
+    font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)
     
     draw.text((base_x, base_y), footer_main, fill=(0, 0, 0), font=font_main)
     
