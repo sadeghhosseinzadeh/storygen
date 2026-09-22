@@ -22,21 +22,14 @@ _reshaper = arabic_reshaper.ArabicReshaper({
 })
 
 def reshape_persian(text: str) -> str:
-    """
-    Connects Arabic/Persian letters AND reverses display order for RTL rendering in Pillow.
-    Forces Right-to-Left base direction.
-    """
     if not text or not isinstance(text, str):
         return text
-
-    # Check for any Arabic/Persian characters
     if any('\u0600' <= ch <= '\u06FF' or '\uFB50' <= ch <= '\uFDFF' or '\uFE70' <= ch <= '\uFEFF' for ch in text):
+        # 1. Reshape connects letters
         reshaped = _reshaper.reshape(text)
-        # base_dir='R' forces strictly Right-To-Left bidirectional ordering!
-        return get_display(reshaped, base_dir='R')
-
+        # 2. Return reshaped text directly
+        return get_display(reshaped)
     return text
-
 
 
 # 1. size box grid 
