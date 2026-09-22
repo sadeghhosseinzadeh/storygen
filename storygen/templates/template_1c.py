@@ -5,6 +5,7 @@ import numpy as np
 
 from storygen.Utils.sizes_utils import draw_sizes_grid
 from storygen.utils import (
+    reshape_persian,
     lighten_color,
     darken_color,
     draw_text,
@@ -233,7 +234,7 @@ def template_1c(photo_1, model_name, sizes, shop_name_en, brand, logo):
     # Footer Text
     # -------------------------
     rand_num = random.randint(100, 999)
-    footer_main = "استعلام قیمت عدد"
+    footer_main = reshape_persian("استعلام قیمت عدد")
     footer_number = f"({to_english_digits(str(rand_num))})"
     
     # Colors
