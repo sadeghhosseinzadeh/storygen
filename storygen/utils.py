@@ -12,8 +12,6 @@ import cairo
 from pathlib import Path
 import storygen
 import arabic_reshaper
-from bidi.algorithm import get_display
-
 
 _reshaper = arabic_reshaper.ArabicReshaper({
     'delete_harakat': False,
@@ -22,13 +20,15 @@ _reshaper = arabic_reshaper.ArabicReshaper({
 })
 
 def reshape_persian(text: str) -> str:
+    """
+    Connects Persian/Arabic letters in normal natural order.
+    """
     if not text or not isinstance(text, str):
         return text
+
     if any('\u0600' <= ch <= '\u06FF' or '\uFB50' <= ch <= '\uFDFF' or '\uFE70' <= ch <= '\uFEFF' for ch in text):
-        # 1. Reshape connects letters
-        reshaped = _reshaper.reshape(text)
-        # 2. Return reshaped text directly
-        return get_display(reshaped)
+        return _reshaper.reshape(text)
+
     return text
 
 
