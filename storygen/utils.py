@@ -15,8 +15,6 @@ import arabic_reshaper
 from bidi.algorithm import get_display
 
 
-
-# Custom configuration for full Persian & Arabic character support
 _reshaper = arabic_reshaper.ArabicReshaper({
     'delete_harakat': False,
     'support_ligatures': True,
@@ -25,14 +23,18 @@ _reshaper = arabic_reshaper.ArabicReshaper({
 
 def reshape_persian(text: str) -> str:
     """
-    Connects Persian/Arabic letters and reverses order for RTL display.
+    Connects Arabic/Persian letters AND reverses display order for RTL rendering in Pillow.
+    Forces Right-to-Left base direction.
     """
     if not text or not isinstance(text, str):
         return text
-    # Check if text contains Persian/Arabic unicode characters
+
+    # Check for any Arabic/Persian characters
     if any('\u0600' <= ch <= '\u06FF' or '\uFB50' <= ch <= '\uFDFF' or '\uFE70' <= ch <= '\uFEFF' for ch in text):
         reshaped = _reshaper.reshape(text)
-        return get_display(reshaped)
+        # base_dir='R' forces strictly Right-To-Left bidirectional ordering!
+        return get_display(reshaped, base_dir='R')
+
     return text
 
 
