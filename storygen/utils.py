@@ -11,7 +11,23 @@ import io
 import cairo
 from pathlib import Path
 import storygen
+import arabic_reshaper
+from bidi.algorithm import get_display
 
+
+
+def reshape_persian(text: str) -> str:
+    """
+    Connects Arabic/Persian characters and reverses direction for RTL rendering.
+    Leaves pure English/Numbers intact.
+    """
+    if not text or not isinstance(text, str):
+        return text
+    # Check if text contains any Persian/Arabic characters
+    if any('\u0600' <= ch <= '\u06FF' or '\uFB50' <= ch <= '\uFDFF' or '\uFE70' <= ch <= '\uFEFF' for ch in text):
+        reshaped = arabic_reshaper.reshape(text)
+        return get_display(reshaped)
+    return text
 
 
 
