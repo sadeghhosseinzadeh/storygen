@@ -246,8 +246,8 @@ def template_1hm(photo_1, model_name, sizes, shop_name_en, brand, logo):
     footer_main = reshape_persian("استعلام قیمت عدد")
     footer_number = f"({to_english_digits(str(rand_num))})"
     
-    base_x = 390
-    base_y = 1735
+    base_x = 383
+    base_y = 1740
     
     font_main = load_font("Homa.ttf", 45)          # Persian font
     font_num  = load_font("Segoe.UI.Bold_p30download.com.ttf", 55)      # English font
