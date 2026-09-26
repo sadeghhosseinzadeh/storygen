@@ -150,9 +150,9 @@ def template_1hm(photo_1, model_name, sizes, shop_name_en, brand, logo):
         canvas,
         logo_path=logo,
         pos=(None, 395),
-        max_size=(105, 105),
+        max_size=(125, 125),
         center_x=True,
-        opacity=230)
+        opacity=100)
     
 
     # -------------------------
